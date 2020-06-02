@@ -6,6 +6,7 @@ This tool attempts to catch all parity issues present in the given map. Unlike o
 
 # Supports
 - Single directional notes
+- Doubles
 - Dot notes
 - Stacks
 - Towers
