@@ -13,7 +13,7 @@ This tool attempts to catch all parity issues present in the given map. Unlike o
 - Windows (no angle snapping)
 
 # Limitations
-- Doesn't take into account angle snapped windows
+- Doesn't take into account angle snapping on windows
 - First note parity always assumes forehand for dot notes
 - Doesn't take bombs into account
 - Only looks at cut direction, not note position
