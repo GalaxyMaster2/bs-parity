@@ -63,7 +63,7 @@ class Parity {
 }
 
 var difficultyString;
-var sliderPrecision = 0;
+var sliderPrecision = Infinity;
 var ready = false;
 
 const fileInput = document.getElementById('file-input');
