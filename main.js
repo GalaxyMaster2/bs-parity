@@ -12,6 +12,10 @@ const lineLayers = ['bottom', 'middle', 'top'];
 // make user configurable?
 const bombMinTime = 0.25;
 
+// the tolerance when making float comparisons
+// needed because different editors round in different ways
+const comparisonTolerance = 1 / 128;
+
 const cuts = {
     blue: {
         good: {
@@ -158,8 +162,8 @@ function main() {
             };
             let offset = -1;
             let offsetNote = notes[i + offset];
-            while (((i + offset) >= 0) &&
-                (parseFloat((note._time - offsetNote._time).toFixed(10)) <= parseFloat(bombMinTime.toFixed(10)))) {
+            while ((i + offset) >= 0 &&
+                (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
                 switch (types[offsetNote._type]) {
                     case 'bomb':
                         if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
@@ -214,8 +218,8 @@ function main() {
             // invert parity again if there's a same-color note within sliderPrecision
             let offset = 1;
             let offsetNote = notes[i + offset];
-            while (((i + offset) < notes.length) &&
-                (parseFloat((offsetNote._time - note._time).toFixed(10)) <= parseFloat((1 / sliderPrecision).toFixed(10)))) {
+            while ((i + offset) < notes.length &&
+                (offsetNote._time - note._time - (1 / sliderPrecision)) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
                     parity.invert(type);
                     break;
