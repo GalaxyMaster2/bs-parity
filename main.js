@@ -81,6 +81,7 @@ var ready = false;
 const fileInput = document.getElementById('file-input');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const submit = document.getElementById('submit');
+const output = document.getElementById('output');
 
 fileInput.addEventListener('change', readFile);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
@@ -137,10 +138,17 @@ function outputMessage(text, type) {
     textNode.innerHTML = text;
     element.classList.add('outline', type);
     element.appendChild(textNode);
-    document.getElementById('output').appendChild(element);
+    output.appendChild(element);
+}
+
+function clearOutput() {
+    while (output.lastChild) {
+        output.removeChild(output.lastChild);
+    }
 }
 
 function main() {
+    clearOutput();
     if (!ready) {
         outputMessage('File loading not ready, try again', 'error');
         return;
