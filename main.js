@@ -125,9 +125,9 @@ function logNote(note, parity) {
     let row = lineLayers[note._lineLayer];
 
     if (type === 'bomb') {
-        console.log('Bomb at beat ' + time + ' -- ' + column + ' -- ' + row);
+        return ('Bomb at beat ' + time + ' -- ' + column + ' -- ' + row);
     } else {
-        console.log('Note at beat ' + time + ' -- ' + type + ' -- ' + cutDirection + ' -- ' + column + ' -- ' + row + ' -- ' + parity[type]);
+        return ('Note at beat ' + time + ' -- ' + type + ' -- ' + cutDirection + ' -- ' + column + ' -- ' + row + ' -- ' + parity[type]);
     }
 }
 
@@ -184,34 +184,32 @@ function main() {
             }
 
             // invert parity if needed and log the bomb if so
-            let logBomb = false;
+            let logString = '';
             for (let color in setParity) {
                 if (setParity[color]) {
                     if (row === 'bottom' && parity[color] === 'backhand') {
-                        logBomb = true;
                         parity.invert(color);
+                        logString += '\n' + color + ' parity set to ' + parity[color];
                     }
                     if (row === 'top' && parity[color] === 'forehand') {
-                        logBomb = true;
                         parity.invert(color);
+                        logString += '\n' + color + ' parity set to ' + parity[color];
                     }
                 }
             }
-            if (logBomb) {
-                logNote(note, parity);
-                for (let color in setParity) {
-                    console.log(color + ' parity is now ' + parity[color]);
-                }
+            if (logString) {
+                logString = logNote(note, parity) + logString;
+                console.log(logString);
             }
         } else {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                logNote(note, parity);
+                console.log(logNote(note, parity));
                 console.log('borderline');
                 parity.invert(type);
             } else {
-                logNote(note, parity);
+                console.log(logNote(note, parity));
                 console.log('bad, assuming wrist reset');
             }
 
