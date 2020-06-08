@@ -131,9 +131,18 @@ function logNote(note, parity) {
     }
 }
 
+function outputMessage(text, type) {
+    let element = document.createElement('div');
+    let textNode = document.createElement('pre');
+    textNode.innerHTML = text;
+    element.classList.add('outline', type);
+    element.appendChild(textNode);
+    document.getElementById('output').appendChild(element);
+}
+
 function main() {
     if (!ready) {
-        console.log('not ready');
+        outputMessage('File loading not ready, try again', 'error');
         return;
     }
 
@@ -199,18 +208,17 @@ function main() {
             }
             if (logString) {
                 logString = logNote(note, parity) + logString;
-                console.log(logString);
+                outputMessage(logString, 'info');
             }
         } else {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                console.log(logNote(note, parity));
-                console.log('Borderline hit, not all players might read or be able to play this correctly');
+                outputMessage(logNote(note, parity) +
+                    '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
             } else {
-                console.log(logNote(note, parity));
-                console.log('Bad hit, wrist reset is necessary');
+                outputMessage(logNote(note, parity) + '\nBad hit, wrist reset is necessary', 'error');
             }
 
             // invert parity again if there's a same-color note within sliderPrecision
