@@ -1,6 +1,3 @@
-// TODO:
-// - implement zip extraction?
-
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 const types = ['red', 'blue'];
 
@@ -122,14 +119,18 @@ function main() {
     parity.init(notes);
 
     for (let i = 0; i < notes.length; i++) {
-        if (cuts[types[notes[i]._type]].good[parity[types[notes[i]._type]]].indexOf(cutDirections[notes[i]._cutDirection]) != -1) {
-            parity.invert(types[notes[i]._type]);
-        } else if (cuts[types[notes[i]._type]].borderline[parity[types[notes[i]._type]]].indexOf(cutDirections[notes[i]._cutDirection]) != -1) {
-            logNote(notes[i], parity[types[notes[i]._type]]);
+        let note = notes[i];
+        let type = types[note._type];
+        let cutDirection = cutDirections[note._cutDirection];
+
+        if (cuts[type].good[parity[type]].indexOf(cutDirection) != -1) {
+            parity.invert(type);
+        } else if (cuts[type].borderline[parity[type]].indexOf(cutDirection) != -1) {
+            logNote(note, parity[type]);
             console.log('borderline');
-            parity.invert(types[notes[i]._type]);
+            parity.invert(type);
         } else {
-            logNote(notes[i], parity[types[notes[i]._type]]);
+            logNote(note, parity[type]);
             console.log('bad, assuming wrist reset');
         }
 
@@ -138,7 +139,7 @@ function main() {
         while (((i + offset) < notes.length) &&
             (parseFloat((notes[i + offset]._time - notes[i]._time).toFixed(10)) <= parseFloat((1 / sliderPrecision).toFixed(10)))) {
             if (notes[i]._type === notes[i + offset]._type) {
-                parity.invert(types[notes[i]._type]);
+                parity.invert(type);
                 break;
             }
             offset++;
