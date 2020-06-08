@@ -1,5 +1,5 @@
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
-const types = ['red', 'blue'];
+const types = ['red', 'blue', 'bomb'];
 
 const cuts = {
     blue: {
@@ -95,10 +95,10 @@ function getNotes(obj) {
         return a._time - b._time;
     })
 
-    // filter out bombs and invalid note types
+    // filter out invalid note types
     notes = notes.filter(function (note) {
-        return (note._type === 0 || note._type === 1);
-    })
+        return types[note._type] !== undefined;
+    });
     return notes;
 }
 
@@ -122,6 +122,11 @@ function main() {
         let note = notes[i];
         let type = types[note._type];
         let cutDirection = cutDirections[note._cutDirection];
+
+        // skip bombs for now
+        if (type === 'bomb') {
+            continue;
+        }
 
         if (cuts[type].good[parity[type]].indexOf(cutDirection) != -1) {
             parity.invert(type);
