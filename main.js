@@ -151,6 +151,7 @@ function main() {
                 continue;
             }
 
+            // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
             let setParity = {
                 red: true,
                 blue: true
@@ -178,16 +179,17 @@ function main() {
                 offsetNote = notes[i + offset];
             }
 
+            // invert parity if needed and log the bomb if so
             let logBomb = false;
             for (let color in setParity) {
                 if (setParity[color]) {
                     if (row === 'bottom' && parity[color] === 'backhand') {
                         logBomb = true;
-                        parity[color] = 'forehand';
+                        parity.invert(color);
                     }
                     if (row === 'top' && parity[color] === 'forehand') {
                         logBomb = true;
-                        parity[color] = 'backhand';
+                        parity.invert(color);
                     }
                 }
             }
