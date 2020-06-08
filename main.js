@@ -206,11 +206,11 @@ function main() {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
                 console.log(logNote(note, parity));
-                console.log('borderline');
+                console.log('Borderline hit, not all players might read or be able to play this correctly');
                 parity.invert(type);
             } else {
                 console.log(logNote(note, parity));
-                console.log('bad, assuming wrist reset');
+                console.log('Bad hit, wrist reset is necessary');
             }
 
             // invert parity again if there's a same-color note within sliderPrecision
