@@ -243,4 +243,8 @@ function main() {
             }
         }
     }
+
+    if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
+        outputMessage('No errors found', 'success');
+    }
 }
