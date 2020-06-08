@@ -68,15 +68,6 @@ class Parity {
             this.blue = 'backhand';
         }
     }
-
-    setRed(x) {
-        console.log('red parity set to ' + x);
-        this.red = x;
-    }
-    setBlue(x) {
-        console.log('blue parity set to ' + x);
-        this.blue = x;
-    }
 }
 
 var difficultyString;
@@ -130,7 +121,7 @@ function logNote(note, parity) {
     let row = lineLayers[note._lineLayer];
 
     if (type === 'bomb') {
-        console.log('Bomb at beat ' + time + ' -- ' + column + ' -- ' + row + ' -- red saber: ' + parity.red + ', blue saber: ' + parity.blue);
+        console.log('Bomb at beat ' + time + ' -- ' + column + ' -- ' + row);
     } else {
         console.log('Note at beat ' + time + ' -- ' + type + ' -- ' + cutDirection + ' -- ' + column + ' -- ' + row + ' -- ' + parity[type]);
     }
@@ -160,8 +151,10 @@ function main() {
                 continue;
             }
 
-            let setRed = true;
-            let setBlue = true;
+            let setParity = {
+                red: true,
+                blue: true
+            };
             let offset = -1;
             let offsetNote = notes[i + offset];
             while (((i + offset) >= 0) &&
@@ -169,36 +162,39 @@ function main() {
                 switch (types[offsetNote._type]) {
                     case 'bomb':
                         if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
-                            setRed = false;
+                            setParity.red = false;
                         } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
-                            setBlue = false;
+                            setParity.blue = false;
                         }
                         break;
                     case 'red':
-                        setRed = false;
+                        setParity.red = false;
                         break;
                     case 'blue':
-                        setBlue = false;
+                        setParity.blue = false;
                         break;
                 }
                 offset--;
                 offsetNote = notes[i + offset];
             }
 
-            logNote(note, parity);
-            if (row === 'bottom') {
-                if (setRed) {
-                    parity.setRed('forehand');
+            let logBomb = false;
+            for (let color in setParity) {
+                if (setParity[color]) {
+                    if (row === 'bottom' && parity[color] === 'backhand') {
+                        logBomb = true;
+                        parity[color] = 'forehand';
+                    }
+                    if (row === 'top' && parity[color] === 'forehand') {
+                        logBomb = true;
+                        parity[color] = 'backhand';
+                    }
                 }
-                if (setBlue) {
-                    parity.setBlue('forehand');
-                }
-            } else if (row === 'top') {
-                if (setRed) {
-                    parity.setRed('backhand');
-                }
-                if (setBlue) {
-                    parity.setBlue('backhand');
+            }
+            if (logBomb) {
+                logNote(note, parity);
+                for (let color in setParity) {
+                    console.log(color + ' parity is now ' + parity[color]);
                 }
             }
         } else {
