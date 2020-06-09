@@ -1,0 +1,46 @@
+html {
+    margin: 10px;
+    font-size: 15px;
+    font-family: sans-serif;
+    line-height: 1.4em;
+}
+
+div.parent {
+    width: 600px; /* this is hacky but i never claimed to be any good at css and it works */
+}
+div.loc {
+    height: 94px;
+    width: 124px;
+    background-color: lightgrey;
+    border-radius: 3px;
+    position: relative;
+    left: 0px;
+}
+div.text {
+    position: relative;
+    top: -68px;
+    left: 144px
+}
+
+div img {
+    position: relative;
+    width: 30px
+}
+
+img.top    {top: 2px }
+img.middle {top: 32px}
+img.bottom {top: 62px}
+
+img.left        {left: 2px }
+img.middleLeft  {left: 32px}
+img.middleRight {left: 62px}
+img.right       {left: 92px}
+
+img.dup         {transform: rotate(180deg)}
+img.ddown       {transform: rotate(0deg)}
+img.dleft       {transform: rotate(90deg)}
+img.dright      {transform: rotate(270deg)}
+img.dupLeft     {transform: rotate(90deg)}
+img.dupRight    {transform: rotate(180deg)}
+img.ddownLeft   {transform: rotate(0deg)}
+img.ddownRight  {transform: rotate(270deg)}

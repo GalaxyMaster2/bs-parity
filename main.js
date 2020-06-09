@@ -141,6 +141,36 @@ function outputMessage(text, type) {
     output.appendChild(element);
 }
 
+function outputUI(note, parity, errString, errType) { // combination of outputMessage and logNote
+    let time = note._time.toFixed(3);
+    let type = types[note._type];
+    let cutDirection = cutDirections[note._cutDirection];
+    let column = lineIndices[note._lineIndex];
+    let row = lineLayers[note._lineLayer];
+
+    if (type === 'bomb') {
+        string = 'Bomb at beat ' + time + ': ';
+        noteType = 'bomb' // image file
+    } else {
+        string = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
+        string += cutDirection + ') at beat ' + time + ': ';
+        if      (cutDirection === 'dot') { noteType = 'dot'  } // selects image file to use
+        else if (note._cutDirection < 4) { noteType = 'stan' }
+        else                             { noteType = 'diag' }
+        noteType += (type === 'blue') ? '_blue' : '' // colour and svgs is not a fun thing to deal with so i just made more images
+    }
+
+    let element = document.createElement('div');
+    element.classList.add("parent");
+    element.classList.add(errType);
+
+    element.innerHTML += "<div class='loc'><img class='" + column + " " + row + " d" + cutDirection + "' src='assets/" + noteType + ".svg'></div>";
+    element.innerHTML += "<div class='text'>" + string + "<br>" + errString + " (" + errType + ")</div>";
+    // structure allows easier css styling for each error in the list
+
+    output.appendChild(element);
+}
+
 function clearOutput() {
     while (output.lastChild) {
         output.removeChild(output.lastChild);
@@ -215,18 +245,16 @@ function main() {
                 }
             }
             if (logString) {
-                logString = logNote(note, parity) + logString;
-                outputMessage(logString, 'info');
+                outputUI(note, parity, logString, 'info');
             }
         } else {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                outputMessage(logNote(note, parity) +
-                    '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
+                outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
             } else {
-                outputMessage(logNote(note, parity) + '\nBad hit, wrist reset is necessary', 'error');
+                outputUI(note, parity, 'Bad hit, wrist reset is necessary', 'error');
             }
 
             // invert parity again if there's a same-color note within sliderPrecision
