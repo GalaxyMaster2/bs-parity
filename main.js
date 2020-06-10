@@ -248,3 +248,178 @@ function main() {
         outputMessage('No errors found', 'success');
     }
 }
+
+// angle (0,0) is looking directly at the notes from player perspective
+let angleX = 30;
+let angleY = 40;
+let centerBeat = 0;
+function rotate(event) {
+    switch (event.key) {
+        case 'w':
+            angleX += 10;
+            break;
+        case 'a':
+            angleY -= 10;
+            break;
+        case 's':
+            angleX -= 10;
+            break;
+        case 'd':
+            angleY += 10;
+            break;
+    }
+    angleX = mod(angleX, 360);
+    angleY = mod(angleY, 360);
+    render(getNotes(getDifficultyObject()), centerBeat);
+}
+
+// js modulo operator does not work well with negative values
+function mod(n, m) {
+    return ((n % m) + m) % m;
+}
+
+document.addEventListener('keydown', rotate);
+document.addEventListener('wheel', scroll);
+
+function scroll(event) {
+    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    render(getNotes(getDifficultyObject()), centerBeat);
+}
+
+// I like to work in degrees, fight me
+function toRadians(angle) {
+    return angle * (Math.PI / 180);
+}
+
+const renderContainer = document.getElementById('render-container');
+
+function render(notes, centerBeat) {
+    // clear container
+    while (renderContainer.lastChild) {
+        renderContainer.removeChild(renderContainer.lastChild);
+    }
+
+    // container size in pixels
+    // TODO: calculate from page
+    let containerWidth = 600;
+    let containerHeight = 300;
+
+    let gridHeight = containerHeight / 2;
+
+    let noteSize = gridHeight / 3 / Math.SQRT2;
+
+    // scaling factors for time/column/row transformation into x,y coordinates
+    let timeScaleX = Math.sin(toRadians(angleY));
+    let timeScaleY = Math.cos(toRadians(angleY)) * Math.sin(toRadians(angleX)) * -1;
+
+    let columnScaleX = Math.cos(toRadians(angleY));
+    let columnScaleY = Math.sin(toRadians(angleY)) * Math.sin(toRadians(angleX));
+
+    // row never affects x coordinate regardless of camera angle
+    let rowScaleY = Math.cos(toRadians(angleX)) * -1;
+
+    // range around centerBeat to render, also affects the scale
+    // TODO: make a scale parameter, calculate this range automatically based on visibility
+    let beatRange = 2;
+
+    // filter notes outside of range
+    notes = notes.filter(function (note) {
+        return (note._time >= centerBeat - beatRange && note._time <= centerBeat + beatRange);
+    });
+
+    // decide time order
+    let reverseTimeOrder = false;
+    if (angleY >= 90 && angleY < 270) {
+        reverseTimeOrder = !reverseTimeOrder;
+    }
+    if (angleX <= 90 || angleX > 270) {
+        reverseTimeOrder = !reverseTimeOrder;
+    }
+
+    // decide column order
+    let reverseColumnOrder = false;
+    if (angleY >= 180) {
+        reverseColumnOrder = !reverseColumnOrder;
+    }
+    if (angleX >= 90 && angleX < 270) {
+        reverseColumnOrder = !reverseColumnOrder;
+    }
+
+    // decide row order
+    let reverseRowOrder = false;
+    if (angleX >= 180) {
+        reverseRowOrder = !reverseRowOrder;
+    }
+
+    // sort by row, then column, then time
+    notes = notes.sort(function (a, b) {
+        return (reverseRowOrder ? b._lineLayer - a._lineLayer : a._lineLayer - b._lineLayer) ||
+            (reverseColumnOrder ? b._lineIndex - a._lineIndex : a._lineIndex - b._lineIndex) ||
+            (reverseTimeOrder ? b._time - a._time : a._time - b._time);
+    });
+
+    // calculate note position, make img element and add to the container
+    for (let note of notes) {
+        let relTime = note._time - centerBeat;
+        let posX = (relTime / beatRange) * (containerWidth / 2) * timeScaleX + (containerWidth / 2);
+        let posY = (relTime / beatRange) * (containerWidth / 2) * timeScaleY + (containerHeight / 2);
+
+        let columnOffsetX = (gridHeight / 3) * (note._lineIndex - 1.5) * columnScaleX;
+        let columnOffsetY = (gridHeight / 3) * (note._lineIndex - 1.5) * columnScaleY;
+
+        posX += columnOffsetX;
+        posY += columnOffsetY;
+
+        let rowOffsetY = (gridHeight / 3) * (note._lineLayer - 1) * rowScaleY;
+
+        posY += rowOffsetY;
+
+        let noteAngle = 0;
+        let dot = false;
+
+        switch (cutDirections[note._cutDirection]) {
+            case 'down':
+                noteAngle = 0;
+                break;
+            case 'downLeft':
+                noteAngle = 45;
+                break;
+            case 'left':
+                noteAngle = 90;
+                break;
+            case 'upLeft':
+                noteAngle = 135;
+                break;
+            case 'up':
+                noteAngle = 180;
+                break;
+            case 'upRight':
+                noteAngle = 225;
+                break;
+            case 'right':
+                noteAngle = 270;
+                break;
+            case 'downRight':
+                noteAngle = 315;
+                break;
+            case 'dot':
+                noteAngle = 0;
+                dot = true;
+                break;
+        }
+
+        let noteImg = document.createElement('img');
+        if (types[note._type] === 'bomb') {
+            noteImg.src = 'assets/bomb.svg';
+        } else {
+            noteImg.src = (dot ? 'assets/dot_' : 'assets/note_') + types[note._type] + '.svg';
+        }
+        noteImg.classList.add('note');
+        noteImg.style.setProperty('--size', noteSize + 'px');
+        noteImg.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
+        noteImg.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
+        noteImg.style.setProperty('transform', 'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
+
+        renderContainer.appendChild(noteImg);
+    }
+}

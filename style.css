@@ -1,0 +1,14 @@
+#render-container {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    border: 1px solid black;
+    overflow: hidden;
+}
+
+.note {
+    --size: 50px;
+    position: absolute;
+    width: var(--size);
+    border: 2px solid black;
+}
