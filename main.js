@@ -418,7 +418,7 @@ function render(notes, centerBeat) {
         noteImg.style.setProperty('--size', noteSize + 'px');
         noteImg.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
         noteImg.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
-        noteImg.style.setProperty('transform', 'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
+        noteImg.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
 
         renderContainer.appendChild(noteImg);
     }
