@@ -45,3 +45,31 @@
 .bottom {
     transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
+
+.bomb {
+    background-image: url('assets/bomb.svg');
+}
+
+.dot_front_blue {
+    background-image: url('assets/dot_front_blue.svg');
+}
+
+.dot_front_red {
+    background-image: url('assets/dot_front_red.svg');
+}
+
+.note_front_blue {
+    background-image: url('assets/note_front_blue.svg');
+}
+
+.note_front_red {
+    background-image: url('assets/note_front_red.svg');
+}
+
+.note_side_blue {
+    background-image: url('assets/note_side_blue.svg');
+}
+
+.note_side_red {
+    background-image: url('assets/note_side_red.svg');
+}

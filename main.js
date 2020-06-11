@@ -416,14 +416,15 @@ function render(notes, centerBeat) {
 
         let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
         for (let face of faces) {
-            let noteFace = document.createElement('img');
+            let noteFace = document.createElement('div');
+            let imgClass;
             if (types[note._type] === 'bomb') {
-                noteFace.src = 'assets/bomb.svg';
+                imgClass = 'bomb';
             } else {
-                noteFace.src = (dot && face === 'front' ? 'assets/dot_' : 'assets/note_') +
-                    (face === 'front' ? 'front_' : 'side_') + types[note._type] + '.svg';
+                imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
+                    (face === 'front' ? 'front_' : 'side_') + types[note._type];
             }
-            noteFace.classList.add('note-face', face);
+            noteFace.classList.add('note-face', face, imgClass);
             noteContainer.appendChild(noteFace);
         }
 
