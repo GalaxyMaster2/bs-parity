@@ -18,6 +18,7 @@
     position: absolute;
     display: block;
     width: var(--size);
+    height: var(--size);
     outline: 1px solid black;
 }
 
