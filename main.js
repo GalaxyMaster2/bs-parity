@@ -246,22 +246,22 @@ function main() {
 }
 
 // angle (0,0) is looking directly at the notes from player perspective
-let angleX = 30;
-let angleY = 40;
+let angleX = -30;
+let angleY = -40;
 let centerBeat = 0;
 function rotate(event) {
     switch (event.key) {
         case 'w':
-            angleX += 10;
-            break;
-        case 'a':
-            angleY -= 10;
-            break;
-        case 's':
             angleX -= 10;
             break;
-        case 'd':
+        case 'a':
             angleY += 10;
+            break;
+        case 's':
+            angleX += 10;
+            break;
+        case 'd':
+            angleY -= 10;
             break;
     }
     angleX = mod(angleX, 360);
@@ -326,7 +326,7 @@ function render(notes, centerBeat) {
 
         let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-        let posZ = (relTime / beatRange) * (containerWidth / 2);
+        let posZ = (relTime / beatRange) * (containerWidth / 2) * -1;
 
         let noteAngle = 0;
         let dot = false;
@@ -382,9 +382,9 @@ function render(notes, centerBeat) {
 
         noteContainer.style.setProperty('left', posX + 'px');
         noteContainer.style.setProperty('top', posY + 'px');
-        noteContainer.style.setProperty('transform', 'translateZ(' + -posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+        noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
         gridContainer.appendChild(noteContainer);
     }
-    gridContainer.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg)');
+    gridContainer.style.setProperty('transform', 'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
 }
