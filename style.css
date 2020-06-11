@@ -8,7 +8,39 @@
 
 .note {
     --size: 50px;
-    position: absolute;
     width: var(--size);
-    border: 2px solid black;
+    height: var(--size);
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.note-face {
+    position: absolute;
+    display: block;
+    width: var(--size);
+    outline: 1px solid black;
+}
+
+.front {
+    transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+}
+
+.back {
+    transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }

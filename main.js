@@ -408,18 +408,26 @@ function render(notes, centerBeat) {
                 break;
         }
 
-        let noteImg = document.createElement('img');
-        if (types[note._type] === 'bomb') {
-            noteImg.src = 'assets/bomb.svg';
-        } else {
-            noteImg.src = (dot ? 'assets/dot_' : 'assets/note_') + types[note._type] + '.svg';
-        }
-        noteImg.classList.add('note');
-        noteImg.style.setProperty('--size', noteSize + 'px');
-        noteImg.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
-        noteImg.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
-        noteImg.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
+        let noteContainer = document.createElement('div');
+        noteContainer.classList.add('note');
+        noteContainer.style.setProperty('--size', noteSize + 'px');
 
-        renderContainer.appendChild(noteImg);
+        let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+        for (face of faces) {
+            let noteFace = document.createElement('img');
+            if (types[note._type] === 'bomb') {
+                noteFace.src = 'assets/bomb.svg';
+            } else {
+                noteFace.src = (dot ? 'assets/dot_' : 'assets/note_') + (face === 'front' ? 'front_' : 'side_') + types[note._type] + '.svg';
+            }
+            noteFace.classList.add('note-face', face);
+            noteContainer.appendChild(noteFace);
+        }
+
+        noteContainer.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
+        noteContainer.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
+        noteContainer.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
+
+        renderContainer.appendChild(noteContainer);
     }
 }
