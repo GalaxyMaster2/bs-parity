@@ -74,7 +74,7 @@ class Parity {
     }
 }
 
-var difficultyString;
+var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;
 
@@ -92,17 +92,13 @@ function readFile() {
     let fr = new FileReader();
     fr.readAsText(fileInput.files[0]);
     fr.addEventListener('load', function () {
-        difficultyString = fr.result;
+        notesArray = getNotes(JSON.parse(fr.result));
         ready = true;
     });
 }
 
 function readSliderPrecision() {
     sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
-}
-
-function getDifficultyObject() {
-    return JSON.parse(difficultyString);
 }
 
 function getNotes(obj) {
@@ -154,7 +150,7 @@ function main() {
         return;
     }
 
-    let notes = getNotes(getDifficultyObject());
+    let notes = notesArray;
 
     let parity = new Parity();
     parity.init(notes);
@@ -270,7 +266,7 @@ function rotate(event) {
     }
     angleX = mod(angleX, 360);
     angleY = mod(angleY, 360);
-    render(getNotes(getDifficultyObject()), centerBeat);
+    render(notesArray, centerBeat);
 }
 
 // js modulo operator does not work well with negative values
@@ -283,7 +279,7 @@ document.addEventListener('wheel', scroll);
 
 function scroll(event) {
     centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
-    render(getNotes(getDifficultyObject()), centerBeat);
+    render(notesArray, centerBeat);
 }
 
 // I like to work in degrees, fight me
@@ -294,6 +290,12 @@ function toRadians(angle) {
 const renderContainer = document.getElementById('render-container');
 
 function render(notes, centerBeat) {
+    if (!ready) {
+        clearOutput();
+        outputMessage('File loading not ready, try again', 'error');
+        return;
+    }
+
     // clear container
     while (renderContainer.lastChild) {
         renderContainer.removeChild(renderContainer.lastChild);
@@ -413,7 +415,7 @@ function render(notes, centerBeat) {
         noteContainer.style.setProperty('--size', noteSize + 'px');
 
         let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-        for (face of faces) {
+        for (let face of faces) {
             let noteFace = document.createElement('img');
             if (types[note._type] === 'bomb') {
                 noteFace.src = 'assets/bomb.svg';
