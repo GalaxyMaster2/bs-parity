@@ -418,7 +418,8 @@ function render(notes, centerBeat) {
             if (types[note._type] === 'bomb') {
                 noteFace.src = 'assets/bomb.svg';
             } else {
-                noteFace.src = (dot ? 'assets/dot_' : 'assets/note_') + (face === 'front' ? 'front_' : 'side_') + types[note._type] + '.svg';
+                noteFace.src = (dot && face === 'front' ? 'assets/dot_' : 'assets/note_') +
+                    (face === 'front' ? 'front_' : 'side_') + types[note._type] + '.svg';
             }
             noteFace.classList.add('note-face', face);
             noteContainer.appendChild(noteFace);
