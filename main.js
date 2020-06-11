@@ -287,7 +287,7 @@ function toRadians(angle) {
     return angle * (Math.PI / 180);
 }
 
-const renderContainer = document.getElementById('render-container');
+const gridContainer = document.getElementById('grid-container');
 
 function render(notes, centerBeat) {
     if (!ready) {
@@ -297,8 +297,8 @@ function render(notes, centerBeat) {
     }
 
     // clear container
-    while (renderContainer.lastChild) {
-        renderContainer.removeChild(renderContainer.lastChild);
+    while (gridContainer.lastChild) {
+        gridContainer.removeChild(gridContainer.lastChild);
     }
 
     // container size in pixels
@@ -306,19 +306,10 @@ function render(notes, centerBeat) {
     let containerWidth = 600;
     let containerHeight = 300;
 
+    // TODO: set grid-container CSS dimensions here
     let gridHeight = containerHeight / 2;
 
     let noteSize = gridHeight / 3 / Math.SQRT2;
-
-    // scaling factors for time/column/row transformation into x,y coordinates
-    let timeScaleX = Math.sin(toRadians(angleY));
-    let timeScaleY = Math.cos(toRadians(angleY)) * Math.sin(toRadians(angleX)) * -1;
-
-    let columnScaleX = Math.cos(toRadians(angleY));
-    let columnScaleY = Math.sin(toRadians(angleY)) * Math.sin(toRadians(angleX));
-
-    // row never affects x coordinate regardless of camera angle
-    let rowScaleY = Math.cos(toRadians(angleX)) * -1;
 
     // range around centerBeat to render, also affects the scale
     // TODO: make a scale parameter, calculate this range automatically based on visibility
@@ -329,52 +320,13 @@ function render(notes, centerBeat) {
         return (note._time >= centerBeat - beatRange && note._time <= centerBeat + beatRange);
     });
 
-    // decide time order
-    let reverseTimeOrder = false;
-    if (angleY >= 90 && angleY < 270) {
-        reverseTimeOrder = !reverseTimeOrder;
-    }
-    if (angleX <= 90 || angleX > 270) {
-        reverseTimeOrder = !reverseTimeOrder;
-    }
-
-    // decide column order
-    let reverseColumnOrder = false;
-    if (angleY >= 180) {
-        reverseColumnOrder = !reverseColumnOrder;
-    }
-    if (angleX >= 90 && angleX < 270) {
-        reverseColumnOrder = !reverseColumnOrder;
-    }
-
-    // decide row order
-    let reverseRowOrder = false;
-    if (angleX >= 180) {
-        reverseRowOrder = !reverseRowOrder;
-    }
-
-    // sort by row, then column, then time
-    notes = notes.sort(function (a, b) {
-        return (reverseRowOrder ? b._lineLayer - a._lineLayer : a._lineLayer - b._lineLayer) ||
-            (reverseColumnOrder ? b._lineIndex - a._lineIndex : a._lineIndex - b._lineIndex) ||
-            (reverseTimeOrder ? b._time - a._time : a._time - b._time);
-    });
-
-    // calculate note position, make img element and add to the container
+    // calculate note position, make note element and add to the container
     for (let note of notes) {
         let relTime = note._time - centerBeat;
-        let posX = (relTime / beatRange) * (containerWidth / 2) * timeScaleX + (containerWidth / 2);
-        let posY = (relTime / beatRange) * (containerWidth / 2) * timeScaleY + (containerHeight / 2);
 
-        let columnOffsetX = (gridHeight / 3) * (note._lineIndex - 1.5) * columnScaleX;
-        let columnOffsetY = (gridHeight / 3) * (note._lineIndex - 1.5) * columnScaleY;
-
-        posX += columnOffsetX;
-        posY += columnOffsetY;
-
-        let rowOffsetY = (gridHeight / 3) * (note._lineLayer - 1) * rowScaleY;
-
-        posY += rowOffsetY;
+        let posX = (gridHeight / 3) * (0.5 + note._lineIndex);
+        let posY = (gridHeight / 3) * (2.5 - note._lineLayer);
+        let posZ = (relTime / beatRange) * (containerWidth / 2);
 
         let noteAngle = 0;
         let dot = false;
@@ -430,8 +382,9 @@ function render(notes, centerBeat) {
 
         noteContainer.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
         noteContainer.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
-        noteContainer.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg) rotateZ(' + noteAngle + 'deg)');
+        noteContainer.style.setProperty('transform', 'translateZ(' + -posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-        renderContainer.appendChild(noteContainer);
+        gridContainer.appendChild(noteContainer);
     }
+    gridContainer.style.setProperty('transform', 'rotateX(' + -angleX + 'deg) rotateY(' + -angleY + 'deg)');
 }

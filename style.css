@@ -6,6 +6,17 @@
     overflow: hidden;
 }
 
+#grid-container {
+    --width: 200px;
+    --height: 150px;
+    position: absolute;
+    left: calc(50% - (var(--width) / 2));
+    top: calc(50% - (var(--height) / 2));
+    width: var(--width);
+    height: var(--height);
+    transform-style: preserve-3d;
+}
+
 .note {
     --size: 50px;
     width: var(--size);
