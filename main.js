@@ -324,8 +324,8 @@ function render(notes, centerBeat) {
     for (let note of notes) {
         let relTime = note._time - centerBeat;
 
-        let posX = (gridHeight / 3) * (0.5 + note._lineIndex);
-        let posY = (gridHeight / 3) * (2.5 - note._lineLayer);
+        let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
+        let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
         let posZ = (relTime / beatRange) * (containerWidth / 2);
 
         let noteAngle = 0;
@@ -380,8 +380,8 @@ function render(notes, centerBeat) {
             noteContainer.appendChild(noteFace);
         }
 
-        noteContainer.style.setProperty('left', 'calc(' + posX + 'px - (var(--size) / 2))');
-        noteContainer.style.setProperty('top', 'calc(' + posY + 'px - (var(--size) / 2))');
+        noteContainer.style.setProperty('left', posX + 'px');
+        noteContainer.style.setProperty('top', posY + 'px');
         noteContainer.style.setProperty('transform', 'translateZ(' + -posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
         gridContainer.appendChild(noteContainer);
