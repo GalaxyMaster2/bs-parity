@@ -9,7 +9,17 @@ console.log("ui js loaded");
 var file = null;
 
 let dropArea = document.getElementById("drag-file");
-let introDiv = document.getElementById("intro")
+let introDiv = document.getElementById("intro");
+let themeBut = document.getElementById("theme");
+
+themeBut.addEventListener('click', changeTheme);
+
+function changeTheme() {
+    let body = document.getElementsByTagName("body");
+    let current = (body[0].classList[0] === "dark")
+    body[0].classList.remove(current ? "dark" : "light");
+    body[0].classList.add(current ? "light" : "dark");
+}
 
 ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);

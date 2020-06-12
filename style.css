@@ -1,28 +1,42 @@
-html, body {
+html,
+body {
     --blue: #3f96e6;
     --red: #f03e2d;
-    --bg: #222222;
-    --text: #dddddd;
-    --vizbg: #555555;
+    --transition:cubic-bezier(.58,.07,.51,.97);
     margin: 0;
     border: none;
     background-color: var(--bg);
     color: var(--text);
     overflow-x: hidden;
     font-family: sans-serif;
+    transition: background-color var(--transition) 0.3s, color var(--transition) 0.3s;
+}
+
+body.dark {
+    --bg: #222222;
+    --ebg: #555555;
+    --text: #dddddd;
+    --etext: #eeeeee;
+}
+
+body.light {
+    --bg: #eeeeee;
+    --ebg: #ebebeb;
+    --text: #222222;
+    --etext: #111111;
 }
 
 .intro {
     position: absolute;
-    z-index: 10;
+    z-index: 0;
     top: 0px;
     left: 0px;
     width: 100%;
     height: 100%;
-    transition: top ease-in 1.5s;
+    transition: top var(--transition) 1.5s;
 }
 
-.intro div.drag-file {
+.intro .drag-file {
     background-color: var(--text);
     outline: 2px dashed var(--bg);
     color: var(--bg);
@@ -44,60 +58,66 @@ html, body {
     text-align: center;
 }
 
-.intro div.drag-file.highlight {
-    background-color: #eeeeee;
+.intro .drag-file.highlight {
+    background-color: var(--etext);
 }
 
 input#file {
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
-input#file + label {
+
+input#file+label {
     cursor: pointer;
     display: inline-block;
 }
 
-input#file:focus + label strong,
-input#file + label:hover strong{
+input#file:focus+label strong,
+input#file+label:hover strong {
     color: var(--blue);
 }
 
-.intro div .uploading,
-.intro div .success {
+.intro .uploading,
+.intro .success {
     display: none;
 }
 
-.intro.uploading div .uploading {
-    display: inline;
-}
-.intro.done div .success {
+.intro.uploading .uploading {
     display: inline;
 }
 
-.intro.uploading div input#file + label,
-.intro.done div input#file + label {
+.intro.done .success {
+    display: inline;
+}
+
+.intro.uploading input#file+label,
+.intro.done input#file+label {
     display: none;
 }
+
 .intro.done {
     top: -100%;
 }
 
-.intro + .main {
+.intro+.main {
     position: absolute;
     top: -150%;
     transition: top ease-in 1.5s;
 }
-.intro.done + .main {
+
+.intro.done+.main {
     top: 0%;
 }
 
 .main {
     padding: 1em;
+    width: 100%; /* causes overflow but it is hidden */
 }
+
 .main #output {
     height: 300px;
     overflow-y: scroll;
@@ -109,7 +129,8 @@ input#file + label:hover strong{
     height: 300px;
     border: 1px solid black;
     overflow: hidden;
-    background-color: var(--vizbg);
+    background-color: var(--ebg);
+    transition: background-color var(--transition) 0.3s
 }
 
 #render-container span {
@@ -196,4 +217,62 @@ input#file + label:hover strong{
 
 .note_side_red {
     background-image: url('assets/note_side_red.svg');
+}
+
+.theme {
+    position: absolute;
+    top: 1em;
+    right: 3em;
+    z-index: 11;
+    font-size: 17.5px;
+}
+
+@supports(-webkit-appearance: none) or (-moz-appearance: none) {
+    input[type='checkbox'] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        height: 20px;
+        outline: none;
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+        margin: 0;
+        cursor: pointer;
+        border: 1px solid var(--bg);
+        background: var(--red);
+        transition: background .3s, border-color .3s;
+    }
+
+    input[type='checkbox']:after {
+        content: '';
+        display: block;
+        left: 0;
+        top: 0;
+        position: absolute;
+        transition: transform 0.3s var(--transition);
+    }
+
+    input[type='checkbox']:checked {
+        background: var(--blue);
+    }
+
+    input[type='checkbox'] {
+        width: 40px;
+        border-radius: 11px;
+    }
+
+    input[type='checkbox']:after {
+        left: 3px;
+        top:  2px;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        background: #eeeeee;
+        -webkit-transform: translateX(var(--x, 0));
+        transform: translateX(var(--x, 0));
+    }
+
+    input[type='checkbox']:checked {
+        --x: 18px;
+    }
 }

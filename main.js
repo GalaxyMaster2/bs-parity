@@ -273,7 +273,7 @@ function main() {
 // angle (0,0) is looking directly at the notes from player perspective
 let angleX = -30;
 let angleY = -40;
-let centerBeat = 0;
+let centerBeat = 2; // increase chance notes are visible when opened
 function rotate(event) {
     switch (event.key) {
         case 'w':
