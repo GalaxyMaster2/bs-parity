@@ -84,6 +84,7 @@ const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const submit = document.getElementById('submit');
 const output = document.getElementById('output');
+const position = document.getElementById('location');
 
 fileInput.addEventListener('change', readFile);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
@@ -301,8 +302,9 @@ function mod(n, m) {
 document.addEventListener('keydown', rotate);
 document.addEventListener('wheel', scroll);
 
-function scroll(event) {
+function scroll(event) { // todo - only change if mouse is over the vis instead of all scrolls and prevent scrolling action?
     centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    position.firstChild.data = "beat " + centerBeat;
     render(notesArray, centerBeat);
 }
 
