@@ -209,6 +209,10 @@ function main() {
         return;
     }
 
+    errCount = 0;
+    warnCount = 0;
+    let summary = document.getElementById("summary");
+
     let notes = notesArray;
 
     let parity = new Parity();
@@ -281,9 +285,11 @@ function main() {
                     // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
                 outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
+                warnCount += 1;
             } else {
                 // outputMessage(logNote(note, parity) + '\nBad hit, wrist reset is necessary', 'error');
                 outputUI(note, parity, 'Bad hit, wrist reset is necessary', 'error');
+                errCount += 1;
             }
 
             // invert parity again if there's a same-color note within sliderPrecision
@@ -300,6 +306,8 @@ function main() {
             }
         }
     }
+
+    summary.innerHTML = "found " + ((errCount === 0) ? "no" : errCount) + " errors and " + ((warnCount === 0) ? "no" : warnCount) + " warnings:";
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
