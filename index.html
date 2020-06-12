@@ -24,9 +24,14 @@
 
         <div class="main">
             <span class="theme">night mode <input type="checkbox" name="theme" id="theme" checked></span>
-            <label for="slider-precision">Lowest slider precision present (default assumes no sliders): 1/</label>
-            <input type="number" name="slider-precision" id="slider-precision" style="width:40px" min="0" max="64"><br><br>
-            <input type="submit" name="submit" id="submit" value="Check parity"><br><br>
+
+            <label for="slider-precision">slider precision: 1/</label>
+            <input type="number" name="slider-precision" id="slider-precision" style="width:30px" min="0" max="64">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="submit" name="submit" id="submit" value="check parity">
+            <label for="submit" class="submit">check parity</label>
+            
+            <br><br>
 
             <div id="render-container">
                 <span id="location">beat 0</span>

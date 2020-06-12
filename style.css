@@ -49,7 +49,7 @@ body.light {
     left: 50%;
     transform: translateY(-50%) translateX(-50%);
 
-    width: 100%;
+    width: 100%; /* vscode throws an error on this but it is needed */
     max-width: 680px;
 
     font-size: 1.25em;
@@ -62,7 +62,7 @@ body.light {
     background-color: var(--etext);
 }
 
-input#file {
+input#file, input#submit {
     width: 0.1px;
     height: 0.1px;
     opacity: 0;
@@ -71,9 +71,33 @@ input#file {
     z-index: -1;
 }
 
-input#file+label {
+label {
     cursor: pointer;
     display: inline-block;
+}
+label:hover strong {
+    color: var(--blue);
+}
+
+label.submit {
+    padding: 4px 6px;
+    border-radius: 5px;
+    background-color: var(--ebg);
+}
+
+input[type=number] {
+    position: relative;
+    top: -1px;
+    padding: 6px 4px;
+    border-radius: 5px;
+    background-color: var(--ebg);
+    box-shadow: none;
+    border: 1px var(--ebg);
+    color: var(--text);
+}
+
+label.submit:hover {
+    color: var(--blue);
 }
 
 input#file:focus+label strong,
@@ -100,7 +124,7 @@ input#file+label:hover strong {
 }
 
 .intro.done {
-    top: -100%;
+    top: -101%;
 }
 
 .intro+.main {
@@ -116,11 +140,12 @@ input#file+label:hover strong {
 .main {
     padding: 1em;
     width: 100%; /* causes overflow but it is hidden */
+    width: calc(100% - 2em);
 }
 
 .main #output {
-    height: 300px;
-    overflow-y: scroll;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 #render-container {
@@ -222,7 +247,7 @@ input#file+label:hover strong {
 .theme {
     position: absolute;
     top: 1em;
-    right: 3em;
+    right: 1em;
     z-index: 11;
     font-size: 17.5px;
 }
