@@ -144,8 +144,33 @@ input#file+label:hover strong {
 }
 
 .main #output {
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
+}
+
+#output img {
+    height: 2em;
+    position: relative;
+    left: 1em;
+}
+#output div.text {
+    position: relative;
+    left: 4em;
+    top: -2.36em;
+    width: 50%;
+    width: calc(100% - 4em);
+}
+#output div.warning {
+    display: none;
+}
+#output div.error {
+    display: none;
+}
+#output.warning div.warning {
+    display: block;
+}
+#output.error div.error {
+    display: block;
 }
 
 #render-container {

@@ -12,13 +12,39 @@ let dropArea = document.getElementById("drag-file");
 let introDiv = document.getElementById("intro");
 let themeBut = document.getElementById("theme");
 
+let warn = document.getElementById("warnings");
+let err = document.getElementById("errors");
+
 themeBut.addEventListener('click', changeTheme);
+warn.addEventListener('click', toggleWarn);
+err.addEventListener('click', toggleErr);
 
 function changeTheme() {
     let body = document.getElementsByTagName("body");
-    let current = (body[0].classList[0] === "dark")
+    let current = (body[0].classList[0] === "dark");
     body[0].classList.remove(current ? "dark" : "light");
     body[0].classList.add(current ? "light" : "dark");
+}
+
+function toggleWarn() {
+    let out = document.getElementById("output");
+    let current = out.classList.contains("warning");
+    if (current) {
+        out.classList.remove("warning");
+    }
+    else {
+        out.classList.add("warning");
+    }
+}
+function toggleErr() {
+    let out = document.getElementById("output");
+    let current = out.classList.contains("error");
+    if (current) {
+        out.classList.remove("error");
+    }
+    else {
+        out.classList.add("error");
+    }
 }
 
 ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
