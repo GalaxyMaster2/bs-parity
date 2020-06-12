@@ -59,6 +59,7 @@ html, body {
     outline: 2px dashed #222222;
     color: #222222;
     outline-offset: -15px;
+    border-radius: 5px;
     padding: 120px 20px;
 
     position: absolute;
@@ -73,6 +74,10 @@ html, body {
 
     display: inline;
     text-align: center;
+}
+
+.intro div.drag-file.highlight {
+    background-color: #eeeeee;
 }
 
 input#file {
