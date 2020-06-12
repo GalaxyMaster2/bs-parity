@@ -1,3 +1,5 @@
+console.log("main js loaded");
+
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 // bombs are type 3 for some reason
 const types = {
@@ -78,7 +80,7 @@ var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;
 
-const fileInput = document.getElementById('file-input');
+const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const submit = document.getElementById('submit');
 const output = document.getElementById('output');
@@ -89,11 +91,33 @@ submit.addEventListener('click', main);
 
 function readFile() {
     ready = false;
-    let fr = new FileReader();
+    const fr = new FileReader();
+    introDiv.classList.add('uploading');
     fr.readAsText(fileInput.files[0]);
-    fr.addEventListener('load', function () {
+    fr.addEventListener('loadend', function () {
         notesArray = getNotes(JSON.parse(fr.result));
+        introDiv.classList.remove('uploading');
+        introDiv.classList.add('done');
+        console.log("successful read!");
+        
         ready = true;
+        // main();
+    });
+}
+
+function readDropFile(files) { // the drop uses a different file read method so needs it's own function annoyingly
+    ready = false;
+    const fr = new FileReader();
+    introDiv.classList.add('uploading');
+    fr.readAsText(files[0]);
+    fr.addEventListener('loadend', function () {
+        notesArray = getNotes(JSON.parse(fr.result));
+        introDiv.classList.remove('uploading');
+        introDiv.classList.add('done');
+        console.log("successful read!");
+
+        ready = true;
+        // main();
     });
 }
 

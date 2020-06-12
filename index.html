@@ -9,17 +9,32 @@
     </head>
 
     <body>
-        See below for output<br>
-        <label for="file-input">Choose Difficulty.dat (e.g. ExpertPlusStandard.dat)</label>
-        <input type="file" name="file-input" id="file-input" accept=".dat"><br>
-        <label for="slider-precision">Lowest slider precision present (default assumes no sliders): 1/</label>
-        <input type="number" name="slider-precision" id="slider-precision"><br>
-        <input type="submit" id="submit" value="Check parity">
-        <div id="output"></div>
-        <div id="render-container">
-            <div id="grid-container"></div>
+        <div class="intro" id="intro">
+            <div>
+                <div class="drag-file" id="drag-file">
+                    <input type="file" name="file" id="file" class="inputfile" accept=".dat"/>
+                    <label for="file">
+                        <strong>choose a difficulty.dat</strong>
+                        <span class="drag"> or drag it here</span>.
+                    </label>
+                    <span class="uploading">uploading&hellip;</span>
+                    <span class="success">done!</span>
+                </div>
+                
+            </div>
         </div>
-        <script src="main.js"></script>
-    </body>
+        <div class="main">
+            <label for="slider-precision">Lowest slider precision present (default assumes no sliders): 1/</label>
+            <input type="number" name="slider-precision" id="slider-precision" style="width:40px" min="0" max="64"><br><br>
+            <input type="submit" id="submit" value="Check parity"><br><br>
 
+            <div id="render-container">
+                <div id="grid-container"></div>
+            </div>
+            <br>
+            <div id="output">choose a slider precision and click <strong>check parity</strong> to list errors</div>
+        </div>
+    </body>
+    <script src="main.js" async></script>
+    <script src="ui.js" async></script>
 </html>
