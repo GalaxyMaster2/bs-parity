@@ -1,17 +1,12 @@
-/*
-    useful colours:
-        blue: #3f96e6
-        red:  #f03e2d
-        bg:   #222222
-        text: #dddddd
-
-*/
-
 html, body {
+    --blue: #3f96e6;
+    --red: #f03e2d;
+    --bg: #222222;
+    --text: #dddddd;
     margin: none;
     border: none;
-    background-color: #222222;
-    color: #dddddd;
+    background-color: var(--bg);
+    color: var(--text);
     overflow-x: hidden;
     font-family: sans-serif;
 }
@@ -55,9 +50,9 @@ html, body {
 }
 
 .intro div.drag-file {
-    background-color: #dddddd;
-    outline: 2px dashed #222222;
-    color: #222222;
+    background-color: var(--text);
+    outline: 2px dashed var(--bg);
+    color: var(--bg);
     outline-offset: -15px;
     padding: 120px 20px;
 
@@ -90,7 +85,7 @@ input#file + label {
 
 input#file:focus + label strong,
 input#file + label:hover strong{
-    color: #3f96e6;
+    color: var(--blue);
 }
 
 .intro div .uploading,
