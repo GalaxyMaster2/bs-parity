@@ -1,48 +1,16 @@
-/*
-    useful colours:
-        blue: #3f96e6
-        red:  #f03e2d
-        bg:   #222222
-        text: #dddddd
-
-*/
-
 html, body {
-    margin: none;
+    --blue: #3f96e6;
+    --red: #f03e2d;
+    --bg: #222222;
+    --text: #dddddd;
+    --vizbg: #555555;
+    margin: 0;
     border: none;
-    background-color: #222222;
-    color: #dddddd;
+    background-color: var(--bg);
+    color: var(--text);
     overflow-x: hidden;
     font-family: sans-serif;
 }
-
-#render-container {
-    position: relative;
-    width: 600px;
-    height: 300px;
-    border: 1px solid black;
-    overflow: hidden;
-    background-color: #555555;
-}
-
-#render-container span {
-    position: absolute;
-    bottom: 4px;
-    left: 4px;
-    font-size: 0.8em;
-}
-
-#grid-container {
-    --width: 200px;
-    --height: 150px;
-    position: absolute;
-    left: calc(50% - (var(--width) / 2));
-    top: calc(50% - (var(--height) / 2));
-    width: var(--width);
-    height: var(--height);
-    transform-style: preserve-3d;
-}
-
 
 .intro {
     position: absolute;
@@ -55,9 +23,9 @@ html, body {
 }
 
 .intro div.drag-file {
-    background-color: #dddddd;
-    outline: 2px dashed #222222;
-    color: #222222;
+    background-color: var(--text);
+    outline: 2px dashed var(--bg);
+    color: var(--bg);
     outline-offset: -15px;
     border-radius: 5px;
     padding: 120px 20px;
@@ -95,7 +63,7 @@ input#file + label {
 
 input#file:focus + label strong,
 input#file + label:hover strong{
-    color: #3f96e6;
+    color: var(--blue);
 }
 
 .intro div .uploading,
@@ -135,6 +103,32 @@ input#file + label:hover strong{
     overflow-y: scroll;
 }
 
+#render-container {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    border: 1px solid black;
+    overflow: hidden;
+    background-color: var(--vizbg);
+}
+
+#render-container span {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    font-size: 0.8em;
+}
+
+#grid-container {
+    --width: 200px;
+    --height: 150px;
+    position: absolute;
+    left: calc(50% - (var(--width) / 2));
+    top: calc(50% - (var(--height) / 2));
+    width: var(--width);
+    height: var(--height);
+    transform-style: preserve-3d;
+}
 
 .note {
     --size: 50px;
