@@ -1,0 +1,86 @@
+#render-container {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    border: 1px solid black;
+    overflow: hidden;
+}
+
+#grid-container {
+    --width: 200px;
+    --height: 150px;
+    position: absolute;
+    left: calc(50% - (var(--width) / 2));
+    top: calc(50% - (var(--height) / 2));
+    width: var(--width);
+    height: var(--height);
+    transform-style: preserve-3d;
+}
+
+.note {
+    --size: 50px;
+    width: var(--size);
+    height: var(--size);
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.note-face {
+    position: absolute;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    outline: 1px solid black;
+}
+
+.front {
+    transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+}
+
+.back {
+    transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+}
+
+.bomb {
+    background-image: url('assets/bomb.svg');
+}
+
+.dot_front_blue {
+    background-image: url('assets/dot_front_blue.svg');
+}
+
+.dot_front_red {
+    background-image: url('assets/dot_front_red.svg');
+}
+
+.note_front_blue {
+    background-image: url('assets/note_front_blue.svg');
+}
+
+.note_front_red {
+    background-image: url('assets/note_front_red.svg');
+}
+
+.note_side_blue {
+    background-image: url('assets/note_side_blue.svg');
+}
+
+.note_side_red {
+    background-image: url('assets/note_side_red.svg');
+}

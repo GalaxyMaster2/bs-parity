@@ -74,7 +74,7 @@ class Parity {
     }
 }
 
-var difficultyString;
+var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;
 
@@ -92,17 +92,13 @@ function readFile() {
     let fr = new FileReader();
     fr.readAsText(fileInput.files[0]);
     fr.addEventListener('load', function () {
-        difficultyString = fr.result;
+        notesArray = getNotes(JSON.parse(fr.result));
         ready = true;
     });
 }
 
 function readSliderPrecision() {
     sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
-}
-
-function getDifficultyObject() {
-    return JSON.parse(difficultyString);
 }
 
 function getNotes(obj) {
@@ -154,7 +150,7 @@ function main() {
         return;
     }
 
-    let notes = getNotes(getDifficultyObject());
+    let notes = notesArray;
 
     let parity = new Parity();
     parity.init(notes);
@@ -247,4 +243,148 @@ function main() {
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
     }
+}
+
+// angle (0,0) is looking directly at the notes from player perspective
+let angleX = -30;
+let angleY = -40;
+let centerBeat = 0;
+function rotate(event) {
+    switch (event.key) {
+        case 'w':
+            angleX -= 10;
+            break;
+        case 'a':
+            angleY += 10;
+            break;
+        case 's':
+            angleX += 10;
+            break;
+        case 'd':
+            angleY -= 10;
+            break;
+    }
+    angleX = mod(angleX, 360);
+    angleY = mod(angleY, 360);
+    render(notesArray, centerBeat);
+}
+
+// js modulo operator does not work well with negative values
+function mod(n, m) {
+    return ((n % m) + m) % m;
+}
+
+document.addEventListener('keydown', rotate);
+document.addEventListener('wheel', scroll);
+
+function scroll(event) {
+    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    render(notesArray, centerBeat);
+}
+
+// I like to work in degrees, fight me
+function toRadians(angle) {
+    return angle * (Math.PI / 180);
+}
+
+const gridContainer = document.getElementById('grid-container');
+
+function render(notes, centerBeat) {
+    if (!ready) {
+        clearOutput();
+        outputMessage('File loading not ready, try again', 'error');
+        return;
+    }
+
+    // clear container
+    while (gridContainer.lastChild) {
+        gridContainer.removeChild(gridContainer.lastChild);
+    }
+
+    // container size in pixels
+    // TODO: calculate from page
+    let containerWidth = 600;
+    let containerHeight = 300;
+
+    // TODO: set grid-container CSS dimensions here
+    let gridHeight = containerHeight / 2;
+
+    let noteSize = gridHeight / 3 / Math.SQRT2;
+
+    // range around centerBeat to render, also affects the scale
+    // TODO: make a scale parameter, calculate this range automatically based on visibility
+    let beatRange = 2;
+
+    // filter notes outside of range
+    notes = notes.filter(function (note) {
+        return (note._time >= centerBeat - beatRange && note._time <= centerBeat + beatRange);
+    });
+
+    // calculate note position, make note element and add to the container
+    for (let note of notes) {
+        let relTime = note._time - centerBeat;
+
+        let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
+        let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
+        let posZ = (relTime / beatRange) * (containerWidth / 2) * -1;
+
+        let noteAngle = 0;
+        let dot = false;
+
+        switch (cutDirections[note._cutDirection]) {
+            case 'down':
+                noteAngle = 0;
+                break;
+            case 'downLeft':
+                noteAngle = 45;
+                break;
+            case 'left':
+                noteAngle = 90;
+                break;
+            case 'upLeft':
+                noteAngle = 135;
+                break;
+            case 'up':
+                noteAngle = 180;
+                break;
+            case 'upRight':
+                noteAngle = 225;
+                break;
+            case 'right':
+                noteAngle = 270;
+                break;
+            case 'downRight':
+                noteAngle = 315;
+                break;
+            case 'dot':
+                noteAngle = 0;
+                dot = true;
+                break;
+        }
+
+        let noteContainer = document.createElement('div');
+        noteContainer.classList.add('note');
+        noteContainer.style.setProperty('--size', noteSize + 'px');
+
+        let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+        for (let face of faces) {
+            let noteFace = document.createElement('div');
+            let imgClass;
+            if (types[note._type] === 'bomb') {
+                imgClass = 'bomb';
+            } else {
+                imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
+                    (face === 'front' ? 'front_' : 'side_') + types[note._type];
+            }
+            noteFace.classList.add('note-face', face, imgClass);
+            noteContainer.appendChild(noteFace);
+        }
+
+        noteContainer.style.setProperty('left', posX + 'px');
+        noteContainer.style.setProperty('top', posY + 'px');
+        noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+        gridContainer.appendChild(noteContainer);
+    }
+    gridContainer.style.setProperty('transform', 'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
 }
