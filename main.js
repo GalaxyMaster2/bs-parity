@@ -319,7 +319,7 @@ function main() {
 // angle (0,0) is looking directly at the notes from player perspective
 let angleX = -30;
 let angleY = -40;
-let centerBeat = 2; // increase chance notes are visible when opened
+let centerBeat = 0;
 function rotate(event) {
     switch (event.key) {
         case 'w':
@@ -463,6 +463,40 @@ function render(notes, centerBeat) {
 
         gridContainer.appendChild(noteContainer);
     }
+
+    let beatMarkers = [];
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance); i++) {
+        beatMarkers.push(i);
+    }
+
+    for (let beat of beatMarkers) {
+        let marker = document.createElement('div');
+        let line = document.createElement('div');
+        let number = document.createElement('div');
+        marker.classList.add('marker');
+        line.classList.add('marker-line');
+        number.classList.add('marker-number');
+        number.textContent = beat;
+
+        let relTime = beat - centerBeat;
+        let lineWidth = gridHeight * 4 / 3;
+        let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
+        let posY = gridHeight;
+        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+
+        line.style.setProperty('width', lineWidth + 'px');
+        line.style.setProperty('height', (lineWidth / 25) + 'px');
+
+        marker.appendChild(line);
+        marker.appendChild(number);
+
+        marker.style.setProperty('left', posX + 'px');
+        marker.style.setProperty('top', posY + 'px');
+        marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
+
+        gridContainer.appendChild(marker);
+    }
+
     gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px)' +
         'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
 }

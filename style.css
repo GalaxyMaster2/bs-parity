@@ -211,6 +211,23 @@ input[type=range] + label {
     transform-style: preserve-3d;
 }
 
+.marker {
+    display: flex;
+    align-items: center;
+    position: absolute;
+}
+
+.marker-line {
+    background-color: var(--etext);
+}
+
+.marker-number {
+    color: var(--etext);
+    margin-left: 0.2rem;
+    font-size: 2em;
+    font-weight: bold;
+}
+
 .note {
     --size: 50px;
     width: var(--size);
