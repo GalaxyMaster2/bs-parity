@@ -1,4 +1,4 @@
-console.log("main js loaded");
+console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 // bombs are type 3 for some reason
@@ -132,11 +132,11 @@ function outputUI(note, parity, errString, errType) {
     }
 
     let element = document.createElement('div');
-    element.classList.add("parent");
+    element.classList.add('parent');
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollVal(" + time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
-    element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
+    element.innerHTML += '<img src="assets/' + imgClass + '.svg" onclick="scrollVal(' + time_raw + ')" style="transform: rotate(' + cutAngle[note._cutDirection] + 'deg); cursor: pointer; height: 2.1em">';
+    element.innerHTML += '<div class="text">' + string + '<br>' + errString + '</div>';
     // structure allows easier css styling for each error in the list
 
     output.appendChild(element);
@@ -157,7 +157,7 @@ function checkParity() {
 
     errCount = 0;
     warnCount = 0;
-    let summary = document.getElementById("summary");
+    let summary = document.getElementById('summary');
 
     let parity = new Parity();
     parity.init(notesArray);
@@ -251,7 +251,7 @@ function checkParity() {
         }
     }
 
-    summary.innerHTML = "found " + ((errCount === 0) ? "no" : errCount) + " errors and " + ((warnCount === 0) ? "no" : warnCount) + " warnings:";
+    summary.innerHTML = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors and ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
