@@ -191,7 +191,7 @@ function outputUI(note, parity, errString, errType) {
     element.classList.add("parent");
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollVal("+ time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
+    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollVal(" + time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
     element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
     // structure allows easier css styling for each error in the list
 
@@ -366,6 +366,8 @@ function toRadians(angle) {
 
 const gridContainer = document.getElementById('grid-container');
 
+let perspectiveMultiplier = 1;
+
 function render(notes, centerBeat) {
     if (!ready) {
         clearOutput();
@@ -463,5 +465,6 @@ function render(notes, centerBeat) {
 
         gridContainer.appendChild(noteContainer);
     }
-    gridContainer.style.setProperty('transform', 'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
+    gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px)' +
+        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
 }
