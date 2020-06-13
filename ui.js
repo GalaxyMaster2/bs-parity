@@ -44,7 +44,6 @@ piSlide.addEventListener('input', function () {
     render(notesArray, centerBeat);
 });
 
-
 function changeTheme() {
     let body = document.getElementsByTagName('body');
     let current = (body[0].classList[0] === 'dark');
@@ -62,6 +61,7 @@ function toggleWarn() {
         out.classList.add('warning');
     }
 }
+
 function toggleErr() {
     let out = document.getElementById('output');
     let current = out.classList.contains('error');
@@ -73,15 +73,17 @@ function toggleErr() {
     }
 }
 
-;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
-})
-    ;['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, highlight, false);
-    })
-    ;['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false);
-    })
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false);
+});
 
 dropArea.addEventListener('drop', handleDrop, false);
 
