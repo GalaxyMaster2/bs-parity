@@ -23,7 +23,7 @@ let rdSlide = document.getElementById('renderDistance');
 let tsSlide = document.getElementById('timeScale');
 let piSlide = document.getElementById('perspectiveIntensity');
 
-fileInput.addEventListener('change', readFile);
+fileInput.addEventListener('change', handleFileInput);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
 submit.addEventListener('click', checkParity);
 
@@ -85,6 +85,11 @@ function toggleErr() {
 
 dropArea.addEventListener('drop', handleDrop, false);
 
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
 function highlight(e) {
     dropArea.classList.add('highlight');
 }
@@ -93,36 +98,18 @@ function unhighlight(e) {
     dropArea.classList.remove('highlight');
 }
 
-
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
-
-    readDropFile(files); // in main.js
+    readFile(files);
 }
 
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function handleFileInput(e) {
+    let files = this.files;
+    readFile(files);
 }
 
-function readFile() {
-    ready = false;
-    const fr = new FileReader();
-    introDiv.classList.add('uploading');
-    fr.readAsText(fileInput.files[0]);
-    fr.addEventListener('load', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log("successful read!");
-
-        ready = true;
-        // main();
-    });
-}
-
-function readDropFile(files) { // the drop uses a different file read method so needs it's own function annoyingly
+function readFile(files) {
     ready = false;
     const fr = new FileReader();
     introDiv.classList.add('uploading');
