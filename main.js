@@ -1,4 +1,4 @@
-console.log("main js loaded");
+console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 // bombs are type 3 for some reason
@@ -80,66 +80,7 @@ var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;
 
-const fileInput = document.getElementById('file');
-const sliderPrecisionInput = document.getElementById('slider-precision');
-const submit = document.getElementById('submit');
 const output = document.getElementById('output');
-const visual = document.getElementById('render-container');
-
-fileInput.addEventListener('change', readFile);
-sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-submit.addEventListener('click', main);
-
-function readFile() {
-    ready = false;
-    const fr = new FileReader();
-    introDiv.classList.add('uploading');
-    fr.readAsText(fileInput.files[0]);
-    fr.addEventListener('loadend', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log("successful read!");
-
-        ready = true;
-        render(notesArray, 0);
-        // main();
-    });
-}
-
-function readDropFile(files) { // the drop uses a different file read method so needs it's own function annoyingly
-    ready = false;
-    const fr = new FileReader();
-    introDiv.classList.add('uploading');
-    fr.readAsText(files[0]);
-    fr.addEventListener('loadend', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log("successful read!");
-
-        ready = true;
-        render(notesArray, 0);
-        // main();
-    });
-}
-
-function readSliderPrecision() {
-    sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
-}
-
-function getNotes(obj) {
-    let notes = obj._notes;
-    notes.sort(function (a, b) {
-        return a._time - b._time;
-    })
-
-    // filter out invalid note types
-    notes = notes.filter(function (note) {
-        return types[note._type] !== undefined;
-    });
-    return notes;
-}
 
 function logNote(note, parity) {
     let time = note._time;
@@ -158,7 +99,7 @@ function logNote(note, parity) {
 function outputMessage(text, type) {
     let element = document.createElement('div');
     let textNode = document.createElement('pre');
-    textNode.innerHTML = text;
+    textNode.textContent = text;
     element.classList.add('outline', type);
     element.appendChild(textNode);
     output.appendChild(element);
@@ -169,7 +110,7 @@ function outputUI(note, parity, errString, errType) {
     let time = time_raw.toFixed(3);
     let type = types[note._type];
     let cutDirection = cutDirections[note._cutDirection];
-    let cutAngle = [180, 0, 270, 90, 135, 215, 45, 314, 0];
+    let cutAngle = [180, 0, 270, 90, 135, 225, 45, 315, 0];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
 
@@ -180,21 +121,42 @@ function outputUI(note, parity, errString, errType) {
         imgClass = ((cutDirection === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
     }
 
-
+    let infoString;
     if (type === 'bomb') {
-        string = 'Bomb at beat ' + time + ': ';
+        infoString = 'Bomb at beat ' + time + ': ';
     } else {
-        string = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
-        string += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
-        string += ', ' + row + ' row) at beat ' + time + ': ';
+        infoString = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
+        infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
+        infoString += ', ' + row + ' row) at beat ' + time + ': ';
     }
 
     let element = document.createElement('div');
-    element.classList.add("parent");
+    element.classList.add('parent');
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollVal(" + time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
-    element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
+    let img = document.createElement('img');
+    img.src = 'assets/' + imgClass + '.svg';
+    img.addEventListener('click', function () { scrollVal(time_raw) });
+    img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
+
+    // TODO: turn into css class
+    img.style.setProperty('cursor', 'pointer');
+    img.style.setProperty('height', '2.1em');
+
+    element.appendChild(img);
+
+    let text = document.createElement('div');
+    text.classList.add('text');
+
+    let infoStringNode = document.createTextNode(infoString);
+    let errStringNode = document.createTextNode(errString);
+    let br = document.createElement('br');
+
+    text.appendChild(infoStringNode);
+    text.appendChild(br);
+    text.appendChild(errStringNode);
+
+    element.appendChild(text);
     // structure allows easier css styling for each error in the list
 
     output.appendChild(element);
@@ -206,24 +168,22 @@ function clearOutput() {
     }
 }
 
-function main() {
+function checkParity() {
     clearOutput();
     if (!ready) {
         outputMessage('File loading not ready, try again', 'error');
         return;
     }
 
-    errCount = 0;
-    warnCount = 0;
-    let summary = document.getElementById("summary");
-
-    let notes = notesArray;
+    let errCount = 0;
+    let warnCount = 0;
+    let summary = document.getElementById('summary');
 
     let parity = new Parity();
-    parity.init(notes);
+    parity.init(notesArray);
 
-    for (let i = 0; i < notes.length; i++) {
-        let note = notes[i];
+    for (let i = 0; i < notesArray.length; i++) {
+        let note = notesArray[i];
         let type = types[note._type];
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
@@ -241,7 +201,7 @@ function main() {
                 blue: true
             };
             let offset = -1;
-            let offsetNote = notes[i + offset];
+            let offsetNote = notesArray[i + offset];
             while ((i + offset) >= 0 &&
                 (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
                 switch (types[offsetNote._type]) {
@@ -260,7 +220,7 @@ function main() {
                         break;
                 }
                 offset--;
-                offsetNote = notes[i + offset];
+                offsetNote = notesArray[i + offset];
             }
 
             // invert parity if needed and log the bomb if so
@@ -298,207 +258,22 @@ function main() {
 
             // invert parity again if there's a same-color note within sliderPrecision
             let offset = 1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) < notes.length &&
+            let offsetNote = notesArray[i + offset];
+            while ((i + offset) < notesArray.length &&
                 (offsetNote._time - note._time - (1 / sliderPrecision)) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
                     parity.invert(type);
                     break;
                 }
                 offset++;
-                offsetNote = notes[i + offset];
+                offsetNote = notesArray[i + offset];
             }
         }
     }
 
-    summary.innerHTML = "found " + ((errCount === 0) ? "no" : errCount) + " errors and " + ((warnCount === 0) ? "no" : warnCount) + " warnings:";
+    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors and ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
     }
-}
-
-// angle (0,0) is looking directly at the notes from player perspective
-let angleX = -30;
-let angleY = -40;
-let centerBeat = 0;
-function rotate(event) {
-    switch (event.key) {
-        case 'w':
-            angleX -= 10;
-            break;
-        case 'a':
-            angleY += 10;
-            break;
-        case 's':
-            angleX += 10;
-            break;
-        case 'd':
-            angleY -= 10;
-            break;
-    }
-    angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360);
-    render(notesArray, centerBeat);
-}
-
-// js modulo operator does not work well with negative values
-function mod(n, m) {
-    return ((n % m) + m) % m;
-}
-
-document.addEventListener('keydown', rotate);
-visual.addEventListener('wheel', scroll);
-
-function scroll(event) {
-    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
-    render(notesArray, centerBeat);
-    event.preventDefault();
-}
-
-function scrollVal(value) {
-    centerBeat = value;
-    render(notesArray, centerBeat);
-}
-
-// I like to work in degrees, fight me
-function toRadians(angle) {
-    return angle * (Math.PI / 180);
-}
-
-const gridContainer = document.getElementById('grid-container');
-
-let perspectiveMultiplier = 1;
-let renderDistance = 2;
-let timeScale = 1;
-
-function render(notes, centerBeat) {
-    if (!ready) {
-        clearOutput();
-        outputMessage('File loading not ready, try again', 'error');
-        return;
-    }
-
-    // clear container
-    while (gridContainer.lastChild) {
-        gridContainer.removeChild(gridContainer.lastChild);
-    }
-
-    // container size in pixels
-    // TODO: calculate from page
-    let containerWidth = 600;
-    let containerHeight = 300;
-
-    // TODO: set grid-container CSS dimensions here
-    let gridHeight = containerHeight / 2;
-
-    let noteSize = gridHeight / 3 / Math.SQRT2;
-
-    // filter notes outside of range
-    notes = notes.filter(function (note) {
-        return (note._time >= centerBeat - renderDistance && note._time <= centerBeat + renderDistance);
-    });
-
-    // calculate note position, make note element and add to the container
-    for (let note of notes) {
-        let relTime = note._time - centerBeat;
-
-        let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
-        let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
-
-        let noteAngle = 0;
-        let dot = false;
-
-        switch (cutDirections[note._cutDirection]) {
-            case 'down':
-                noteAngle = 0;
-                break;
-            case 'downLeft':
-                noteAngle = 45;
-                break;
-            case 'left':
-                noteAngle = 90;
-                break;
-            case 'upLeft':
-                noteAngle = 135;
-                break;
-            case 'up':
-                noteAngle = 180;
-                break;
-            case 'upRight':
-                noteAngle = 225;
-                break;
-            case 'right':
-                noteAngle = 270;
-                break;
-            case 'downRight':
-                noteAngle = 315;
-                break;
-            case 'dot':
-                noteAngle = 0;
-                dot = true;
-                break;
-        }
-
-        let noteContainer = document.createElement('div');
-        noteContainer.classList.add('note');
-        noteContainer.style.setProperty('--size', noteSize + 'px');
-
-        let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-        for (let face of faces) {
-            let noteFace = document.createElement('div');
-            let imgClass;
-            if (types[note._type] === 'bomb') {
-                imgClass = 'bomb';
-            } else {
-                imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                    (face === 'front' ? 'front_' : 'side_') + types[note._type];
-            }
-            noteFace.classList.add('note-face', face, imgClass);
-            noteContainer.appendChild(noteFace);
-        }
-
-        noteContainer.style.setProperty('left', posX + 'px');
-        noteContainer.style.setProperty('top', posY + 'px');
-        noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
-
-        gridContainer.appendChild(noteContainer);
-    }
-
-    let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance); i++) {
-        beatMarkers.push(i);
-    }
-
-    for (let beat of beatMarkers) {
-        let marker = document.createElement('div');
-        let line = document.createElement('div');
-        let number = document.createElement('div');
-        marker.classList.add('marker');
-        line.classList.add('marker-line');
-        number.classList.add('marker-number');
-        number.textContent = beat;
-
-        let relTime = beat - centerBeat;
-        let lineWidth = gridHeight * 4 / 3;
-        let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
-        let posY = gridHeight;
-        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
-
-        line.style.setProperty('width', lineWidth + 'px');
-        line.style.setProperty('height', (lineWidth / 25) + 'px');
-
-        marker.appendChild(line);
-        marker.appendChild(number);
-
-        marker.style.setProperty('left', posX + 'px');
-        marker.style.setProperty('top', posY + 'px');
-        marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
-
-        gridContainer.appendChild(marker);
-    }
-
-    gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px)' +
-        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
 }
