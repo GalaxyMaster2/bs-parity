@@ -100,7 +100,7 @@ function readFile() {
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
         console.log("successful read!");
-        
+
         ready = true;
         // main();
     });
@@ -178,7 +178,7 @@ function outputUI(note, parity, errString, errType) {
         imgClass = ((cutDirection === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
     }
 
-    
+
     if (type === 'bomb') {
         string = 'Bomb at beat ' + time + ': ';
     } else {
@@ -191,7 +191,7 @@ function outputUI(note, parity, errString, errType) {
     element.classList.add("parent");
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollTo("+ time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
+    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollTo(" + time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
     element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
     // structure allows easier css styling for each error in the list
 
@@ -284,7 +284,7 @@ function main() {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
                 // outputMessage(logNote(note, parity) +
-                    // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
+                // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
                 outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
                 warnCount += 1;
@@ -351,7 +351,7 @@ visual.addEventListener('wheel', scroll);
 function scroll(event) {
     centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
     render(notesArray, centerBeat);
-    return false;
+    event.preventDefault();
 }
 
 function scrollTo(value = 0) {
