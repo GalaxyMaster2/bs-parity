@@ -95,7 +95,7 @@ function readFile() {
     const fr = new FileReader();
     introDiv.classList.add('uploading');
     fr.readAsText(fileInput.files[0]);
-    fr.addEventListener('loadend', function () {
+    fr.addEventListener('load', function () {
         notesArray = getNotes(JSON.parse(fr.result));
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
@@ -111,7 +111,7 @@ function readDropFile(files) { // the drop uses a different file read method so 
     const fr = new FileReader();
     introDiv.classList.add('uploading');
     fr.readAsText(files[0]);
-    fr.addEventListener('loadend', function () {
+    fr.addEventListener('load', function () {
         notesArray = getNotes(JSON.parse(fr.result));
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
