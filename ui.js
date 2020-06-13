@@ -1,7 +1,10 @@
-// ui javascript
+// ui.js:
+//  handles fancy ui elements and interactive inputs including but
+//  not limited to drag-drop file imports, sliders and toggles, and
+//  file handling
 
 // todo: feature detection for drag and drop?
-//       although tbf the overlap between transform 3d and drag/drop is probably pretty big
+//  although tbf the overlap between transform 3d and drag/drop is probably pretty big
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
 
@@ -123,7 +126,7 @@ function readFile(files) {
         console.log("successful read!");
 
         ready = true;
-        // main();
+        render(notesArray, 0);
     });
 }
 

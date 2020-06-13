@@ -1,3 +1,10 @@
+/* 
+   style.css:
+    at time of writing all css lives here
+*/
+
+/* colour themes and other styling */
+
 html,
 body {
     --blue: #3f96e6;
@@ -26,6 +33,8 @@ body.light {
     --etext: #111111;
 }
 
+
+/* styling of file upload page */
 .intro {
     position: absolute;
     z-index: 0;
@@ -62,91 +71,29 @@ body.light {
     background-color: var(--etext);
 }
 
-input#file, input#submit {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-}
 
-label {
-    cursor: pointer;
-    display: inline-block;
-}
-label:hover strong {
-    color: var(--blue);
-}
-
-label.submit {
-    padding: 4px 6px;
-    border-radius: 5px;
-    background-color: var(--ebg);
-}
-
-input[type=number] {
-    position: relative;
-    top: -1px;
-    padding: 6px 4px;
-    border-radius: 5px;
-    background-color: var(--ebg);
-    box-shadow: none;
-    border: 1px var(--ebg);
-    color: var(--text);
-}
-
-label.submit:hover {
-    color: var(--blue);
-}
-
-input#file:focus+label strong,
-input#file+label:hover strong {
-    color: var(--blue);
-}
-
-input[type=range] {
-    width: 200px;
-}
-
-input[type=range] + label {
-    position: relative;
-    top: -4px;
-    left: 3px;
-}
-
+/* little animation / text indicator thing when files upload */
 .intro .uploading,
-.intro .success {
-    display: none;
-}
+.intro .success { display: none; }
 
-.intro.uploading .uploading {
-    display: inline;
-}
-
-.intro.done .success {
-    display: inline;
-}
+.intro.uploading .uploading { display: inline; }
+.intro.done      .success   { display: inline; }
 
 .intro.uploading input#file+label,
-.intro.done input#file+label {
-    display: none;
-}
+.intro.done input#file+label { display: none; }
 
-.intro.done {
-    top: -101%;
-}
+.intro.done { top: -101%; }
 
 .intro+.main {
     position: absolute;
     top: -150%;
-    transition: top ease-in 1.5s;
+    transition: top var(--transition) 1.5s;
 }
 
-.intro.done+.main {
-    top: 0%;
-}
+.intro.done+.main { top: 0%; }
 
+
+/* styling of the main window */
 .main {
     padding: 1em;
     width: 100%; /* causes overflow but it is hidden */
@@ -158,6 +105,8 @@ input[type=range] + label {
     overflow-y: auto;
 }
 
+
+/* styling of the error messages */
 #output img {
     height: 2em;
     position: relative;
@@ -183,6 +132,8 @@ input[type=range] + label {
     display: block;
 }
 
+
+/* styling and 3d-ifying of the 3d visualizer */
 #render-container {
     position: relative;
     width: 600px;
@@ -211,6 +162,8 @@ input[type=range] + label {
     transform-style: preserve-3d;
 }
 
+
+/* styling of position markers */
 .marker {
     display: flex;
     align-items: center;
@@ -228,6 +181,8 @@ input[type=range] + label {
     font-weight: bold;
 }
 
+
+/* styling of note/bomb blocks */
 .note {
     --size: 50px;
     width: var(--size);
@@ -244,56 +199,71 @@ input[type=range] + label {
     outline: 0.5px solid black;
 }
 
-.front {
-    transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
+.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
+.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
+.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
+.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
+.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+
+.bomb               { background-image: url('assets/bomb.svg');             }
+.dot_front_blue     { background-image: url('assets/dot_front_blue.svg');   }
+.dot_front_red      { background-image: url('assets/dot_front_red.svg');    }
+.note_front_blue    { background-image: url('assets/note_front_blue.svg');  }
+.note_front_red     { background-image: url('assets/note_front_red.svg');   }
+.note_side_blue     { background-image: url('assets/note_side_blue.svg');   }
+.note_side_red      { background-image: url('assets/note_side_red.svg');    }
+
+
+/* styling of all input methods and their associated labels / elements */
+input#file, input#submit {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
 
-.back {
-    transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+label {
+    cursor: pointer;
+    display: inline-block;
 }
 
-.left {
-    transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+label:hover strong { color: var(--blue); }
+
+label.submit {
+    padding: 4px 6px;
+    border-radius: 5px;
+    background-color: var(--ebg);
 }
 
-.right {
-    transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+input[type=number] {
+    position: relative;
+    top: -1px;
+    padding: 6px 4px;
+    border-radius: 5px;
+    background-color: var(--ebg);
+    box-shadow: none;
+    border: 1px var(--ebg);
+    color: var(--text);
 }
 
-.top {
-    transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+label.submit:hover {
+    color: var(--blue);
 }
 
-.bottom {
-    transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+input#file:focus+label strong,
+input#file+label:hover strong {
+    color: var(--blue);
 }
 
-.bomb {
-    background-image: url('assets/bomb.svg');
-}
+input[type=range] { width: 200px; }
 
-.dot_front_blue {
-    background-image: url('assets/dot_front_blue.svg');
-}
-
-.dot_front_red {
-    background-image: url('assets/dot_front_red.svg');
-}
-
-.note_front_blue {
-    background-image: url('assets/note_front_blue.svg');
-}
-
-.note_front_red {
-    background-image: url('assets/note_front_red.svg');
-}
-
-.note_side_blue {
-    background-image: url('assets/note_side_blue.svg');
-}
-
-.note_side_red {
-    background-image: url('assets/note_side_red.svg');
+input[type=range] + label {
+    position: relative;
+    top: -4px;
+    left: 3px;
 }
 
 .theme {
@@ -329,9 +299,7 @@ input[type=range] + label {
         transition: transform 0.3s var(--transition);
     }
 
-    input[type='checkbox']:checked {
-        background: var(--blue);
-    }
+    input[type='checkbox']:checked { background: var(--blue); }
 
     input[type='checkbox'] {
         width: 40px;
@@ -349,7 +317,5 @@ input[type=range] + label {
         transform: translateX(var(--x, 0));
     }
 
-    input[type='checkbox']:checked {
-        --x: 18px;
-    }
+    input[type='checkbox']:checked { --x: 18px; }
 }

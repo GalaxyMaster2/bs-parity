@@ -1,3 +1,10 @@
+// render.js:
+//  handles all operations related to the 3d preview of the file
+//  and interactions between the preview and other parts of the
+//  page
+
+console.log('render js loaded');
+
 const renderContainer = document.getElementById('render-container');
 const gridContainer = document.getElementById('grid-container');
 

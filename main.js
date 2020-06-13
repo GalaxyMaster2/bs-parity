@@ -1,3 +1,7 @@
+// main.js:
+//  handles all error checking and listing as well as anything
+//  that we haven't found a home for yet
+
 console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
