@@ -111,7 +111,7 @@ function outputUI(note, parity, errString, errType) {
     let time = time_raw.toFixed(3);
     let type = types[note._type];
     let cutDirection = cutDirections[note._cutDirection];
-    let cutAngle = [180, 0, 270, 90, 135, 215, 45, 314, 0];
+    let cutAngle = [180, 0, 270, 90, 135, 225, 45, 315, 0];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
 
