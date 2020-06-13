@@ -17,6 +17,7 @@ let err = document.getElementById('errors');
 
 let rdSlide = document.getElementById('renderDistance');
 let tsSlide = document.getElementById('timeScale');
+let piSlide = document.getElementById('perspectiveIntensity')
 
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
@@ -28,6 +29,10 @@ rdSlide.addEventListener('change', function () {
 });
 tsSlide.addEventListener('change', function () {
     timeScale = parseFloat(tsSlide.value)
+    render(notesArray, centerBeat);
+});
+piSlide.addEventListener('change', function () {
+    perspectiveMultiplier = parseFloat(piSlide.value);
     render(notesArray, centerBeat);
 });
 
