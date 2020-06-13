@@ -5,58 +5,58 @@
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
 
-console.log("ui js loaded");
+console.log('ui js loaded');
 var file = null;
 
-let dropArea = document.getElementById("drag-file");
-let introDiv = document.getElementById("intro");
-let themeBut = document.getElementById("theme");
+let dropArea = document.getElementById('drag-file');
+let introDiv = document.getElementById('intro');
+let themeBut = document.getElementById('theme');
 
-let warn = document.getElementById("warnings");
-let err = document.getElementById("errors");
+let warn = document.getElementById('warnings');
+let err = document.getElementById('errors');
 
-let rdSlide = document.getElementById("renderDistance");
-let tsSlide = document.getElementById("timeScale");
+let rdSlide = document.getElementById('renderDistance');
+let tsSlide = document.getElementById('timeScale');
 
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
 err.addEventListener('click', toggleErr);
 
-rdSlide.addEventListener("change", function () {
+rdSlide.addEventListener('change', function () {
     renderDistance = parseFloat(rdSlide.value);
     render(notesArray, centerBeat);
 });
-tsSlide.addEventListener("change", function () {
+tsSlide.addEventListener('change', function () {
     timeScale = parseFloat(tsSlide.value)
     render(notesArray, centerBeat);
 });
 
 
 function changeTheme() {
-    let body = document.getElementsByTagName("body");
-    let current = (body[0].classList[0] === "dark");
-    body[0].classList.remove(current ? "dark" : "light");
-    body[0].classList.add(current ? "light" : "dark");
+    let body = document.getElementsByTagName('body');
+    let current = (body[0].classList[0] === 'dark');
+    body[0].classList.remove(current ? 'dark' : 'light');
+    body[0].classList.add(current ? 'light' : 'dark');
 }
 
 function toggleWarn() {
-    let out = document.getElementById("output");
-    let current = out.classList.contains("warning");
+    let out = document.getElementById('output');
+    let current = out.classList.contains('warning');
     if (current) {
-        out.classList.remove("warning");
+        out.classList.remove('warning');
     }
     else {
-        out.classList.add("warning");
+        out.classList.add('warning');
     }
 }
 function toggleErr() {
-    let out = document.getElementById("output");
-    let current = out.classList.contains("error");
+    let out = document.getElementById('output');
+    let current = out.classList.contains('error');
     if (current) {
-        out.classList.remove("error");
+        out.classList.remove('error');
     }
     else {
-        out.classList.add("error");
+        out.classList.add('error');
     }
 }
 
