@@ -175,8 +175,8 @@ function checkParity() {
         return;
     }
 
-    errCount = 0;
-    warnCount = 0;
+    let errCount = 0;
+    let warnCount = 0;
     let summary = document.getElementById('summary');
 
     let parity = new Parity();
