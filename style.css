@@ -21,7 +21,7 @@ body.dark {
 
 body.light {
     --bg: #eeeeee;
-    --ebg: #ebebeb;
+    --ebg: #e0e0e0;
     --text: #222222;
     --etext: #111111;
 }

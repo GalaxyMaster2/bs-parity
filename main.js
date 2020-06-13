@@ -84,7 +84,7 @@ const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const submit = document.getElementById('submit');
 const output = document.getElementById('output');
-const position = document.getElementById('location');
+const visual = document.getElementById('render-container');
 
 fileInput.addEventListener('change', readFile);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
@@ -166,7 +166,7 @@ function outputUI(note, parity, errString, errType) {
     let time = note._time.toFixed(3);
     let type = types[note._type];
     let cutDirection = cutDirections[note._cutDirection];
-    let cutAngle = [0, 180, 90, 270, 315, 45, 215, 135, 0];
+    let cutAngle = [180, 0, 270, 90, 135, 215, 45, 314, 0];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
 
@@ -182,14 +182,15 @@ function outputUI(note, parity, errString, errType) {
         string = 'Bomb at beat ' + time + ': ';
     } else {
         string = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
-        string += cutDirection + ') at beat ' + time + ': ';
+        string += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : column;
+        string += ', ' + row + ' row) at beat ' + time + ': ';
     }
 
     let element = document.createElement('div');
     element.classList.add("parent");
     element.classList.add(errType);
 
-    element.innerHTML += "<img class='" + column + " " + row + " d" + cutDirection + "' src='assets/" + imgClass + ".svg' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); height: 2.1em'>";
+    element.innerHTML += "<img src='assets/" + imgClass + ".svg' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); height: 2.1em'>";
     element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
     // structure allows easier css styling for each error in the list
 
@@ -346,10 +347,15 @@ function mod(n, m) {
 document.addEventListener('keydown', rotate);
 document.addEventListener('wheel', scroll);
 
-function scroll(event) { // todo - only change if mouse is over the vis instead of all scrolls and prevent scrolling action?
-    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
-    position.firstChild.data = "beat " + centerBeat;
-    render(notesArray, centerBeat);
+visual.mouseOver = false;
+visual.addEventListener('mouseover', function()  { visual.mouseOver = true  });
+visual.addEventListener('mouseleave', function() { visual.mouseOver = false });
+
+function scroll(event) {
+    if (visual.mouseOver) {
+        centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+        render(notesArray, centerBeat);
+    }
 }
 
 // I like to work in degrees, fight me
