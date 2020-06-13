@@ -80,64 +80,8 @@ var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;
 
-const fileInput = document.getElementById('file');
-const sliderPrecisionInput = document.getElementById('slider-precision');
-const submit = document.getElementById('submit');
 const output = document.getElementById('output');
 const visual = document.getElementById('render-container');
-
-fileInput.addEventListener('change', readFile);
-sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-submit.addEventListener('click', main);
-
-function readFile() {
-    ready = false;
-    const fr = new FileReader();
-    introDiv.classList.add('uploading');
-    fr.readAsText(fileInput.files[0]);
-    fr.addEventListener('load', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log("successful read!");
-
-        ready = true;
-        // main();
-    });
-}
-
-function readDropFile(files) { // the drop uses a different file read method so needs it's own function annoyingly
-    ready = false;
-    const fr = new FileReader();
-    introDiv.classList.add('uploading');
-    fr.readAsText(files[0]);
-    fr.addEventListener('load', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log("successful read!");
-
-        ready = true;
-        // main();
-    });
-}
-
-function readSliderPrecision() {
-    sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
-}
-
-function getNotes(obj) {
-    let notes = obj._notes;
-    notes.sort(function (a, b) {
-        return a._time - b._time;
-    })
-
-    // filter out invalid note types
-    notes = notes.filter(function (note) {
-        return types[note._type] !== undefined;
-    });
-    return notes;
-}
 
 function logNote(note, parity) {
     let time = note._time;

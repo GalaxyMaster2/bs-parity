@@ -8,6 +8,10 @@
 console.log('ui js loaded');
 var file = null;
 
+const fileInput = document.getElementById('file');
+const sliderPrecisionInput = document.getElementById('slider-precision');
+const submit = document.getElementById('submit');
+
 let dropArea = document.getElementById('drag-file');
 let introDiv = document.getElementById('intro');
 let themeBut = document.getElementById('theme');
@@ -17,7 +21,11 @@ let err = document.getElementById('errors');
 
 let rdSlide = document.getElementById('renderDistance');
 let tsSlide = document.getElementById('timeScale');
-let piSlide = document.getElementById('perspectiveIntensity')
+let piSlide = document.getElementById('perspectiveIntensity');
+
+fileInput.addEventListener('change', readFile);
+sliderPrecisionInput.addEventListener('change', readSliderPrecision);
+submit.addEventListener('click', main);
 
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
@@ -96,4 +104,53 @@ function handleDrop(e) {
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
+}
+
+function readFile() {
+    ready = false;
+    const fr = new FileReader();
+    introDiv.classList.add('uploading');
+    fr.readAsText(fileInput.files[0]);
+    fr.addEventListener('load', function () {
+        notesArray = getNotes(JSON.parse(fr.result));
+        introDiv.classList.remove('uploading');
+        introDiv.classList.add('done');
+        console.log("successful read!");
+
+        ready = true;
+        // main();
+    });
+}
+
+function readDropFile(files) { // the drop uses a different file read method so needs it's own function annoyingly
+    ready = false;
+    const fr = new FileReader();
+    introDiv.classList.add('uploading');
+    fr.readAsText(files[0]);
+    fr.addEventListener('load', function () {
+        notesArray = getNotes(JSON.parse(fr.result));
+        introDiv.classList.remove('uploading');
+        introDiv.classList.add('done');
+        console.log("successful read!");
+
+        ready = true;
+        // main();
+    });
+}
+
+function readSliderPrecision() {
+    sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
+}
+
+function getNotes(obj) {
+    let notes = obj._notes;
+    notes.sort(function (a, b) {
+        return a._time - b._time;
+    })
+
+    // filter out invalid note types
+    notes = notes.filter(function (note) {
+        return types[note._type] !== undefined;
+    });
+    return notes;
 }
