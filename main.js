@@ -163,7 +163,8 @@ function outputMessage(text, type) {
 }
 
 function outputUI(note, parity, errString, errType) {
-    let time = note._time.toFixed(3);
+    let time_raw = note._time
+    let time = time_raw.toFixed(3);
     let type = types[note._type];
     let cutDirection = cutDirections[note._cutDirection];
     let cutAngle = [180, 0, 270, 90, 135, 215, 45, 314, 0];
@@ -182,7 +183,7 @@ function outputUI(note, parity, errString, errType) {
         string = 'Bomb at beat ' + time + ': ';
     } else {
         string = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
-        string += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : column;
+        string += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
         string += ', ' + row + ' row) at beat ' + time + ': ';
     }
 
@@ -190,7 +191,7 @@ function outputUI(note, parity, errString, errType) {
     element.classList.add("parent");
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); height: 2.1em'>";
+    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollTo("+ time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
     element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
     // structure allows easier css styling for each error in the list
 
@@ -345,17 +346,17 @@ function mod(n, m) {
 }
 
 document.addEventListener('keydown', rotate);
-document.addEventListener('wheel', scroll);
-
-visual.mouseOver = false;
-visual.addEventListener('mouseover',  function() { visual.mouseOver = true  });
-visual.addEventListener('mouseleave', function() { visual.mouseOver = false });
+visual.addEventListener('wheel', scroll);
 
 function scroll(event) {
-    if (visual.mouseOver) {
-        centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
-        render(notesArray, centerBeat);
-    }
+    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    render(notesArray, centerBeat);
+    return false;
+}
+
+function scrollTo(value = 0) {
+    centerBeat = value;
+    render(notesArray, centerBeat);
 }
 
 // I like to work in degrees, fight me
