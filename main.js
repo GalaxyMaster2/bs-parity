@@ -367,6 +367,8 @@ function toRadians(angle) {
 const gridContainer = document.getElementById('grid-container');
 
 let perspectiveMultiplier = 1;
+let renderDistance = 2;
+let timeScale = 1;
 
 function render(notes, centerBeat) {
     if (!ready) {
@@ -390,13 +392,9 @@ function render(notes, centerBeat) {
 
     let noteSize = gridHeight / 3 / Math.SQRT2;
 
-    // range around centerBeat to render, also affects the scale
-    // TODO: make a scale parameter, calculate this range automatically based on visibility
-    let beatRange = 2;
-
     // filter notes outside of range
     notes = notes.filter(function (note) {
-        return (note._time >= centerBeat - beatRange && note._time <= centerBeat + beatRange);
+        return (note._time >= centerBeat - renderDistance && note._time <= centerBeat + renderDistance);
     });
 
     // calculate note position, make note element and add to the container
@@ -405,7 +403,7 @@ function render(notes, centerBeat) {
 
         let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-        let posZ = (relTime / beatRange) * (containerWidth / 2) * -1;
+        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
 
         let noteAngle = 0;
         let dot = false;

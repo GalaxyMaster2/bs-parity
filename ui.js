@@ -22,8 +22,14 @@ themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
 err.addEventListener('click', toggleErr);
 
-rdSlide.addEventListener("change", function() { renderDistance = rdSlide.value })
-tsSlide.addEventListener("change", function() { timeScale = tsSlide.value })
+rdSlide.addEventListener("change", function () {
+    renderDistance = parseFloat(rdSlide.value);
+    render(notesArray, centerBeat);
+});
+tsSlide.addEventListener("change", function () {
+    timeScale = parseFloat(tsSlide.value)
+    render(notesArray, centerBeat);
+});
 
 
 function changeTheme() {
@@ -57,12 +63,12 @@ function toggleErr() {
 ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 })
-;['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-})
-;['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-})
+    ;['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    })
+    ;['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    })
 
 dropArea.addEventListener('drop', handleDrop, false);
 
@@ -76,13 +82,13 @@ function unhighlight(e) {
 
 
 function handleDrop(e) {
-  let dt = e.dataTransfer;
-  let files = dt.files;
+    let dt = e.dataTransfer;
+    let files = dt.files;
 
-  readDropFile(files); // in main.js
+    readDropFile(files); // in main.js
 }
 
-function preventDefaults (e) {
+function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
 }
