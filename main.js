@@ -100,7 +100,7 @@ function readFile() {
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
         console.log("successful read!");
-        
+
         ready = true;
         // main();
     });
@@ -178,7 +178,7 @@ function outputUI(note, parity, errString, errType) {
         imgClass = ((cutDirection === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
     }
 
-    
+
     if (type === 'bomb') {
         string = 'Bomb at beat ' + time + ': ';
     } else {
@@ -284,7 +284,7 @@ function main() {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
                 // outputMessage(logNote(note, parity) +
-                    // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
+                // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
                 outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
                 warnCount += 1;
@@ -351,7 +351,7 @@ visual.addEventListener('wheel', scroll);
 function scroll(event) {
     centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
     render(notesArray, centerBeat);
-    return false;
+    event.preventDefault();
 }
 
 function scrollVal(value) {
