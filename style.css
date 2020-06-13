@@ -54,7 +54,7 @@ body.light {
 
     font-size: 1.25em;
 
-    display: inline;
+    display: block;
     text-align: center;
 }
 
@@ -103,6 +103,16 @@ label.submit:hover {
 input#file:focus+label strong,
 input#file+label:hover strong {
     color: var(--blue);
+}
+
+input[type=range] {
+    width: 200px;
+}
+
+input[type=range] + label {
+    position: relative;
+    top: -4px;
+    left: 3px;
 }
 
 .intro .uploading,

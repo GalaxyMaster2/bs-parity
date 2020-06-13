@@ -15,9 +15,16 @@ let themeBut = document.getElementById("theme");
 let warn = document.getElementById("warnings");
 let err = document.getElementById("errors");
 
+let rdSlide = document.getElementById("renderDistance");
+let tsSlide = document.getElementById("timeScale");
+
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
 err.addEventListener('click', toggleErr);
+
+rdSlide.addEventListener("change", function() { renderDistance = rdSlide.value })
+tsSlide.addEventListener("change", function() { timeScale = tsSlide.value })
+
 
 function changeTheme() {
     let body = document.getElementsByTagName("body");
@@ -50,14 +57,14 @@ function toggleErr() {
 ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 })
-
 ;['dragenter', 'dragover'].forEach(eventName => {
     dropArea.addEventListener(eventName, highlight, false);
 })
-
 ;['dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, unhighlight, false);
 })
+
+dropArea.addEventListener('drop', handleDrop, false);
 
 function highlight(e) {
     dropArea.classList.add('highlight');
@@ -67,7 +74,6 @@ function unhighlight(e) {
     dropArea.classList.remove('highlight');
 }
 
-dropArea.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
   let dt = e.dataTransfer;

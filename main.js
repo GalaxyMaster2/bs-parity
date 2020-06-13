@@ -348,7 +348,7 @@ document.addEventListener('keydown', rotate);
 document.addEventListener('wheel', scroll);
 
 visual.mouseOver = false;
-visual.addEventListener('mouseover', function()  { visual.mouseOver = true  });
+visual.addEventListener('mouseover',  function() { visual.mouseOver = true  });
 visual.addEventListener('mouseleave', function() { visual.mouseOver = false });
 
 function scroll(event) {
