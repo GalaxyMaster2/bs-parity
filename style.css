@@ -200,6 +200,11 @@ body.light {
     outline: 0.5px solid black;
 }
 
+.note.error .note-face { outline: 1px solid red; } /* todo: pick better colours */
+.note.warn  .note-face { outline: 1px solid orangered; }
+.note.precedingError .note-face { outline: 1px solid red; }
+.note.precedingWarn  .note-face { outline: 1px solid orangered; }
+
 .front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
 .back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
 .left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }

@@ -146,6 +146,12 @@ function render(notes, centerBeat) {
         noteContainer.style.setProperty('left', posX + 'px');
         noteContainer.style.setProperty('top', posY + 'px');
         noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+        
+        if (note.error)               { noteContainer.classList.add("error"); }
+        else if (note.precedingError) { noteContainer.classList.add("precedingError"); }
+
+        if (note.warn)                { noteContainer.classList.add("warn");}
+        else if (note.precedingWarn)  { noteContainer.classList.add("precedingWarn");}
 
         gridContainer.appendChild(noteContainer);
     }

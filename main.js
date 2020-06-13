@@ -249,14 +249,17 @@ function checkParity() {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                // outputMessage(logNote(note, parity) +
-                // '\nBorderline hit, not all players might read or be able to play this correctly', 'warning');
                 outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
+
+                note.warn = true;
+                notesArray[i - 1].precedingWarn = true;
                 warnCount += 1;
             } else {
-                // outputMessage(logNote(note, parity) + '\nBad hit, wrist reset is necessary', 'error');
                 outputUI(note, parity, 'Bad hit, wrist reset is necessary', 'error');
+
+                note.error = true;
+                notesArray[i - 1].precedingError = true;
                 errCount += 1;
             }
 
