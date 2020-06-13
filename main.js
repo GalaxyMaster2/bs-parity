@@ -148,7 +148,7 @@ function clearOutput() {
     }
 }
 
-function main() {
+function checkParity() {
     clearOutput();
     if (!ready) {
         outputMessage('File loading not ready, try again', 'error');

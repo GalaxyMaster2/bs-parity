@@ -25,7 +25,7 @@ let piSlide = document.getElementById('perspectiveIntensity');
 
 fileInput.addEventListener('change', readFile);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-submit.addEventListener('click', main);
+submit.addEventListener('click', checkParity);
 
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
