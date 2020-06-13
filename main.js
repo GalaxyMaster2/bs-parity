@@ -99,7 +99,7 @@ function logNote(note, parity) {
 function outputMessage(text, type) {
     let element = document.createElement('div');
     let textNode = document.createElement('pre');
-    textNode.innerHTML = text;
+    textNode.textContent = text;
     element.classList.add('outline', type);
     element.appendChild(textNode);
     output.appendChild(element);
@@ -121,21 +121,42 @@ function outputUI(note, parity, errString, errType) {
         imgClass = ((cutDirection === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
     }
 
-
+    let infoString;
     if (type === 'bomb') {
-        string = 'Bomb at beat ' + time + ': ';
+        infoString = 'Bomb at beat ' + time + ': ';
     } else {
-        string = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
-        string += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
-        string += ', ' + row + ' row) at beat ' + time + ': ';
+        infoString = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
+        infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
+        infoString += ', ' + row + ' row) at beat ' + time + ': ';
     }
 
     let element = document.createElement('div');
     element.classList.add('parent');
     element.classList.add(errType);
 
-    element.innerHTML += '<img src="assets/' + imgClass + '.svg" onclick="scrollVal(' + time_raw + ')" style="transform: rotate(' + cutAngle[note._cutDirection] + 'deg); cursor: pointer; height: 2.1em">';
-    element.innerHTML += '<div class="text">' + string + '<br>' + errString + '</div>';
+    let img = document.createElement('img');
+    img.src = 'assets/' + imgClass + '.svg';
+    img.addEventListener('click', scrollVal(time_raw));
+    img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
+
+    // TODO: turn into css class
+    img.style.setProperty('cursor', 'pointer');
+    img.style.setProperty('height', '2.1em');
+
+    element.appendChild(img);
+
+    let text = document.createElement('div');
+    text.classList.add('text');
+
+    let infoStringNode = document.createTextNode(infoString);
+    let errStringNode = document.createTextNode(errString);
+    let br = document.createElement('br');
+
+    text.appendChild(infoStringNode);
+    text.appendChild(br);
+    text.appendChild(errStringNode);
+
+    element.appendChild(text);
     // structure allows easier css styling for each error in the list
 
     output.appendChild(element);
@@ -250,7 +271,7 @@ function checkParity() {
         }
     }
 
-    summary.innerHTML = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors and ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings:';
+    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors and ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
