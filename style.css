@@ -139,6 +139,7 @@ body.light {
     width: 600px;
     height: 300px;
     border: 1px solid black;
+    border-radius: 4px;
     overflow: hidden;
     background-color: var(--ebg);
     transition: background-color var(--transition) 0.3s
@@ -176,8 +177,8 @@ body.light {
 
 .marker-number {
     color: var(--etext);
-    margin-left: 0.2rem;
-    font-size: 2em;
+    margin-left: 0.3rem;
+    font-size: 1.8em;
     font-weight: bold;
 }
 

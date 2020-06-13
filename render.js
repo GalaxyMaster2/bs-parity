@@ -171,7 +171,7 @@ function render(notes, centerBeat) {
         let posZ = relTime * timeScale * (containerWidth / 4) * -1;
 
         line.style.setProperty('width', lineWidth + 'px');
-        line.style.setProperty('height', (lineWidth / 25) + 'px');
+        line.style.setProperty('height', (lineWidth / 30) + 'px');
 
         marker.appendChild(line);
         marker.appendChild(number);
