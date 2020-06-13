@@ -136,7 +136,7 @@ function outputUI(note, parity, errString, errType) {
 
     let img = document.createElement('img');
     img.src = 'assets/' + imgClass + '.svg';
-    img.addEventListener('click', scrollVal(time_raw));
+    img.addEventListener('click', function () { scrollVal(time_raw) });
     img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
 
     // TODO: turn into css class
