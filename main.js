@@ -159,13 +159,11 @@ function checkParity() {
     warnCount = 0;
     let summary = document.getElementById("summary");
 
-    let notes = notesArray;
-
     let parity = new Parity();
-    parity.init(notes);
+    parity.init(notesArray);
 
-    for (let i = 0; i < notes.length; i++) {
-        let note = notes[i];
+    for (let i = 0; i < notesArray.length; i++) {
+        let note = notesArray[i];
         let type = types[note._type];
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
@@ -183,7 +181,7 @@ function checkParity() {
                 blue: true
             };
             let offset = -1;
-            let offsetNote = notes[i + offset];
+            let offsetNote = notesArray[i + offset];
             while ((i + offset) >= 0 &&
                 (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
                 switch (types[offsetNote._type]) {
@@ -202,7 +200,7 @@ function checkParity() {
                         break;
                 }
                 offset--;
-                offsetNote = notes[i + offset];
+                offsetNote = notesArray[i + offset];
             }
 
             // invert parity if needed and log the bomb if so
@@ -240,15 +238,15 @@ function checkParity() {
 
             // invert parity again if there's a same-color note within sliderPrecision
             let offset = 1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) < notes.length &&
+            let offsetNote = notesArray[i + offset];
+            while ((i + offset) < notesArray.length &&
                 (offsetNote._time - note._time - (1 / sliderPrecision)) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
                     parity.invert(type);
                     break;
                 }
                 offset++;
-                offsetNote = notes[i + offset];
+                offsetNote = notesArray[i + offset];
             }
         }
     }
