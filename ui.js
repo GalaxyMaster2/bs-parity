@@ -31,15 +31,15 @@ themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
 err.addEventListener('click', toggleErr);
 
-rdSlide.addEventListener('change', function () {
+rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
     render(notesArray, centerBeat);
 });
-tsSlide.addEventListener('change', function () {
+tsSlide.addEventListener('input', function () {
     timeScale = parseFloat(tsSlide.value)
     render(notesArray, centerBeat);
 });
-piSlide.addEventListener('change', function () {
+piSlide.addEventListener('input', function () {
     perspectiveMultiplier = parseFloat(piSlide.value);
     render(notesArray, centerBeat);
 });
