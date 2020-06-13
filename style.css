@@ -154,7 +154,7 @@ input[type=range] + label {
 }
 
 .main #output {
-    max-height: 400px;
+    max-height: 380px;
     overflow-y: auto;
 }
 
