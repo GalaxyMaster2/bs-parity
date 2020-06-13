@@ -9,7 +9,7 @@
     </head>
 
     <body class="dark">
-
+        <h1>the currently-unnamed parity tool</h1>
         <div class="intro" id="intro">
             <div class="drag-file" id="drag-file">
                 <input type="file" name="file" id="file" class="inputfile" accept=".dat" />
@@ -25,11 +25,6 @@
         <div class="main">
             <span class="theme">night mode <input type="checkbox" name="theme" id="theme" checked></span>
 
-            <label for="slider-precision">slider precision: 1/</label>
-            <input type="number" name="slider-precision" id="slider-precision" style="width:30px" min="0" max="64">
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="submit" name="submit" id="submit" value="check parity">
-            <label for="submit" class="submit">check parity</label>
 
             <br><br>
 
@@ -50,14 +45,22 @@
             <div class="slider"><input type="range" min="0.5" max="2" value="0.75" step="0.05" id="perspectiveIntensity" name="pi">
                 <label for="pi">perspective intensity</label>
             </div>
-
+            
             <br>
 
-            <input type="checkbox" id="warnings">&nbsp;warnings &nbsp;&nbsp;
+            <label for="slider-precision">slider precision: 1/</label>
+            <input type="number" name="slider-precision" id="slider-precision" style="width:30px" min="0" max="64">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="submit" name="submit" id="submit" value="check parity">
+            <label for="submit" class="submit">check parity</label>
+
+            <br><br>
+
+            show &nbsp;<input type="checkbox" id="warnings">&nbsp;warnings &nbsp;
             <input type="checkbox" id="errors" checked>&nbsp;errors<br><br>
-            <span id="summary"></span><br><br>
-            <div id="output" class="error">choose a slider precision and click <label for="submit"><strong>check parity</strong></label> to list
-                errors</div>
+            <span id="summary">choose a slider precision and click <label for="submit"><strong>check parity</strong></label> to list
+                errors</span>
+            <div id="output" class="error"></div>
         </div>
     </body>
     <script src="main.js" async></script>

@@ -17,6 +17,7 @@ body {
     overflow-x: hidden;
     font-family: sans-serif;
     transition: background-color var(--transition) 0.3s, color var(--transition) 0.3s;
+    height: 100vh;
 }
 
 body.dark {
@@ -100,11 +101,16 @@ body.light {
     width: calc(100% - 2em);
 }
 
-.main #output {
+#output {
     max-height: 380px;
     overflow-y: auto;
 }
-
+h1 {
+    position: absolute;
+    top: -0.4em;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
 /* styling of the error messages */
 #output img {
@@ -324,4 +330,23 @@ input[type=range] + label {
     }
 
     input[type='checkbox']:checked { --x: 18px; }
+}
+
+
+@media screen and (min-width: 1200px) {
+    #summary {
+        display: block;
+        position: absolute;
+        left: calc(600px + 2rem);
+        top: 3.3rem;
+        width: calc(100vw - 600px - 3rem);
+    }
+    #output {
+        position: absolute;
+        left: calc(600px + 2rem);
+        top: 5.3rem;
+        width: calc(100vw - 600px - 3rem);
+        height: calc(100vh - 8.3rem);
+        max-height: none;
+    }
 }
