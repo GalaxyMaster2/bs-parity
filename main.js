@@ -102,6 +102,7 @@ function readFile() {
         console.log("successful read!");
 
         ready = true;
+        render(notesArray, 0);
         // main();
     });
 }
@@ -118,6 +119,7 @@ function readDropFile(files) { // the drop uses a different file read method so 
         console.log("successful read!");
 
         ready = true;
+        render(notesArray, 0);
         // main();
     });
 }
