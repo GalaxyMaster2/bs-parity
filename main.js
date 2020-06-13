@@ -191,7 +191,7 @@ function outputUI(note, parity, errString, errType) {
     element.classList.add("parent");
     element.classList.add(errType);
 
-    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollTo("+ time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
+    element.innerHTML += "<img src='assets/" + imgClass + ".svg' onclick='scrollVal("+ time_raw + ")' style='transform: rotate(" + cutAngle[note._cutDirection] + "deg); cursor: pointer; height: 2.1em'>";
     element.innerHTML += "<div class='text'>" + string + "<br>" + errString + "</div>";
     // structure allows easier css styling for each error in the list
 
@@ -354,7 +354,7 @@ function scroll(event) {
     return false;
 }
 
-function scrollTo(value = 0) {
+function scrollVal(value) {
     centerBeat = value;
     render(notesArray, centerBeat);
 }
