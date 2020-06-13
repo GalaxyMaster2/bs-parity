@@ -102,7 +102,7 @@ body.light {
 }
 
 #output {
-    max-height: 380px;
+    max-height: 350px; /*todo:make responsive*/
     overflow-y: auto;
 }
 h1 {
