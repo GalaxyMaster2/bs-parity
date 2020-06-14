@@ -111,6 +111,7 @@ body.light {
     position: relative;
     top: 1em;
 }
+
 h1 {
     position: absolute;
     top: -0.2rem;
@@ -161,14 +162,16 @@ h1 {
 /* styling and 3d-ifying of the 3d visualizer */
 #render-container {
     position: relative;
-    max-width: 600px;
+    max-width: 900px;
+    left: 50%;
+    transform: translateX(-50%);
     width: calc(100vw - 2rem);
     height: 300px;
     border: 1px solid black;
     border-radius: 4px;
     overflow: hidden;
     background-color: var(--ebg);
-    transition: background-color 0.4s
+    transition: background-color 0.4s, transform 0.3s, left 0.4s, max-width 0.4s;
 }
 
 #render-container span {
@@ -356,6 +359,11 @@ input[type=range] + label {
 
 
 @media screen and (min-width: 1200px) {
+    #render-container {
+        max-width: 600px;
+        left: 0%;
+        transform: translateX(0%);
+    }
     #summary {
         display: block;
         position: absolute;
