@@ -321,7 +321,7 @@ input[type=range] + label {
         margin: 0;
         cursor: pointer;
         border: 1px solid var(--bg);
-        background: var(--red);
+        background: var(--blue);
         transition: background .4s, border .4s;
     }
 
@@ -334,7 +334,7 @@ input[type=range] + label {
         transition: transform 0.4s var(--transition);
     }
 
-    input[type='checkbox']:checked { background: var(--blue); }
+    input[type='checkbox']:checked { background: var(--red); }
 
     input[type='checkbox'] {
         width: 40px;
