@@ -117,8 +117,7 @@ h1 {
     left: 50%;
     font-size: 1.5rem;
     transform: translateX(-50%);
-    transition: transform 0.4s, font-size var(--transition);
-    transition-timing-function: var(--transition);
+    transition: transform 0.3s 0s, font-size 0.3s 0.1s, left 0.4s;
 }
 
 /* styling of the error messages */
@@ -331,7 +330,7 @@ input[type=range] + label {
         left: 0;
         top: 0;
         position: absolute;
-        transition: transform 0.4s var(--transition);
+        transition: transform 0.4s;
     }
 
     input[type='checkbox']:checked { background: var(--red); }
@@ -378,6 +377,10 @@ input[type=range] + label {
     h1 {
         left: 1rem;
         transform: none;
+    }
+    .intro .drag-file {
+        padding: 120px 20px;
+        max-width: 420px;
     }
 }
 
