@@ -360,7 +360,7 @@ input[type=range] + label {
         left: calc(600px + 2rem);
         top: 5.3rem;
         width: calc(100vw - 600px - 3rem);
-        height: calc(100vh - 8.3rem);
+        height: calc(100vh - 6.3rem);
         max-height: none;
     }
 }
