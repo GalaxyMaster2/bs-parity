@@ -168,6 +168,13 @@ function clearOutput() {
     }
 }
 
+function findCol(jsonData, type, lastVal) {
+    for (let i = lastVal; i >= 0; i--) {
+        if (types[jsonData[i]._type] === type) { return i }
+    }
+    return -1;
+}
+
 function checkParity() {
     clearOutput();
     if (!ready) {
@@ -249,14 +256,17 @@ function checkParity() {
                 parity.invert(type);
 
                 note.warn = true;
-                notesArray[i - 1].precedingWarn = true;
-                warnCount += 1;
+                try { notesArray[findCol(notesArray, type, i - 1)].precedingWarn = true; }
+                catch {}
+                warnCount++;
             } else {
                 outputUI(note, parity, 'Bad hit, wrist reset is necessary', 'error');
 
                 note.error = true;
-                notesArray[i - 1].precedingError = true;
-                errCount += 1;
+                
+                try { notesArray[findCol(notesArray, type, i - 1)].precedingError = true; }
+                catch {}
+                errCount++;
             }
 
             // invert parity again if there's a same-color note within sliderPrecision
