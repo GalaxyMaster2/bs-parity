@@ -46,17 +46,27 @@ document.addEventListener('keydown', rotate);
 renderContainer.addEventListener('wheel', scroll);
 
 function scroll(event) {
+    if(document.getElementsByClassName('selected').length != 0) {
+        document.getElementsByClassName('selected')[0].classList.remove('selected');
+    }
     centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
     render(notesArray, centerBeat);
     event.preventDefault();
 }
 
 let scrolling = false;
-async function scrollVal(end, framerate = 30) {
+async function scrollVal(end, target, framerate = 30) {
     if (scrolling) { return };
     scrolling = true; // prevent multiple copies of this function from running at once
                       // todo: make a queue system or a way to cancel and start again with new values?
                       // unless lots of smoothing code is added this will jerk it though :/
+
+    if(document.getElementsByClassName('selected').length != 0) {
+        document.getElementsByClassName('selected')[0].classList.remove('selected');
+    }
+    
+    target.classList.add('selected')
+
     let initial = centerBeat;
     let pos, a, b;
     let delay = 1000 / framerate;

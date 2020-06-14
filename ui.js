@@ -9,7 +9,9 @@
 console.log('ui js loaded');
 var file = null;
 
-const bezierLut = [0, 0.0072564057811261105, 0.016502234897185466, 0.027936819176243296, 0.04178781400927524, 0.05831534448530133, 0.07781612851976319, 0.10062685254912386, 0.12712533983044808, 0.15772673158123052, 0.1928696520040952, 0.232983827059035, 0.2784261318503915, 0.3293690107687303, 0.3856314611255836, 0.4464733735454691, 0.5104391465906857, 0.5753995419474659, 0.638893517804059, 0.6986623556222522, 0.7530880701591078, 0.8013320046700174, 0.8432099794198935, 0.8789652874242738, 0.9090634268717853, 0.9340518341238436, 0.9544795406023789, 0.9708577903565768, 0.9836446524208822, 0.9932422576751736, 1];
+const bezierLut_old = [0, 0.0072564057811261105, 0.016502234897185466, 0.027936819176243296, 0.04178781400927524, 0.05831534448530133, 0.07781612851976319, 0.10062685254912386, 0.12712533983044808, 0.15772673158123052, 0.1928696520040952, 0.232983827059035, 0.2784261318503915, 0.3293690107687303, 0.3856314611255836, 0.4464733735454691, 0.5104391465906857, 0.5753995419474659, 0.638893517804059, 0.6986623556222522, 0.7530880701591078, 0.8013320046700174, 0.8432099794198935, 0.8789652874242738, 0.9090634268717853, 0.9340518341238436, 0.9544795406023789, 0.9708577903565768, 0.9836446524208822, 0.9932422576751736, 1];
+const bezierLut = [0, 0.01644358864383059, 0.03503534699700188, 0.05598035758796653, 0.07950836213565632, 0.10587498337946702, 0.13536109092951693, 0.16826851449178193, 0.2049090562734064, 0.24558189140422804, 0.2905320875754143, 0.33988112525103314, 0.3935221089312413, 0.4509844271541633, 0.5113026054570521, 0.5729668989695741, 0.6340485747232117, 0.6925207121247794, 0.7466524851413876, 0.7952832782345066, 0.8378757119787953, 0.8743968888860167, 0.9051396737791836, 0.9305647696585208, 0.9511917571122064, 0.9675354406953123, 0.9800739805820939, 0.9892362308203032, 0.9953995086370173, 0.998892454767435, 1];
+
 /*
     generated using pomax.github.io/bezierjs/ in chrome dev console:
         let curve = new Bezier(0,0,0.58,0.11,0.51,0.92,1,1);
@@ -47,9 +49,9 @@ sliderPrecisionInput.addEventListener('change', readSliderPrecision);
 submit.addEventListener('click', checkParity);
 
 themeBut.addEventListener('click', changeTheme);
-warn.addEventListener('click', toggleWarn);
-err.addEventListener('click', toggleErr);
-inf.addEventListener('click', toggleInfo);
+warn.addEventListener('click', function() { document.getElementById('output').classList.toggle('warning'); });
+err.addEventListener('click', function()  { document.getElementById('output').classList.toggle('error');   });
+inf.addEventListener('click', function()  { document.getElementById('output').classList.toggle('info');    });
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
@@ -71,26 +73,14 @@ function changeTheme() {
     body[0].classList.add(current ? 'light' : 'dark');
 }
 
-function toggleWarn() {
-    let out = document.getElementById('output');
-    let current = out.classList.contains('warning');
-    if (current) { out.classList.remove('warning'); }
-    else { out.classList.add('warning'); }
+function highlightErr(target) {
+    if(document.getElementsByClassName('selected').length != 0) {
+        document.getElementsByClassName('selected')[0].classList.remove('selected');
+    }
+    
+    target.classList.add('selected')
 }
 
-function toggleErr() {
-    let out = document.getElementById('output');
-    let current = out.classList.contains('error');
-    if (current) { out.classList.remove('error'); }
-    else { out.classList.add('error'); }
-}
-
-function toggleInfo() {
-    let out = document.getElementById('output');
-    let current = out.classList.contains('info');
-    if (current) { out.classList.remove('info'); }
-    else { out.classList.add('info'); }
-}
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

@@ -137,10 +137,10 @@ function outputUI(note, parity, errString, errType) {
     let element = document.createElement('div');
     element.classList.add('parent');
     element.classList.add(errType);
+    element.addEventListener('click', function () { scrollVal(time_raw, element); });
 
     let img = document.createElement('img');
     img.src = 'assets/' + imgClass + '.svg';
-    img.addEventListener('click', function () { scrollVal(time_raw) });
     img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
 
     element.appendChild(img);
