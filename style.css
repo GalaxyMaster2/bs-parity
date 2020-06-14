@@ -5,7 +5,7 @@
 
 /* colour themes and other styling */
 * {
-    transition-timing-function: cubic-bezier(.58,.07,.51,.97);
+    transition-timing-function: cubic-bezier(.58,.11,.51,.97);
 } /* using * to apply theming elements is a little hacky but !inherit would add a dozen lines to this */
 
 html,

@@ -51,16 +51,25 @@ function scroll(event) {
     event.preventDefault();
 }
 
-async function scrollVal(end, frames = 30, framerate = 30) {
+let scrolling = false
+async function scrollVal(end, framerate = 30) {
+    if (scrolling) { return };
     let initial = centerBeat;
-    let pos;
-    let delay = 1000 / framerate
-    for (let i = 0; i < frames; i++) {
-        pos = (i + 1) / frames
-        centerBeat = (initial * (1 - Math.pow(pos, 3))) + (end * Math.pow(pos, 3));
-        render(notesArray, centerBeat); // because render is blocking this should run the animation as fast as possible?
+    let pos, a, b;
+    let delay = 1000 / framerate;
+    let frames = Math.abs(end - initial) * 4.5;
+    frames = (frames > 90) ? 90 : frames;
+    scrolling = true;
+    for (let i = 1; i <= frames; i++) {
+        b = Math.ceil((i / frames) * 30);
+        a = b - 1;
+        pos = bezierLut[a] * (1 - 30 * ((i / frames) - (a / 30))) + bezierLut[b] * 30 * ((i / frames) - (a / 30)); // there are many brackets in this line that could be reduced
+        console.log(b + ' ' + ((i / frames) - (a / 30)) + ' ' + pos);
+        centerBeat = (initial * (1 - pos)) + (end * pos);
+        render(notesArray, centerBeat);
         await new Promise(r => setTimeout(r, delay)); // icky async but it works
     }
+    scrolling = false;
 }
 
 function render(notes, centerBeat) {
