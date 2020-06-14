@@ -143,10 +143,6 @@ function outputUI(note, parity, errString, errType) {
     img.addEventListener('click', function () { scrollVal(time_raw) });
     img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
 
-    // TODO: turn into css class
-    img.style.setProperty('cursor', 'pointer');
-    img.style.setProperty('height', '2.1em');
-
     element.appendChild(img);
 
     let text = document.createElement('div');

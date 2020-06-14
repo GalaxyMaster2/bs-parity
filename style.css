@@ -4,19 +4,21 @@
 */
 
 /* colour themes and other styling */
+* {
+    transition-timing-function: cubic-bezier(.58,.07,.51,.97);
+} /* using * to apply theming elements is a little hacky but !inherit would add a dozen lines to this */
 
 html,
 body {
     --blue: #3f96e6;
     --red: #f03e2d;
-    --transition:cubic-bezier(.58,.07,.51,.97);
     margin: 0;
     border: none;
     background-color: var(--bg);
     color: var(--text);
     overflow-x: hidden;
     font-family: sans-serif;
-    transition: background-color var(--transition) 0.3s, color var(--transition) 0.3s;
+    transition: background-color 0.4s 0s, color 0.3s 0.1s;
     height: 100vh;
 }
 
@@ -43,7 +45,7 @@ body.light {
     left: 0px;
     width: 100%;
     height: 100%;
-    transition: top var(--transition) 1.5s;
+    transition: top 1.5s;
 }
 
 .intro .drag-file {
@@ -62,7 +64,7 @@ body.light {
     width: 100%; /* vscode throws an error on this but it is needed */
     max-width: 680px;
 
-    font-size: 1.25em;
+    font-size: 1.25rem;
 
     display: block;
     text-align: center;
@@ -87,75 +89,83 @@ body.light {
 
 .intro+.main {
     position: absolute;
-    top: -150%;
-    transition: top var(--transition) 1.5s;
+    left: -100%;
+    transition: left 1.5s 0.5s;
 }
 
-.intro.done+.main { top: 0%; }
+.intro.done+.main { left: 0%; }
 
 
-/* styling of the main window */
+/* styling of the main window & error container */
 .main {
-    padding: 1em;
-    width: 100%; /* causes overflow but it is hidden */
-    width: calc(100% - 2em);
+    padding: 1rem;
+    width: 100%;
+    width: calc(100% - 2rem);
 }
 
 #output {
     max-height: 350px; /*todo:make responsive*/
+    max-height: calc(100vh - 18rem - 300px);
+    min-height: 200px;
     overflow-y: auto;
+    position: relative;
+    top: 1em;
 }
 h1 {
     position: absolute;
-    top: -0.4em;
+    top: -0.2rem;
     left: 50%;
+    font-size: 1.5rem;
     transform: translateX(-50%);
+    transition: transform 0.4s, font-size var(--transition);
+    transition-timing-function: var(--transition);
 }
 
 /* styling of the error messages */
+#output .parent {
+    padding: 0.4rem 0rem;
+}
 #output img {
-    height: 2em;
+    height: 2.1rem;
     position: relative;
-    left: 1em;
+    cursor: pointer;
+    left: 1rem;
 }
 #output div.text {
-    position: relative;
-    left: 4em;
-    top: -2.36em;
     width: 50%;
-    width: calc(100% - 4em);
+    width: calc(100% - 4rem);
+
+    left: 2rem;
+    top: -0.1rem;
+    
+    display: inline-block;
+    position: relative;
 }
-#output div.warning {
-    display: none;
-}
-#output div.error {
-    display: none;
-}
-#output.warning div.warning {
-    display: block;
-}
-#output.error div.error {
-    display: block;
-}
+
+#output div.warning         { display: none; }
+#output div.error           { display: none; }
+#output.warning div.warning { display: block; }
+#output.error div.error     { display: block; }
 
 
 /* styling and 3d-ifying of the 3d visualizer */
 #render-container {
     position: relative;
-    width: 600px;
+    max-width: 600px;
+    width: calc(100vw - 2rem);
     height: 300px;
     border: 1px solid black;
     border-radius: 4px;
     overflow: hidden;
     background-color: var(--ebg);
-    transition: background-color var(--transition) 0.3s
+    transition: background-color 0.4s
 }
 
 #render-container span {
     position: absolute;
     bottom: 4px;
     left: 4px;
-    font-size: 0.8em;
+    font-size: 0.8rem;
 }
 
 #grid-container {
@@ -179,13 +189,15 @@ h1 {
 
 .marker-line {
     background-color: var(--etext);
+    transition: background-color 0.3s 0.1s;
 }
 
 .marker-number {
     color: var(--etext);
     margin-left: 0.3rem;
-    font-size: 1.8em;
+    font-size: 1.8rem;
     font-weight: bold;
+    transition: color 0.3s 0.1s;
 }
 
 
@@ -280,8 +292,8 @@ input[type=range] + label {
 
 .theme {
     position: absolute;
-    top: 1em;
-    right: 1em;
+    top: 1rem;
+    right: 1rem;
     z-index: 11;
     font-size: 17.5px;
 }
@@ -299,7 +311,7 @@ input[type=range] + label {
         cursor: pointer;
         border: 1px solid var(--bg);
         background: var(--red);
-        transition: background .3s, border-color .3s;
+        transition: background .4s, border .4s;
     }
 
     input[type='checkbox']:after {
@@ -308,7 +320,7 @@ input[type=range] + label {
         left: 0;
         top: 0;
         position: absolute;
-        transition: transform 0.3s var(--transition);
+        transition: transform 0.4s var(--transition);
     }
 
     input[type='checkbox']:checked { background: var(--blue); }
@@ -338,7 +350,7 @@ input[type=range] + label {
         display: block;
         position: absolute;
         left: calc(600px + 2rem);
-        top: 3.3rem;
+        top: 3.4rem;
         width: calc(100vw - 600px - 3rem);
     }
     #output {
@@ -348,5 +360,19 @@ input[type=range] + label {
         width: calc(100vw - 600px - 3rem);
         height: calc(100vh - 8.3rem);
         max-height: none;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    h1 {
+        left: 1rem;
+        transform: none;
+    }
+}
+
+@media screen and (max-width: 632px) {
+    h1 {
+        font-size: 1em;
+        top: 0.1em;
     }
 }
