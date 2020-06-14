@@ -50,9 +50,8 @@
 
             <label for="slider-precision">slider precision: 1/</label>
             <input type="number" name="slider-precision" id="slider-precision" style="width:30px" min="0" max="64">
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="submit" name="submit" id="submit" value="check parity">
-            <label for="submit" class="submit">check parity</label>
+            &nbsp;
+            (blank / zero assumes no sliders)
 
             <br><br>
 
@@ -60,8 +59,7 @@
             <input type="checkbox" id="errors" checked>&nbsp;errors &nbsp;
             <input type="checkbox" id="info" checked>&nbsp;debug messages<br><br>
 
-            <span id="summary">choose a slider precision (or leave blank for no sliders) and click <label for="submit"><strong>check parity</strong></label> to list
-                errors</span>
+            <span id="summary"></span>
             <div id="output" class="error info"></div>
         </div>
     </body>
