@@ -21,6 +21,7 @@ let themeBut = document.getElementById('theme');
 
 let warn = document.getElementById('warnings');
 let err = document.getElementById('errors');
+let inf = document.getElementById('info');
 
 let rdSlide = document.getElementById('renderDistance');
 let tsSlide = document.getElementById('timeScale');
@@ -33,6 +34,7 @@ submit.addEventListener('click', checkParity);
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', toggleWarn);
 err.addEventListener('click', toggleErr);
+inf.addEventListener('click', toggleInfo);
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
@@ -73,6 +75,17 @@ function toggleErr() {
     }
     else {
         out.classList.add('error');
+    }
+}
+
+function toggleInfo() {
+    let out = document.getElementById('output');
+    let current = out.classList.contains('info');
+    if (current) {
+        out.classList.remove('info');
+    }
+    else {
+        out.classList.add('info');
     }
 }
 

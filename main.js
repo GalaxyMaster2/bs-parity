@@ -182,6 +182,7 @@ function checkParity() {
         return;
     }
 
+    let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
     let summary = document.getElementById('summary');
@@ -247,6 +248,7 @@ function checkParity() {
             if (logString) {
                 logString = logNote(note, parity) + logString;
                 outputMessage(logString, 'info');
+                infCount++;
             }
         } else {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
@@ -284,7 +286,7 @@ function checkParity() {
         }
     }
 
-    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors and ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings:';
+    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ' errors, ' + ((warnCount === 0) ? 'no' : warnCount) + ' warnings and generated ' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');

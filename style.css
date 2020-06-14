@@ -133,17 +133,19 @@ h1 {
 }
 #output div.text {
     width: 50%;
-    width: calc(100% - 4rem);
+    width: calc(100% - 5rem);
 
     left: 2rem;
     top: -0.1rem;
-    
+
     display: inline-block;
     position: relative;
 }
 
-#output div.warning         { display: none; }
-#output div.error           { display: none; }
+#output div.info            { display: none;  }
+#output div.warning         { display: none;  }
+#output div.error           { display: none;  }
+#output.info div.info       { display: block; }
 #output.warning div.warning { display: block; }
 #output.error div.error     { display: block; }
 
@@ -218,7 +220,7 @@ h1 {
     outline: 0.5px solid black;
 }
 
-.note.error .note-face { outline: 1px solid red; } /* todo: pick better colours */
+.note.error .note-face { outline: 1px solid red; } /* todo: pick better colours and animations */
 .note.warn  .note-face { outline: 1px solid orangered; }
 .note.precedingError .note-face { outline: 1px solid red; }
 .note.precedingWarn  .note-face { outline: 1px solid orangered; }
