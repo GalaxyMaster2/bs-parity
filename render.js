@@ -51,21 +51,27 @@ function scroll(event) {
     event.preventDefault();
 }
 
-let scrolling = false
+let scrolling = false;
 async function scrollVal(end, framerate = 30) {
     if (scrolling) { return };
+    scrolling = true; // prevent multiple copies of this function from running at once
+                      // todo: make a queue system or a way to cancel and start again with new values?
+                      // unless lots of smoothing code is added this will jerk it though :/
     let initial = centerBeat;
     let pos, a, b;
     let delay = 1000 / framerate;
     let frames = Math.abs(end - initial) * 4.5;
+
     frames = (frames > 90) ? 90 : frames;
-    scrolling = true;
+    frames = (frames < 10) ? 10 : frames;
+
     for (let i = 1; i <= frames; i++) {
-        b = Math.ceil((i / frames) * 30);
+        b = Math.ceil((i / frames) * 30); // find values of lut to interpolate between
         a = b - 1;
+
         pos = bezierLut[a] * (1 - 30 * ((i / frames) - (a / 30))) + bezierLut[b] * 30 * ((i / frames) - (a / 30)); // there are many brackets in this line that could be reduced
-        console.log(b + ' ' + ((i / frames) - (a / 30)) + ' ' + pos);
         centerBeat = (initial * (1 - pos)) + (end * pos);
+
         render(notesArray, centerBeat);
         await new Promise(r => setTimeout(r, delay)); // icky async but it works
     }
