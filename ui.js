@@ -47,7 +47,7 @@ const piSlide = document.getElementById('perspectiveIntensity');
 
 fileInput.addEventListener('change', handleFileInput);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-submit.addEventListener('click', checkParity);
+// submit.addEventListener('click', checkParity);
 
 themeBut.addEventListener('click', changeTheme);
 warn.addEventListener('click', function() { document.getElementById('output').classList.toggle('warning'); });
@@ -75,10 +75,10 @@ function changeTheme() {
 }
 
 function highlightErr(target) {
-    if(document.getElementsByClassName('selected').length != 0) {
+    if (document.getElementsByClassName('selected').length != 0) {
         document.getElementsByClassName('selected')[0].classList.remove('selected');
     }
-    
+
     target.classList.add('selected')
 }
 
