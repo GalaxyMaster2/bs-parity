@@ -1,400 +1,353 @@
-/* 
-   style.css:
-    at time of writing all css lives here
+/*
+    style.css is now a compiled less file - make sure you are editing style.less 
+     instead or your changes might be erased by compilation of the less file!
 */
-
-/* colour themes and other styling */
 * {
-    transition-timing-function: cubic-bezier(.58,.11,.51,.97);
-} /* using * to apply theming elements is a little hacky but !inherit would add a dozen lines to this */
-
+  transition-timing-function: cubic-bezier(0.58, 0.11, 0.51, 0.97);
+}
 html,
 body {
-    --blue: #3f96e6;
-    --red: #f03e2d;
-    margin: 0;
-    border: none;
-    background-color: var(--bg);
-    color: var(--text);
-    overflow-x: hidden;
-    font-family: sans-serif;
-    transition: background-color 0.4s 0s, color 0.3s 0.1s;
-    height: 100vh;
+  --blue: #3f96e6;
+  --red: #f03e2d;
+  margin: 0;
+  border: none;
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  font-family: sans-serif;
+  transition: background-color 0.4s 0s, color 0.3s 0.1s;
+  height: 100vh;
 }
-
+html.dark,
 body.dark {
-    --bg: #222222;
-    --ebg: #555555;
-    --text: #dddddd;
-    --etext: #eeeeee;
+  --bg: #222222;
+  --ebg: #555555;
+  --text: #dddddd;
+  --etext: #eeeeee;
 }
-
+html.light,
 body.light {
-    --bg: #eeeeee;
-    --ebg: #e0e0e0;
-    --text: #222222;
-    --etext: #111111;
+  --bg: \#eeeeee;
+  --ebg: #e0e0e0;
+  --text: #222222;
+  --etext: #111111;
 }
-
-
-/* styling of file upload page */
+html .theme,
+body .theme {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 11;
+  font-size: 17.5px;
+}
 .intro {
-    position: absolute;
-    z-index: 0;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    transition: top 1.5s;
+  position: absolute;
+  z-index: 0;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  transition: top 1.5s;
 }
-
 .intro .drag-file {
-    background-color: var(--text);
-    outline: 2px dashed var(--bg);
-    color: var(--bg);
-    outline-offset: -15px;
-    border-radius: 5px;
-    padding: 120px 20px;
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateY(-50%) translateX(-50%);
-
-    width: 100%; /* vscode throws an error on this but it is needed */
-    max-width: 680px;
-
-    font-size: 1.25rem;
-
-    display: block;
-    text-align: center;
+  background-color: var(--text);
+  outline: 2px dashed var(--bg);
+  color: var(--bg);
+  outline-offset: -15px;
+  border-radius: 5px;
+  padding: 120px 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  width: 100%;
+  /* vscode throws an error on this but it is needed */
+  max-width: 680px;
+  font-size: 1.25rem;
+  display: block;
+  text-align: center;
 }
-
 .intro .drag-file.highlight {
-    background-color: var(--etext);
+  background-color: var(--etext);
 }
-
-
-/* little animation / text indicator thing when files upload */
 .intro .uploading,
-.intro .success { display: none; }
-
-.intro.uploading .uploading { display: inline; }
-.intro.done      .success   { display: inline; }
-
-.intro.uploading input#file+label,
-.intro.done input#file+label { display: none; }
-
-.intro.done { top: -101%; }
-
-.intro+.main {
-    position: absolute;
-    left: -100%;
-    transition: left 1.5s 0.5s;
+.intro .done {
+  display: none;
 }
-
-.intro.done+.main { left: 0%; }
-
-
-/* styling of the main window & error container */
+.intro .uploading input#file + label,
+.intro .done input#file + label {
+  display: none;
+}
+.intro.uploading .uploading {
+  display: inline;
+}
+.intro.done .done {
+  display: inline;
+}
+.intro + .main {
+  position: absolute;
+  left: -100%;
+  transition: left 1.5s 0.5s;
+}
+.intro.done + .main {
+  left: 0%;
+}
 .main {
-    padding: 1rem;
-    width: 100%;
-    width: calc(100% - 2rem);
+  padding: 1rem;
+  width: 100%;
+  width: calc(100% - 2rem);
 }
-
-#output {
-    max-height: 350px;
-    max-height: calc(100vh - 18rem - 300px);
-    min-height: 200px;
-    overflow-y: auto;
-    position: relative;
-    top: 1em;
+.main #output {
+  max-height: 350px;
+  max-height: calc(100vh - 18rem - 300px);
+  min-height: 200px;
+  overflow-y: auto;
+  position: relative;
+  top: 1em;
 }
-
+.main #output .parent {
+  padding: 0.4rem 0rem;
+  width: calc(100% - 1rem);
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 1s, color 1s;
+  border-radius: 1.5rem;
+}
+.main #output .parent.selected {
+  background-color: var(--ebg);
+  color: var(--etext);
+}
+.main #output .parent img {
+  height: 2.1rem;
+  position: relative;
+  cursor: pointer;
+  left: 1rem;
+}
+.main #output .parent .text {
+  width: 50%;
+  width: calc(100% - 5rem);
+  left: 2rem;
+  top: -0.1rem;
+  display: inline-block;
+  position: relative;
+}
+.main #output .parent.info,
+.main #output .parent.warning,
+.main #output .parent.error {
+  display: none;
+}
+.main #output.info .info,
+.main #output.warning .warning,
+.main #output.error .error {
+  display: block;
+}
+.main #render-container {
+  position: relative;
+  max-width: 900px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100vw - 2rem);
+  height: 300px;
+  border: 1px solid black;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--ebg);
+  transition: background-color 0.4s, transform 0.3s, left 0.4s, max-width 0.4s;
+}
+.main #render-container #grid-container {
+  --width: 200px;
+  --height: 150px;
+  position: absolute;
+  left: calc(50% - (var(--width) / 2));
+  top: calc(50% - (var(--height) / 2));
+  width: var(--width);
+  height: var(--height);
+  transform-style: preserve-3d;
+}
+.main #render-container #grid-container .marker {
+  display: flex;
+  align-items: center;
+  position: absolute;
+}
+.main #render-container #grid-container .marker .marker-line {
+  background-color: var(--etext);
+  transition: background-color 0.3s 0.1s;
+}
+.main #render-container #grid-container .marker .marker-number {
+  color: var(--etext);
+  margin-left: 0.3rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  transition: color 0.3s 0.1s;
+}
+.main #render-container #grid-container .note {
+  --size: 50px;
+  width: var(--size);
+  height: var(--size);
+  position: absolute;
+  transform-style: preserve-3d;
+}
+.main #render-container #grid-container .note .note-face {
+  position: absolute;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  outline: 0.5px solid black;
+}
+.main #render-container #grid-container .note .note-face.front {
+  transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note .note-face.back {
+  transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note .note-face.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note .note-face.right {
+  transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note .note-face.top {
+  transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note .note-face.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+}
+.main #render-container #grid-container .note.error .note-face {
+  outline: 2px solid red;
+}
+.main #render-container #grid-container .note.warn .note-face {
+  outline: 2px solid yellow;
+}
+.main #render-container #grid-container .note.precedingError .note-face {
+  outline: 1px solid red;
+}
+.main #render-container #grid-container .note.precedingWarn .note-face {
+  outline: 1px solid yellow;
+}
 h1 {
-    position: absolute;
-    top: -0.2rem;
-    left: 50%;
-    font-size: 1.5rem;
-    transform: translateX(-50%);
-    transition: transform 0.3s 0s, font-size 0.3s 0.1s, left 0.4s;
+  position: absolute;
+  top: -0.2rem;
+  left: 50%;
+  font-size: 1.5rem;
+  transform: translateX(-50%);
+  transition: transform 0.3s 0s, font-size 0.3s 0.1s, left 0.4s;
 }
-
-/* styling of the error messages */
-#output .parent {
-    padding: 0.4rem 0rem;
-    width: calc(100% - 1rem);
-    background-color: var(--bg);
-    color: var(--text);
-    transition: background-color 1s, color 1s;
-    border-radius: 1.5rem;
+input#file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }
-#output .parent.selected {
-    background-color: var(--ebg);
-    color: var(--etext);
+input#file:focus + label strong,
+input#file + label:hover strong {
+  color: var(--blue);
 }
-#output img {
-    height: 2.1rem;
-    position: relative;
-    cursor: pointer;
-    left: 1rem;
-}
-#output div.text {
-    width: 50%;
-    width: calc(100% - 5rem);
-
-    left: 2rem;
-    top: -0.1rem;
-
-    display: inline-block;
-    position: relative;
-}
-
-#output div.info            { display: none;  }
-#output div.warning         { display: none;  }
-#output div.error           { display: none;  }
-#output.info div.info       { display: block; }
-#output.warning div.warning { display: block; }
-#output.error div.error     { display: block; }
-
-
-/* styling and 3d-ifying of the 3d visualizer */
-#render-container {
-    position: relative;
-    max-width: 900px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100vw - 2rem);
-    height: 300px;
-    border: 1px solid black;
-    border-radius: 4px;
-    overflow: hidden;
-    background-color: var(--ebg);
-    transition: background-color 0.4s, transform 0.3s, left 0.4s, max-width 0.4s;
-}
-
-#render-container span {
-    position: absolute;
-    bottom: 4px;
-    left: 4px;
-    font-size: 0.8rem;
-}
-
-#grid-container {
-    --width: 200px;
-    --height: 150px;
-    position: absolute;
-    left: calc(50% - (var(--width) / 2));
-    top: calc(50% - (var(--height) / 2));
-    width: var(--width);
-    height: var(--height);
-    transform-style: preserve-3d;
-}
-
-
-/* styling of position markers */
-.marker {
-    display: flex;
-    align-items: center;
-    position: absolute;
-}
-
-.marker-line {
-    background-color: var(--etext);
-    transition: background-color 0.3s 0.1s;
-}
-
-.marker-number {
-    color: var(--etext);
-    margin-left: 0.3rem;
-    font-size: 1.8rem;
-    font-weight: bold;
-    transition: color 0.3s 0.1s;
-}
-
-
-/* styling of note/bomb blocks */
-.note {
-    --size: 50px;
-    width: var(--size);
-    height: var(--size);
-    position: absolute;
-    transform-style: preserve-3d;
-}
-
-.note-face {
-    position: absolute;
-    display: block;
-    width: var(--size);
-    height: var(--size);
-    outline: 0.5px solid black;
-}
-
-.note.error .note-face { outline: 1px solid red; } /* todo: pick better colours and animations */
-.note.warn  .note-face { outline: 1px solid orangered; }
-.note.precedingError .note-face { outline: 1px solid red; }
-.note.precedingWarn  .note-face { outline: 1px solid orangered; }
-
-.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
-.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
-.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
-.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
-.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
-.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
-
-.bomb               { background-image: url('assets/bomb.svg');             }
-.dot_front_blue     { background-image: url('assets/dot_front_blue.svg');   }
-.dot_front_red      { background-image: url('assets/dot_front_red.svg');    }
-.note_front_blue    { background-image: url('assets/note_front_blue.svg');  }
-.note_front_red     { background-image: url('assets/note_front_red.svg');   }
-.note_side_blue     { background-image: url('assets/note_side_blue.svg');   }
-.note_side_red      { background-image: url('assets/note_side_red.svg');    }
-
-
-/* styling of all input methods and their associated labels / elements */
-input#file, input#submit {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-}
-
-label {
-    cursor: pointer;
-    display: inline-block;
-}
-
-label:hover strong { color: var(--blue); }
-
-label.submit {
-    padding: 4px 6px;
-    border-radius: 5px;
-    background-color: var(--ebg);
-}
-
 input[type=number] {
-    position: relative;
-    top: -1px;
-    padding: 6px 4px;
-    border-radius: 5px;
-    background-color: var(--ebg);
-    box-shadow: none;
-    border: 1px var(--ebg);
-    color: var(--text);
+  position: relative;
+  top: -1px;
+  padding: 6px 4px;
+  border-radius: 5px;
+  background-color: var(--ebg);
+  box-shadow: none;
+  border: 1px var(--ebg);
+  color: var(--text);
 }
-
-label.submit:hover {
-    color: var(--blue);
+input[type=range] {
+  width: 200px;
 }
-
-input#file:focus+label strong,
-input#file+label:hover strong {
-    color: var(--blue);
-}
-
-input[type=range] { width: 200px; }
-
 input[type=range] + label {
+  position: relative;
+  top: -4px;
+  left: 3px;
+}
+label {
+  cursor: pointer;
+  display: inline-block;
+}
+label:hover strong {
+  color: var(--blue);
+}
+label .submit {
+  padding: 4px 6px;
+  border-radius: 5px;
+  background-color: var(--ebg);
+}
+label .submit:hover {
+  color: var(--blue);
+}
+@supports ((-webkit-appearance: none) or (-moz-appearance: none) or (appearance: none)) {
+  input[type='checkbox'] {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    height: 20px;
+    width: 40px;
+    border-radius: 11px;
+    outline: none;
+    display: inline-block;
+    vertical-align: top;
     position: relative;
-    top: -4px;
-    left: 3px;
-}
-
-.theme {
+    margin: 0;
+    cursor: pointer;
+    border: 1px solid var(--bg);
+    background: var(--blue);
+    transition: background 0.4s, border 0.4s;
+  }
+  input[type='checkbox']:after {
+    content: '';
+    display: block;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 11;
-    font-size: 17.5px;
+    transition: transform 0.4s;
+    left: 3px;
+    top: 2px;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    background: #eeeeee;
+    transform: translateX(var(--x, 0));
+  }
+  input[type='checkbox']:checked {
+    background: var(--red);
+    --x: 18px;
+  }
 }
-
-@supports(-webkit-appearance: none) or (-moz-appearance: none) {
-    input[type='checkbox'] {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        height: 20px;
-        outline: none;
-        display: inline-block;
-        vertical-align: top;
-        position: relative;
-        margin: 0;
-        cursor: pointer;
-        border: 1px solid var(--bg);
-        background: var(--blue);
-        transition: background .4s, border .4s;
-    }
-
-    input[type='checkbox']:after {
-        content: '';
-        display: block;
-        left: 0;
-        top: 0;
-        position: absolute;
-        transition: transform 0.4s;
-    }
-
-    input[type='checkbox']:checked { background: var(--red); }
-
-    input[type='checkbox'] {
-        width: 40px;
-        border-radius: 11px;
-    }
-
-    input[type='checkbox']:after {
-        left: 3px;
-        top:  2px;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        background: #eeeeee;
-        -webkit-transform: translateX(var(--x, 0));
-        transform: translateX(var(--x, 0));
-    }
-
-    input[type='checkbox']:checked { --x: 18px; }
-}
-
-
 @media screen and (min-width: 1200px) {
-    #render-container {
-        max-width: 600px;
-        left: 0%;
-        transform: translateX(0%);
-    }
-    #summary {
-        display: block;
-        position: absolute;
-        left: calc(600px + 2rem);
-        top: 3.4rem;
-        width: calc(100vw - 600px - 3rem);
-    }
-    #output {
-        position: absolute;
-        left: calc(600px + 2rem);
-        top: 5.3rem;
-        width: calc(100vw - 600px - 3rem);
-        height: calc(100vh - 6.3rem);
-        max-height: none;
-    }
+  #render-container {
+    max-width: 600px;
+    left: 0%;
+    transform: translateX(0%);
+  }
+  #summary {
+    display: block;
+    position: absolute;
+    left: calc(600px + 2rem);
+    top: 3.4rem;
+    width: calc(100vw - 600px - 3rem);
+  }
+  #output {
+    position: absolute;
+    left: calc(600px + 2rem);
+    top: 5.3rem;
+    width: calc(100vw - 600px - 3rem);
+    height: calc(100vh - 6.3rem);
+    max-height: none;
+  }
 }
-
 @media screen and (max-width: 800px) {
-    h1 {
-        left: 1rem;
-        transform: none;
-    }
-    .intro .drag-file {
-        padding: 120px 20px;
-        max-width: 420px;
-    }
+  h1 {
+    left: 1rem;
+    transform: none;
+  }
+  .intro .drag-file {
+    padding: 120px 20px;
+    max-width: 420px;
+  }
 }
-
 @media screen and (max-width: 632px) {
-    h1 {
-        font-size: 1em;
-        top: 0.1em;
-    }
+  h1 {
+    font-size: 1em;
+    top: 0.1em;
+  }
 }

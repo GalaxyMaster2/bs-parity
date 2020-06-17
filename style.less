@@ -4,6 +4,8 @@
 */
 
 // style.less
+// autoprefixer settings: 
+//   > 3%, last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, not ie 6-9
 
 // colour themes and other styling
 // using * to apply theming elements is a little hacky but !inherit or adding it manually would add a dozen lines to this
@@ -84,7 +86,7 @@ body {
         }
     }
 
-    .uploading, .success   { 
+    .uploading, .done   { 
         display: none;   
         input#file+label { display: none; }
     }
