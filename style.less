@@ -8,22 +8,20 @@
 //   > 3%, last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, not ie 6-9
 
 // colour themes and other styling
-// using * to apply theming elements is a little hacky but !inherit or adding it manually would add a dozen lines to this
-* {
-    transition-timing-function: cubic-bezier(.58,.11,.51,.97);
-}
 
 html,
 body {
     --blue: #3f96e6;
     --red: #f03e2d;
+    --trans: cubic-bezier(.58,.11,.51,.97);
+    
     margin: 0;
     border: none;
     background-color: var(--bg);
     color: var(--text);
     overflow-x: hidden;
     font-family: sans-serif;
-    transition: background-color 0.4s 0s, color 0.3s 0.1s;
+    transition: background-color 0.4s var(--trans) 0s, color 0.3s var(--trans) 0.1s;
     height: 100vh;
 
     &.dark {
@@ -58,7 +56,7 @@ body {
     left: 0px;
     width: 100%;
     height: 100%;
-    transition: top 1.5s;
+    transition: top 1.5s var(--trans);
 
     .drag-file {
         background-color: var(--text);
@@ -96,8 +94,9 @@ body {
     +.main {
         position: absolute;
         left: -100%;
-        transition: left 1.5s 0.5s;
+        transition: left 1.5s var(--trans) 0.5s;
     }
+    &.done { top: -101%; }
     &.done + .main { left: 0%; }
 }
 
@@ -121,7 +120,7 @@ body {
             width: calc(100% - 1rem);
             background-color: var(--bg);
             color: var(--text);
-            transition: background-color 1s, color 1s;
+            transition: background-color 1s var(--trans), color 1s var(--trans);
             border-radius: 1.5rem;
 
             &.selected { // when clicked
@@ -163,7 +162,7 @@ body {
         border-radius: 4px;
         overflow: hidden;
         background-color: var(--ebg);
-        transition: background-color 0.4s, transform 0.3s, left 0.4s, max-width 0.4s;
+        transition: background-color 0.4s var(--trans), transform 0.3s var(--trans), left 0.4s var(--trans), max-width 0.4s var(--trans);
     
         #grid-container {
             --width: 200px;
@@ -182,7 +181,7 @@ body {
     
                 .marker-line {
                     background-color: var(--etext);
-                    transition: background-color 0.3s 0.1s;
+                    transition: background-color 0.3s var(--trans) 0.1s;
                 }
     
                 .marker-number {
@@ -190,7 +189,7 @@ body {
                     margin-left: 0.3rem;
                     font-size: 1.8rem;
                     font-weight: bold;
-                    transition: color 0.3s 0.1s;
+                    transition: color 0.3s var(--trans) 0.1s;
                 }
             }
     
@@ -233,7 +232,7 @@ h1 {
     left: 50%;
     font-size: 1.5rem;
     transform: translateX(-50%);
-    transition: transform 0.3s 0s, font-size 0.3s 0.1s, left 0.4s;
+    transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s;
 }
 
 
@@ -303,13 +302,13 @@ label {
         cursor: pointer;
         border: 1px solid var(--bg);
         background: var(--blue);
-        transition: background .4s, border .4s;
+        transition: background .4s var(--trans), border .4s var(--trans);
 
         &:after {
             content: '';
             display: block;
             position: absolute;
-            transition: transform 0.4s;
+            transition: transform 0.4s var(--trans);
             left: 3px;
             top:  2px;
             border-radius: 50%;
@@ -328,25 +327,27 @@ label {
 
 
 @media screen and (min-width: 1200px) {
-    #render-container {
-        max-width: 600px;
-        left: 0%;
-        transform: translateX(0%);
-    }
-    #summary {
-        display: block;
-        position: absolute;
-        left: calc(600px + 2rem);
-        top: 3.4rem;
-        width: calc(100vw - 600px - 3rem);
-    }
-    #output {
-        position: absolute;
-        left: calc(600px + 2rem);
-        top: 5.3rem;
-        width: calc(100vw - 600px - 3rem);
-        height: calc(100vh - 6.3rem);
-        max-height: none;
+    .main {
+        #render-container {
+            max-width: 600px;
+            left: 0%;
+            transform: translateX(0%);
+        }
+        #summary {
+            display: block;
+            position: absolute;
+            left: calc(600px + 2rem);
+            top: 3.4rem;
+            width: calc(100vw - 600px - 3rem);
+        }
+        #output {
+            position: absolute;
+            left: calc(600px + 2rem);
+            top: 5.3rem;
+            width: calc(100vw - 600px - 3rem);
+            height: calc(100vh - 6.3rem);
+            max-height: none;
+        }
     }
 }
 
