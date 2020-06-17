@@ -213,6 +213,27 @@ body .theme {
 .main #render-container #grid-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
+.main #render-container #grid-container .note .note-face.bomb {
+  background-image: url('assets/bomb.svg');
+}
+.main #render-container #grid-container .note .note-face.dot_front_blue {
+  background-image: url('assets/dot_front_blue.svg');
+}
+.main #render-container #grid-container .note .note-face.dot_front_red {
+  background-image: url('assets/dot_front_red.svg');
+}
+.main #render-container #grid-container .note .note-face.note_front_blue {
+  background-image: url('assets/note_front_blue.svg');
+}
+.main #render-container #grid-container .note .note-face.note_front_red {
+  background-image: url('assets/note_front_red.svg');
+}
+.main #render-container #grid-container .note .note-face.note_side_blue {
+  background-image: url('assets/note_side_blue.svg');
+}
+.main #render-container #grid-container .note .note-face.note_side_red {
+  background-image: url('assets/note_side_red.svg');
+}
 .main #render-container #grid-container .note.error .note-face {
   outline: 2px solid red;
 }
