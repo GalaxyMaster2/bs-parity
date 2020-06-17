@@ -70,9 +70,9 @@ async function scrollVal(end, target, framerate = 30) {
     let initial = centerBeat;
     let pos, a, b;
     let delay = 1000 / framerate;
-    let frames = Math.abs(end - initial) * 4.5;
+    let frames = Math.abs(end - initial) * 3;
 
-    frames = (frames > 90) ? 90 : frames;
+    frames = (frames > 60) ? 60 : frames;
     frames = (frames < 10) ? 10 : frames;
 
     for (let i = 1; i <= frames; i++) {

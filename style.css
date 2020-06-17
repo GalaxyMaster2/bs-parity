@@ -19,13 +19,15 @@ body {
 html.dark,
 body.dark {
   --bg: #222222;
+  --dbg: #1a1a1a;
   --ebg: #555555;
   --text: #dddddd;
   --etext: #eeeeee;
 }
 html.light,
 body.light {
-  --bg: \#eeeeee;
+  --bg: #eeeeee;
+  --dbg: #fbfbfb;
   --ebg: #e0e0e0;
   --text: #222222;
   --etext: #111111;
@@ -240,12 +242,6 @@ body .theme {
 .main #render-container #grid-container .note.warn .note-face {
   outline: 2px solid yellow;
 }
-.main #render-container #grid-container .note.precedingError .note-face {
-  outline: 1px solid red;
-}
-.main #render-container #grid-container .note.precedingWarn .note-face {
-  outline: 1px solid yellow;
-}
 h1 {
   position: absolute;
   top: -0.2rem;
@@ -372,4 +368,19 @@ label .submit:hover {
     font-size: 1em;
     top: 0.1em;
   }
+}
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background-color: var(--dbg);
+  border-radius: 6px;
+  opacity: 0.5;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--ebg);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text);
 }

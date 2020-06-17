@@ -25,17 +25,19 @@ body {
     height: 100vh;
 
     &.dark {
-        --bg: #222222;
-        --ebg: #555555;
+        --bg:   #222222;
+        --dbg:  #1a1a1a;
+        --ebg:  #555555;
         --text: #dddddd;
-        --etext: #eeeeee;
+        --etext:#eeeeee;
     }
 
     &.light {
-        --bg: \#eeeeee;
-        --ebg: #e0e0e0;
+        --bg:   #eeeeee;
+        --dbg:  #fbfbfb;
+        --ebg:  #e0e0e0;
         --text: #222222;
-        --etext: #111111;
+        --etext:#111111;
     }
 
     .theme {
@@ -225,8 +227,8 @@ body {
     
                 &.error .note-face { outline: 2px solid red;    }
                 &.warn  .note-face { outline: 2px solid yellow; }
-                &.precedingError .note-face { outline: 1px solid red;    }
-                &.precedingWarn  .note-face { outline: 1px solid yellow; }
+                // &.precedingError .note-face { outline: 1px solid red;    }
+                // &.precedingWarn  .note-face { outline: 1px solid yellow; }
             }
         }
     } // 3d visualiser
@@ -374,5 +376,24 @@ label {
     h1 {
         font-size: 1em;
         top: 0.1em;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--dbg);
+    border-radius: 6px;
+    opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--ebg);
+    border-radius: 6px;
+
+    &:hover {
+        background-color: var(--text);
     }
 }
