@@ -13,6 +13,8 @@ html,
 body {
     --blue: #3f96e6;
     --red: #f03e2d;
+    --warning: #ffca00;
+    --error: #ee0000;
     --trans: cubic-bezier(.58,.11,.51,.97);
     
     margin: 0;
@@ -118,7 +120,7 @@ body {
         top: 1em;
 
         .parent { // single error
-            padding: 0.4rem 0rem;
+            padding: 0.4rem 0rem 0.12rem 0rem;
             width: calc(100% - 1rem);
             background-color: var(--bg);
             color: var(--text);
@@ -136,13 +138,18 @@ body {
                 cursor: pointer;
                 left: 1rem;
             }
+
+            &.warning img {
+                border: 2px solid var(--warning);
+                border-radius: 16%;
+            }
             
             .text {
                 width: 50%;
                 width: calc(100% - 5rem);
             
                 left: 2rem;
-                top: -0.1rem;
+                top: -0.18rem;
             
                 display: inline-block;
                 position: relative;
@@ -180,6 +187,9 @@ body {
                 display: flex;
                 align-items: center;
                 position: absolute;
+                
+                &.fakeMarker { opacity: 0.5; }
+                &.decimalTime .marker-number {opacity: 0;}
     
                 .marker-line {
                     background-color: var(--etext);
@@ -207,7 +217,8 @@ body {
                     display: block;
                     width: var(--size);
                     height: var(--size);
-                    outline: 0.5px solid black;
+                    // outline: 0.5px solid black;
+                    border-radius: 2px; // border allows for slight smoothing at edges which makes the outline look better
     
                     &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
                     &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
@@ -225,10 +236,10 @@ body {
                     &.note_side_red      {  background-image: url('assets/note_side_red.svg');   }
                 }
     
-                &.error .note-face { outline: 2px solid red;    }
-                &.warn  .note-face { outline: 2px solid yellow; }
-                // &.precedingError .note-face { outline: 1px solid red;    }
-                // &.precedingWarn  .note-face { outline: 1px solid yellow; }
+                &.precedingError .note-face { border: 1px solid black; }
+                &.precedingWarn  .note-face { border: 1px solid black; }
+                &.error .note-face { border: 1px solid var(--error);  }
+                &.warn  .note-face { border: 1px solid var(--warning);}
             }
         }
     } // 3d visualiser

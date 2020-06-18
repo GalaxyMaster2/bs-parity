@@ -8,10 +8,10 @@ console.log('render js loaded');
 const renderContainer = document.getElementById('render-container');
 const gridContainer = document.getElementById('grid-container');
 
-var perspectiveMultiplier = 1;
-var renderDistance = 2;
-var timeScale = 1;
-var centerBeat = 0;
+var perspectiveMultiplier = parseFloat(piSlide.value);
+var renderDistance = parseFloat(rdSlide.value);
+var timeScale      = parseFloat(tsSlide.value);;
+var centerBeat = 0; // changed to match values in html
 
 // angle (0,0) is looking directly at the notes from player perspective
 var angleX = -30;
@@ -101,9 +101,9 @@ function render(notes, centerBeat) {
     }
 
     // container size in pixels
-    // TODO: calculate from page
-    let containerWidth = 600;
-    let containerHeight = 300;
+    // TODO: render the page again when the width / height changes
+    let containerWidth = renderContainer.offsetWidth;
+    let containerHeight = renderContainer.offsetHeight;
 
     // TODO: set grid-container CSS dimensions here
     let gridHeight = containerHeight / 2;
@@ -189,8 +189,13 @@ function render(notes, centerBeat) {
     }
 
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance); i++) {
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 3); i++) {
         beatMarkers.push(i);
+        if (i <= Math.floor(centerBeat + renderDistance)) {
+            beatMarkers.push(i + 0.25);
+            beatMarkers.push(i + 0.50);
+            beatMarkers.push(i + 0.75);
+        }
     }
 
     for (let beat of beatMarkers) {
@@ -203,13 +208,16 @@ function render(notes, centerBeat) {
         number.textContent = beat;
 
         let relTime = beat - centerBeat;
+        let fakeMarker = false, decimalTime = false;
+        if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true; }
+        if ( Math.floor(relTime) != relTime )    { decimalTime = true; }
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
         let posZ = relTime * timeScale * (containerWidth / 4) * -1;
 
         line.style.setProperty('width', lineWidth + 'px');
-        line.style.setProperty('height', (lineWidth / 30) + 'px');
+        line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
 
         marker.appendChild(line);
         marker.appendChild(number);
@@ -217,6 +225,8 @@ function render(notes, centerBeat) {
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
+        if (fakeMarker)  marker.classList.add("fakeMarker");
+        if (decimalTime) marker.classList.add("decimalTime");
 
         gridContainer.appendChild(marker);
     }
