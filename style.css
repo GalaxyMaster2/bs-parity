@@ -132,6 +132,10 @@ body .theme {
   border: 2px solid var(--warning);
   border-radius: 16%;
 }
+.main #output .parent.error img {
+  border: 2px solid var(--error);
+  border-radius: 16%;
+}
 .main #output .parent .text {
   width: 50%;
   width: calc(100% - 5rem);
