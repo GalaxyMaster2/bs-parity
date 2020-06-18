@@ -210,7 +210,7 @@ function render(notes, centerBeat) {
         let relTime = beat - centerBeat;
         let fakeMarker = false, decimalTime = false;
         if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true; }
-        if ( Math.floor(relTime) != relTime )    { decimalTime = true; }
+        if ( beat != Math.floor(beat)  )          { decimalTime = true; }
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
