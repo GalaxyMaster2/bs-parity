@@ -9,8 +9,9 @@ const renderContainer = document.getElementById('render-container');
 const gridContainer = document.getElementById('grid-container');
 
 var perspectiveMultiplier = parseFloat(piSlide.value);
+var divisionValue  = parseFloat(dvSlide.value);
 var renderDistance = parseFloat(rdSlide.value);
-var timeScale      = parseFloat(tsSlide.value);;
+var timeScale      = parseFloat(tsSlide.value);
 var centerBeat = 0; // changed to match values in html
 
 // angle (0,0) is looking directly at the notes from player perspective
@@ -191,10 +192,10 @@ function render(notes, centerBeat) {
     let beatMarkers = [];
     for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 3); i++) {
         beatMarkers.push(i);
-        if (i <= Math.floor(centerBeat + renderDistance)) {
-            beatMarkers.push(i + 0.25);
-            beatMarkers.push(i + 0.50);
-            beatMarkers.push(i + 0.75);
+        if (i <= Math.floor(centerBeat + renderDistance) && divisionValue > 1) {
+            for (let j = 1; j < divisionValue; j++) {
+                beatMarkers.push(i + (j / divisionValue));
+            }
         }
     }
 

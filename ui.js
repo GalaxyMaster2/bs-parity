@@ -44,6 +44,7 @@ const inf = document.getElementById('info');
 const rdSlide = document.getElementById('renderDistance');
 const tsSlide = document.getElementById('timeScale');
 const piSlide = document.getElementById('perspectiveIntensity');
+const dvSlide = document.getElementById('divisionValue');
 
 fileInput.addEventListener('change', handleFileInput);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
@@ -64,6 +65,10 @@ tsSlide.addEventListener('input', function () {
 });
 piSlide.addEventListener('input', function () {
     perspectiveMultiplier = parseFloat(piSlide.value);
+    render(notesArray, centerBeat);
+});
+dvSlide.addEventListener('input', function () {
+    divisionValue = parseFloat(dvSlide.value);
     render(notesArray, centerBeat);
 });
 

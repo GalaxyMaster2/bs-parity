@@ -104,11 +104,11 @@ body .theme {
 }
 .main #output {
   max-height: 350px;
-  max-height: calc(100vh - 18rem - 300px);
+  max-height: calc(100vh - 19rem - 300px);
   min-height: 200px;
   overflow-y: auto;
   position: relative;
-  top: 1em;
+  top: 0.7em;
 }
 .main #output .parent {
   padding: 0.4rem 0rem 0.12rem 0rem;
@@ -140,7 +140,7 @@ body .theme {
   width: 50%;
   width: calc(100% - 5rem);
   left: 2rem;
-  top: -0.18rem;
+  top: -0.28rem;
   display: inline-block;
   position: relative;
 }
@@ -353,7 +353,7 @@ label .submit:hover {
     --x: 18px;
   }
 }
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1300px) {
   .main #render-container {
     max-width: 600px;
     left: 0%;
