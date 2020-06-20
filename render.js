@@ -159,8 +159,8 @@ function render(notes, centerBeat) {
     }
 
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 3); i++) {
-        if (i <= Math.floor(centerBeat + renderDistance)) {
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
+        if (i <= Math.floor(centerBeat + renderDistance + 1)) {
             for (let j = 0; j < divisionValue; j++) {
                 beatMarkers.push(i + (j / divisionValue));
             }
@@ -194,8 +194,8 @@ function render(notes, centerBeat) {
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
-        if (fakeMarker)  marker.classList.add("fakeMarker");
-        if (decimalTime) marker.classList.add("decimalTime");
+        if (fakeMarker)  marker.style.setProperty('opacity', 1 - (0.7)*(relTime - renderDistance));
+        if (decimalTime) marker.classList.add('decimalTime');
 
         gridContainer.appendChild(marker);
     }

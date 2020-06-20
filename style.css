@@ -182,9 +182,6 @@ body .theme {
   align-items: center;
   position: absolute;
 }
-.main #render-container #grid-container .marker.fakeMarker {
-  opacity: 0.5;
-}
 .main #render-container #grid-container .marker.decimalTime .marker-number {
   opacity: 0;
 }
