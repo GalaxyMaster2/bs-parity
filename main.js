@@ -5,7 +5,7 @@
 console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
-const cutAngles     = [180, 0, 270, 90, 135, 225, 45, 315, 0];
+const cutAngles     = [ 180,      0,     90,     270,      135,       225,         45,         315,     0];
 
 // bombs are type 3 for some reason
 const types = {
