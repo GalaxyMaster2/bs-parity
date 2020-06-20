@@ -198,6 +198,11 @@ function checkParity() {
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
+        note.error = false;
+        note.warn = false;
+        note.precedingError = false;
+        note.precedingWarn = false;
+
         if (type === 'bomb') {
             // this is super ugly, I'm hoping to come up with a better way later
             if (!(['middleLeft', 'middleRight'].includes(column)) || !(['bottom', 'top'].includes(row))) {
