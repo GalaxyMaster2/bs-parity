@@ -5,6 +5,8 @@
 console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
+const cutAngles     = [180, 0, 270, 90, 135, 225, 45, 315, 0];
+
 // bombs are type 3 for some reason
 const types = {
     0: 'red',
@@ -114,7 +116,6 @@ function outputUI(note, parity, errString, errType) {
     let time = time_raw.toFixed(3);
     let type = types[note._type];
     let cutDirection = cutDirections[note._cutDirection];
-    let cutAngle = [180, 0, 270, 90, 135, 225, 45, 315, 0];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
 
@@ -141,7 +142,7 @@ function outputUI(note, parity, errString, errType) {
 
     let img = document.createElement('img');
     img.src = 'assets/' + imgClass + '.svg';
-    img.style.setProperty('transform', 'rotate(' + cutAngle[note._cutDirection] + 'deg)');
+    img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
 
     element.appendChild(img);
 

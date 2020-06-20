@@ -74,7 +74,7 @@ async function scrollVal(end, target, framerate = 30) {
     let frames = Math.abs(end - initial) * 3;
 
     frames = (frames > 60) ? 60 : frames;
-    frames = (frames < 10) ? 10 : frames;
+    frames = (frames < 8) ? 8 : frames;
 
     for (let i = 1; i <= frames; i++) {
         b = Math.ceil((i / frames) * 30); // find values of lut to interpolate between
@@ -124,39 +124,8 @@ function render(notes, centerBeat) {
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
         let posZ = relTime * timeScale * (containerWidth / 4) * -1;
 
-        let noteAngle = 0;
-        let dot = false;
-
-        switch (cutDirections[note._cutDirection]) {
-            case 'down':
-                noteAngle = 0;
-                break;
-            case 'downLeft':
-                noteAngle = 45;
-                break;
-            case 'left':
-                noteAngle = 90;
-                break;
-            case 'upLeft':
-                noteAngle = 135;
-                break;
-            case 'up':
-                noteAngle = 180;
-                break;
-            case 'upRight':
-                noteAngle = 225;
-                break;
-            case 'right':
-                noteAngle = 270;
-                break;
-            case 'downRight':
-                noteAngle = 315;
-                break;
-            case 'dot':
-                noteAngle = 0;
-                dot = true;
-                break;
-        }
+        let noteAngle = cutAngles[note._cutDirection];
+        let dot = (cutDirections[note._cutDirection] === 'dot');
 
         let noteContainer = document.createElement('div');
         noteContainer.classList.add('note');
@@ -191,9 +160,8 @@ function render(notes, centerBeat) {
 
     let beatMarkers = [];
     for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 3); i++) {
-        beatMarkers.push(i);
-        if (i <= Math.floor(centerBeat + renderDistance) && divisionValue > 1) {
-            for (let j = 1; j < divisionValue; j++) {
+        if (i <= Math.floor(centerBeat + renderDistance)) {
+            for (let j = 0; j < divisionValue; j++) {
                 beatMarkers.push(i + (j / divisionValue));
             }
         }
