@@ -115,7 +115,7 @@ body .theme {
   width: calc(100% - 1rem);
   background-color: var(--bg);
   color: var(--text);
-  transition: background-color 1s var(--trans), color 1s var(--trans);
+  transition: background-color 0.75s var(--trans), color 0.75s var(--trans);
   border-radius: 1.5rem;
 }
 .main #output .parent.selected {
@@ -143,6 +143,7 @@ body .theme {
   top: -0.28rem;
   display: inline-block;
   position: relative;
+  cursor: pointer;
 }
 .main #output .parent.info,
 .main #output .parent.warning,
