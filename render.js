@@ -161,7 +161,7 @@ function render(notes, centerBeat) {
     }
 
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
         if (i <= Math.floor(centerBeat + renderDistance + 1)) {
             for (let j = 0; j < divisionValue; j++) {
                 beatMarkers.push(i + (j / divisionValue));
