@@ -56,7 +56,7 @@ function scroll(event) {
 }
 
 let scrolling = false;
-async function scrollVal(end, target, framerate = 30) {
+async function scrollVal(end, target = null, framerate = 30) {
     if (scrolling) { return };
     scrolling = true; // prevent multiple copies of this function from running at once
                       // todo: make a queue system or a way to cancel and start again with new values?
@@ -66,7 +66,7 @@ async function scrollVal(end, target, framerate = 30) {
         document.getElementsByClassName('selected')[0].classList.remove('selected');
     }
     
-    target.classList.add('selected')
+    if (target != null) target.classList.add('selected')
 
     let initial = centerBeat;
     let pos, a, b;
@@ -148,6 +148,8 @@ function render(notes, centerBeat) {
         noteContainer.style.setProperty('left', posX + 'px');
         noteContainer.style.setProperty('top', posY + 'px');
         noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+        noteContainer.addEventListener('click', function () { scrollVal(note._time); }); // todo: highlight errors if an error block is chosen?
         
         if (note.error)               { noteContainer.classList.add("error"); }
         else if (note.precedingError) { noteContainer.classList.add("precedingError"); }
@@ -171,8 +173,10 @@ function render(notes, centerBeat) {
         let marker = document.createElement('div');
         let line = document.createElement('div');
         let number = document.createElement('div');
+
         marker.classList.add('marker');
         line.classList.add('marker-line');
+
         number.classList.add('marker-number');
         number.textContent = beat;
 
@@ -187,6 +191,7 @@ function render(notes, centerBeat) {
 
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
+        if (!decimalTime) number.addEventListener('click', function () { scrollVal(beat); });
 
         marker.appendChild(line);
         marker.appendChild(number);

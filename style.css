@@ -196,6 +196,7 @@ body .theme {
   font-size: 1.8rem;
   font-weight: bold;
   transition: color 0.3s var(--trans) 0.1s;
+  cursor: pointer;
 }
 .main #render-container #grid-container .note {
   --size: 50px;
@@ -203,6 +204,7 @@ body .theme {
   height: var(--size);
   position: absolute;
   transform-style: preserve-3d;
+  cursor: pointer;
 }
 .main #render-container #grid-container .note .note-face {
   position: absolute;
