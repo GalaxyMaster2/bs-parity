@@ -14,7 +14,7 @@ const types = {
     3: 'bomb'
 };
 const lineIndices = ['left', 'middleLeft', 'middleRight', 'right'];
-const lineLayers = ['bottom', 'middle', 'top'];
+const lineLayers  = ['bottom', 'middle', 'top'];
 
 // the minimum time between the last note or bomb for a bomb to be considered for each saber
 // make user configurable?

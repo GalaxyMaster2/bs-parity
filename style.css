@@ -130,11 +130,11 @@ body .theme {
 }
 .main #output .parent.warning img {
   border: 2px solid var(--warning);
-  border-radius: 16%;
+  border-radius: 23%;
 }
 .main #output .parent.error img {
   border: 2px solid var(--error);
-  border-radius: 16%;
+  border-radius: 23%;
 }
 .main #output .parent .text {
   width: 50%;
