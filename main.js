@@ -261,20 +261,30 @@ function checkParity() {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
+                note.warn = true;
+
+                try {
+                    let last = notesArray[findCol(notesArray, type, i - 1)];
+                    last.precedingWarn = true;
+                }
+                catch { console.log('error finding note!'); }
+
                 outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
-
-                note.warn = true;
-                try { notesArray[findCol(notesArray, type, i - 1)].precedingWarn = true; }
-                catch {}
                 warnCount++;
             } else {
-                outputUI(note, parity, 'Bad hit, wrist reset is necessary', 'error');
-
                 note.error = true;
-                
-                try { notesArray[findCol(notesArray, type, i - 1)].precedingError = true; }
-                catch {}
+                let deltaTime = 0;
+
+                try {
+                    let last = notesArray[findCol(notesArray, type, i - 1)]
+                    deltaTime = (note._time - last._time).toFixed(3)
+                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats'
+                    last.precedingError = true;
+                }
+                catch { console.log('error finding note!'); }
+
+                outputUI(note, parity, 'Bad hit, wrist reset is necessary in ' + deltaTime, 'error');
                 errCount++;
             }
 

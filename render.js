@@ -159,7 +159,7 @@ function render(notes, centerBeat) {
         noteContainer.style.setProperty('top', posY + 'px');
         noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-        noteContainer.addEventListener('click', function () { scrollVal(note._time); }); // todo: highlight errors if an error block is chosen?
+        noteContainer.addEventListener('click', function () { scrollVal(note._time); });
         
         if (note.error)               { noteContainer.classList.add("error"); }
         else if (note.precedingError) { noteContainer.classList.add("precedingError"); }
