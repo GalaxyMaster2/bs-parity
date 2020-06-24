@@ -47,26 +47,36 @@ document.addEventListener('keydown', rotate);
 renderContainer.addEventListener('wheel', scroll);
 
 function scroll(event) {
-    if(document.getElementsByClassName('selected').length != 0) {
-        document.getElementsByClassName('selected')[0].classList.remove('selected');
-    }
-    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
-    render(notesArray, centerBeat);
     event.preventDefault();
+    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    let timeInd = centerBeat.toFixed(3);
+
+    document.querySelectorAll('.selected').forEach( 
+        (element) => { element.classList.remove('selected') } 
+    )
+
+    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
+        (element) => { element.classList.add('selected'); }
+    )
+
+    render(notesArray, centerBeat);
 }
 
 let scrolling = false;
-async function scrollVal(end, target = null, framerate = 30) {
+async function scrollVal(end, framerate = 30) {
     if (scrolling) { return };
     scrolling = true; // prevent multiple copies of this function from running at once
                       // todo: make a queue system or a way to cancel and start again with new values?
                       // unless lots of smoothing code is added this will jerk it though :/
 
-    if(document.getElementsByClassName('selected').length != 0) {
-        document.getElementsByClassName('selected')[0].classList.remove('selected');
-    }
+    document.querySelectorAll('.selected').forEach( 
+        (element) => { element.classList.remove('selected') } 
+    )
     
-    if (target != null) target.classList.add('selected')
+    let timeInd = end.toFixed(3);
+    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
+        (element) => { element.classList.add('selected'); }
+    )
 
     let initial = centerBeat;
     let pos, a, b;

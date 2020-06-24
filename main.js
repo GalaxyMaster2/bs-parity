@@ -138,7 +138,8 @@ function outputUI(note, parity, errString, errType) {
     let element = document.createElement('div');
     element.classList.add('parent');
     element.classList.add(errType);
-    element.addEventListener('click', function () { scrollVal(time_raw, element); });
+    element.dataset.time = time;
+    element.addEventListener('click', function () { scrollVal(time_raw); });
 
     let img = document.createElement('img');
     img.src = 'assets/' + imgClass + '.svg';
