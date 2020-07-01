@@ -168,6 +168,12 @@ body .theme {
   background-color: var(--ebg);
   transition: background-color 0.4s var(--trans), transform 0.3s var(--trans), left 0.4s var(--trans), max-width 0.4s var(--trans);
 }
+.main #render-container.rotating {
+  cursor: all-scroll;
+}
+.main #render-container.scrolling {
+  cursor: s-resize;
+}
 .main #render-container #grid-container {
   --width: 200px;
   --height: 150px;

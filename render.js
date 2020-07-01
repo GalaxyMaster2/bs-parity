@@ -71,6 +71,21 @@ function scroll(event) {
     render(notesArray, centerBeat);
 }
 
+function scrollDelta(delta) {
+    centerBeat = Math.max(0, centerBeat + delta);
+    let timeInd = centerBeat.toFixed(3);
+    
+    render(notesArray, centerBeat);
+
+    document.querySelectorAll('.selected').forEach( 
+        (element) => { element.classList.remove('selected') } 
+    )
+
+    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
+        (element) => { element.classList.add('selected'); }
+    )
+}
+
 let scrolling = false;
 async function scrollVal(end, framerate = 30) {
     if (scrolling) { return };

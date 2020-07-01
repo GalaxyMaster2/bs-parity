@@ -92,34 +92,53 @@ function highlightErr(target) {
 
 // fancy click handler based off of https://jsfiddle.net/KyleMit/1jr12rd3/
 // converted to pure js from jquery and added up/down handlers
-var middleMouse = false
-renderContainer.addEventListener('mousedown', rightMouseDown);
+// should this be in ui or render?
+var mouseHandle = false
+renderContainer.addEventListener('mousedown', handleMouseDown);
 
 var cursorX = -1;
 var cursorY = 0;
 
-async function rightMouseDown(e) {
-    if (middleMouse == true) { return; }
-    if (e.which === 3) {
-        middleMouse = true;
+async function handleMouseDown(e) {
+    if (mouseHandle == true) { return; }
+    if (e.which == 3) {
+        mouseHandle = true;
         cursorX = -1;
 
-        document.addEventListener('mouseup',     rightMouseUp);
+        document.addEventListener('mouseup',     handleMouseUp);
         document.addEventListener('contextmenu', preventDefaults, {once: true});
         document.addEventListener('mousemove',   getMousePos);
 
         let initialRotX = angleX;
         let initialRotY = angleY;
 
+        renderContainer.classList.add('rotating');
+
         await until(_ => cursorX != -1);
         let initialX = cursorX;
         let initialY = cursorY;
 
-        while (middleMouse == true) {
+        while (mouseHandle == true) {
             await new Promise(r => setTimeout(r, 1000 / 30));
             mouseRotate(initialRotY + 0.5 * (cursorX - initialX), initialRotX + -0.5 * (cursorY - initialY));
         }
-        
+    }
+    if (e.which === 2) {
+        mouseHandle = true;
+        cursorX = -1;
+
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousemove', getMousePos);
+
+        renderContainer.classList.add('scrolling');
+
+        await until(_ => cursorX != -1);
+        initialY = cursorY;
+
+        while (mouseHandle == true) {
+            await new Promise(r => setTimeout(r, 1000 / 30));
+            scrollDelta((initialY - cursorY) / 100);
+        }
     }
 }
 function until(condition) {
@@ -130,13 +149,19 @@ function until(condition) {
 
     return new Promise(poll);
 }
-function rightMouseUp(e) {
-    if (e.which === 3) {
-        e.preventDefault();
-        e.stopPropagation();
-        middleMouse = false;
-        document.removeEventListener('mouseup', rightMouseUp);
-        document.removeEventListener('mousemove', getMousePos);
+function handleMouseUp(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    mouseHandle = false;
+
+    document.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener('mousemove', getMousePos);
+    if (e.which == 3) {
+        renderContainer.classList.remove('rotating');
+    }
+    if (e.which == 2) {
+        renderContainer.classList.remove('scrolling');
     }
 }
 function getMousePos(e) {
