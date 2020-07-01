@@ -132,7 +132,7 @@ function render(notes, centerBeat) {
 
     // calculate note position, make note element and add to the container
     for (let note of notes) {
-        let relTime = note._time - centerBeat;
+        let relTime = note._time - centerBeat + 0.5;
 
         let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
@@ -156,7 +156,9 @@ function render(notes, centerBeat) {
                     (face === 'front' ? 'front_' : 'side_') + types[note._type];
             }
             noteFace.classList.add('note-face', face, imgClass);
+            if (relTime < 0.5) noteFace.classList.add('transl');
             noteContainer.appendChild(noteFace);
+            
         }
 
         noteContainer.style.setProperty('left', posX + 'px');
@@ -194,7 +196,7 @@ function render(notes, centerBeat) {
         number.classList.add('marker-number');
         number.textContent = beat;
 
-        let relTime = beat - centerBeat;
+        let relTime = beat - centerBeat + 0.5;
         let fakeMarker = false, decimalTime = false;
         if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true; }
         if ( beat != Math.floor(beat)  )          { decimalTime = true; }

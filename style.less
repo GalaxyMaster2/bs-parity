@@ -225,13 +225,16 @@ body {
                     height: var(--size);
                     // outline: 0.5px solid black;
                     border-radius: 2px; // border allows for slight smoothing at edges which makes the outline look better
-    
+
                     &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
                     &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
                     &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
                     &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
                     &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
                     &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+                    
+                    &.transl { opacity: 0.5; }
+
 
                     &.bomb               {  background-image: url('assets/bomb.svg');            }
                     &.dot_front_blue     {  background-image: url('assets/dot_front_blue.svg');  }

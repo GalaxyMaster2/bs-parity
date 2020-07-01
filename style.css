@@ -232,6 +232,9 @@ body .theme {
 .main #render-container #grid-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
+.main #render-container #grid-container .note .note-face.transl {
+  opacity: 0.5;
+}
 .main #render-container #grid-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
 }
