@@ -15,7 +15,7 @@ const bezierLut = [0, 0.01644358864383059, 0.03503534699700188, 0.05598035758796
 
 /*
     generated using pomax.github.io/bezierjs/ in chrome dev console:
-        let curve = new Bezier(0,0,0.58,0.11,0.51,0.92,1,1);
+        let curve = new Bezier(0,0, 0.58,0.11, 0.51,0.92, 1,1);
         let lut = curve.getLUT(30);
         let tvals = [];
         let bezierLut = [0];
@@ -28,6 +28,9 @@ const bezierLut = [0, 0.01644358864383059, 0.03503534699700188, 0.05598035758796
             bezierLut[i] = curve.get(tvals[i])["y"];
         }
 */
+
+const renderContainer = document.getElementById('render-container');
+const gridContainer = document.getElementById('grid-container');
 
 const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
@@ -87,6 +90,59 @@ function highlightErr(target) {
     target.classList.add('selected')
 }
 
+// fancy click handler based off of https://jsfiddle.net/KyleMit/1jr12rd3/
+// converted to pure js from jquery and added up/down handlers
+var middleMouse = false
+renderContainer.addEventListener('mousedown', rightMouseDown);
+
+var cursorX = -1;
+var cursorY = 0;
+
+async function rightMouseDown(e) {
+    if (middleMouse == true) { return; }
+    if (e.which === 3) {
+        middleMouse = true;
+        cursorX = -1;
+
+        document.addEventListener('mouseup',     rightMouseUp);
+        document.addEventListener('contextmenu', preventDefaults, {once: true});
+        document.addEventListener('mousemove',   getMousePos);
+
+        let initialRotX = angleX;
+        let initialRotY = angleY;
+
+        await until(_ => cursorX != -1);
+        let initialX = cursorX;
+        let initialY = cursorY;
+
+        while (middleMouse == true) {
+            await new Promise(r => setTimeout(r, 1000 / 30));
+            mouseRotate(initialRotY + 0.5 * (cursorX - initialX), initialRotX + -0.5 * (cursorY - initialY));
+        }
+        
+    }
+}
+function until(condition) {
+    const poll = resolve => {
+        if(condition()) resolve();
+        else setTimeout(_ => poll(resolve), 67);
+    }
+
+    return new Promise(poll);
+}
+function rightMouseUp(e) {
+    if (e.which === 3) {
+        e.preventDefault();
+        e.stopPropagation();
+        middleMouse = false;
+        document.removeEventListener('mouseup', rightMouseUp);
+        document.removeEventListener('mousemove', getMousePos);
+    }
+}
+function getMousePos(e) {
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+}
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

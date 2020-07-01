@@ -5,9 +5,6 @@
 
 console.log('render js loaded');
 
-const renderContainer = document.getElementById('render-container');
-const gridContainer = document.getElementById('grid-container');
-
 var perspectiveMultiplier = parseFloat(piSlide.value);
 var divisionValue  = parseFloat(dvSlide.value);
 var renderDistance = parseFloat(rdSlide.value);
@@ -33,6 +30,14 @@ function rotate(event) {
             angleY -= 10;
             break;
     }
+    angleX = mod(angleX, 360);
+    angleY = mod(angleY, 360); 
+    render(notesArray, centerBeat);
+}
+
+function mouseRotate(y, x) {
+    angleX = x;
+    angleY = y;
     angleX = mod(angleX, 360);
     angleY = mod(angleY, 360); 
     render(notesArray, centerBeat);
