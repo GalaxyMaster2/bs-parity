@@ -197,9 +197,10 @@ function render(notes, centerBeat) {
         number.textContent = beat;
 
         let relTime = beat - centerBeat + 0.5;
-        let fakeMarker = false, decimalTime = false;
-        if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true; }
-        if ( beat != Math.floor(beat)  )          { decimalTime = true; }
+        let fakeMarker = false, decimalTime = false, translucent = false;
+        if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true;  }
+        if ( beat != Math.floor(beat) )           { decimalTime = true; }
+        if ( relTime < 0.5 )                      { translucent = true; }
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
@@ -217,6 +218,7 @@ function render(notes, centerBeat) {
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
         if (fakeMarker)  marker.style.setProperty('opacity', 1 - (0.7)*(relTime - renderDistance));
         if (decimalTime) marker.classList.add('decimalTime');
+        if (translucent) marker.classList.add('transl');
 
         gridContainer.appendChild(marker);
     }
