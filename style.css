@@ -24,7 +24,7 @@ body.dark {
   --dbg: #1a1a1a;
   --ebg: #555555;
   --text: #dddddd;
-  --etext: #eeeeee;
+  --etext: #f4f4f4;
 }
 html.light,
 body.light {
@@ -76,8 +76,8 @@ body .theme {
 .intro .done {
   display: none;
 }
-.intro .uploading input#file + label,
-.intro .done input#file + label {
+.intro.uploading label,
+.intro.done label {
   display: none;
 }
 .intro.uploading .uploading {
@@ -112,15 +112,21 @@ body .theme {
 }
 .main #output .parent {
   padding: 0.4rem 0rem 0.12rem 0rem;
-  width: calc(100% - 1rem);
+  width: calc(100% - 1.5rem);
   background-color: var(--bg);
   color: var(--text);
-  transition: background-color 0.75s var(--trans), color 0.75s var(--trans);
+  transform: translateX(0);
+  transition: background-color 0.75s var(--trans), color 0.75s var(--trans), transform 0.75s var(--trans);
   border-radius: 1.5rem;
+}
+.main #output .parent.partialSelected {
+  color: var(--etext);
+  transform: translateX(0.25rem);
 }
 .main #output .parent.selected {
   background-color: var(--ebg);
   color: var(--etext);
+  transform: translateX(1rem);
 }
 .main #output .parent img {
   height: 2.1rem;

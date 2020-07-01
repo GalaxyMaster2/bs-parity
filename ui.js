@@ -210,8 +210,8 @@ function handleFileInput(e) {
 
 function readFile(files) {
     ready = false;
-    const fr = new FileReader();
     introDiv.classList.add('uploading');
+    const fr = new FileReader();
     fr.readAsText(files[0]);
     fr.addEventListener('load', function () {
         notesArray = getNotes(JSON.parse(fr.result));
@@ -228,6 +228,24 @@ function readFile(files) {
 function readSliderPrecision() {
     sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
     checkParity();
+}
+
+function highlightElements(time) {
+    let timeInd = time.toFixed(3);
+
+    document.querySelectorAll('.selected').forEach( 
+        (element) => { element.classList.remove('selected') }
+    )
+    document.querySelectorAll('.partialSelected').forEach( 
+        (element) => { element.classList.remove('partialSelected') }
+    )
+
+    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
+        (element) => { element.classList.add('selected'); }
+    )
+    document.querySelectorAll("[data-time2='" + timeInd + "']").forEach(
+        (element) => { element.classList.add('partialSelected'); }
+    )
 }
 
 function getNotes(obj) {

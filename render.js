@@ -58,32 +58,16 @@ function scroll(event) {
         delta *= 100 / 3
     }
     centerBeat = Math.max(0, centerBeat + delta / -100);
-    let timeInd = centerBeat.toFixed(3);
-
-    document.querySelectorAll('.selected').forEach( 
-        (element) => { element.classList.remove('selected') } 
-    )
-
-    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
-        (element) => { element.classList.add('selected'); }
-    )
+    highlightElements(centerBeat);
 
     render(notesArray, centerBeat);
 }
 
 function scrollDelta(delta) {
     centerBeat = Math.max(0, centerBeat + delta);
-    let timeInd = centerBeat.toFixed(3);
-    
+    highlightElements(centerBeat);
+
     render(notesArray, centerBeat);
-
-    document.querySelectorAll('.selected').forEach( 
-        (element) => { element.classList.remove('selected') } 
-    )
-
-    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
-        (element) => { element.classList.add('selected'); }
-    )
 }
 
 let scrolling = false;
@@ -93,14 +77,7 @@ async function scrollVal(end, framerate = 30) {
                       // todo: make a queue system or a way to cancel and start again with new values?
                       // unless lots of smoothing code is added this will jerk it though :/
 
-    document.querySelectorAll('.selected').forEach( 
-        (element) => { element.classList.remove('selected') } 
-    )
-    
-    let timeInd = end.toFixed(3);
-    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
-        (element) => { element.classList.add('selected'); }
-    )
+    highlightElements(end);
 
     let initial = centerBeat;
     let pos, a, b;

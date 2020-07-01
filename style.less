@@ -31,7 +31,7 @@ body {
         --dbg:  #1a1a1a;
         --ebg:  #555555;
         --text: #dddddd;
-        --etext:#eeeeee;
+        --etext:#f4f4f4;
     }
 
     &.light {
@@ -88,10 +88,9 @@ body {
         }
     }
 
-    .uploading, .done   { 
-        display: none;   
-        input#file+label { display: none; }
-    }
+    .uploading, .done   { display: none; }
+    &.uploading, &.done { label { display: none; } }
+    
     &.uploading .uploading { display: inline; }
     &.done      .done      { display: inline; }
 
@@ -121,16 +120,24 @@ body {
 
         .parent { // single error
             padding: 0.4rem 0rem 0.12rem 0rem;
-            width: calc(100% - 1rem);
+            width: calc(100% - 1.5rem);
             background-color: var(--bg);
             color: var(--text);
-            transition: background-color 0.75s var(--trans), color 0.75s var(--trans);
+            transform: translateX(0);
+            transition: background-color 0.75s var(--trans), color 0.75s var(--trans), transform 0.75s var(--trans);
             border-radius: 1.5rem;
-
+            
+            &.partialSelected { // when preceding note clicked
+                color: var(--etext);
+                transform: translateX(0.25rem);
+            }
+            
             &.selected { // when clicked
                 background-color: var(--ebg);
                 color: var(--etext);
+                transform: translateX(1rem);
             }
+            
 
             img { // note direction/type indicator
                 height: 2.1rem;

@@ -111,7 +111,7 @@ function outputMessage(text, type) {
     output.appendChild(element);
 }
 
-function outputUI(note, parity, errString, errType) {
+function outputUI(note, parity, time2, errString, errType) {
     let time_raw = note._time
     let time = time_raw.toFixed(3);
     let type = types[note._type];
@@ -136,9 +136,13 @@ function outputUI(note, parity, errString, errType) {
     }
 
     let element = document.createElement('div');
+    
     element.classList.add('parent');
     element.classList.add(errType);
+
     element.dataset.time = time;
+    element.dataset.time2 = time2;
+
     element.addEventListener('click', function () { scrollVal(time_raw); });
 
     let img = document.createElement('img');
@@ -262,29 +266,32 @@ function checkParity() {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
                 note.warn = true;
+                let lastTime = -1;
 
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
                     last.precedingWarn = true;
+                    lastTime = last._time.toFixed(3);
                 }
                 catch { console.log('error finding note!'); }
 
-                outputUI(note, parity, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
+                outputUI(note, parity, lastTime, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
                 warnCount++;
             } else {
                 note.error = true;
                 let deltaTime = 0;
-
+                let lastTime = -1;
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)]
                     deltaTime = (note._time - last._time).toFixed(3)
                     deltaTime += (deltaTime == 1) ? ' beat' : ' beats'
                     last.precedingError = true;
+                    lastTime = last._time.toFixed(3);
                 }
                 catch { console.log('error finding note!'); }
 
-                outputUI(note, parity, 'Bad hit, wrist reset is necessary in ' + deltaTime, 'error');
+                outputUI(note, parity, lastTime, 'Bad hit, wrist reset is necessary in ' + deltaTime, 'error');
                 errCount++;
             }
 
