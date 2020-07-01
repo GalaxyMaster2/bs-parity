@@ -233,7 +233,7 @@ body {
                     &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
                     &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
                     
-                    &.transl { opacity: 0.5; }
+                    &.transl { opacity: 0.5; backface-visibility: hidden;}
 
 
                     &.bomb               {  background-image: url('assets/bomb.svg');            }

@@ -234,6 +234,8 @@ body .theme {
 }
 .main #render-container #grid-container .note .note-face.transl {
   opacity: 0.5;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
 }
 .main #render-container #grid-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
