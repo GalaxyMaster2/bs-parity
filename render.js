@@ -15,8 +15,8 @@ var timeScale      = parseFloat(tsSlide.value);
 var centerBeat = 0; // changed to match values in html
 
 // angle (0,0) is looking directly at the notes from player perspective
-var angleX = -30;
-var angleY = -40;
+var angleX = 330;
+var angleY = 320;
 
 function rotate(event) {
     switch (event.key) {
@@ -34,7 +34,7 @@ function rotate(event) {
             break;
     }
     angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360);
+    angleY = mod(angleY, 360); 
     render(notesArray, centerBeat);
 }
 
@@ -48,7 +48,11 @@ renderContainer.addEventListener('wheel', scroll);
 
 function scroll(event) {
     event.preventDefault();
-    centerBeat = Math.max(0, centerBeat + event.deltaY / -100);
+    delta = event.deltaY;
+    if (event.deltaMode == 1) { // mode == 1 when firefox, line scrolling vs pixel scrolling
+        delta *= 100 / 3
+    }
+    centerBeat = Math.max(0, centerBeat + delta / -100);
     let timeInd = centerBeat.toFixed(3);
 
     document.querySelectorAll('.selected').forEach( 

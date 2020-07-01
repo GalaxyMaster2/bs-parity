@@ -185,6 +185,7 @@ body .theme {
 }
 .main #render-container #grid-container .marker.decimalTime .marker-number {
   opacity: 0;
+  cursor: default;
 }
 .main #render-container #grid-container .marker .marker-line {
   background-color: var(--etext);
