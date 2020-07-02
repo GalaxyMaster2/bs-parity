@@ -88,8 +88,6 @@ var notesArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
-const output = document.getElementById('output');
-
 function logNote(note, parity) {
     let time = note._time;
     let type = types[note._type];

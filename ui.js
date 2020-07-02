@@ -3,9 +3,6 @@
 //  not limited to drag-drop file imports, sliders and toggles, and
 //  file handling
 
-// todo: feature detection for drag and drop?
-//  although tbf the overlap between transform 3d and drag/drop is probably pretty big
-
 console.log('ui js loaded');
 var file = null;
 
@@ -31,6 +28,7 @@ const bezierLut = [0, 0.01644358864383059, 0.03503534699700188, 0.05598035758796
 
 const renderContainer = document.getElementById('render-container');
 const gridContainer = document.getElementById('grid-container');
+const output = document.getElementById('output');
 
 const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
@@ -49,19 +47,28 @@ const tsSlide = document.getElementById('timeScale');
 const piSlide = document.getElementById('perspectiveIntensity');
 const dvSlide = document.getElementById('divisionValue');
 
-fileInput.addEventListener('change', handleFileInput);
-sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-// submit.addEventListener('click', checkParity);
+warn.addEventListener('click', function () { output.classList.toggle('warning'); });
+err.addEventListener('click', function () { output.classList.toggle('error'); });
+inf.addEventListener('click', function () { output.classList.toggle('info'); });
 
 themeBut.addEventListener('click', changeTheme);
-warn.addEventListener('click', function () {
-    document.getElementById('output').classList.toggle('warning');
+renderContainer.addEventListener('mousedown', handleMouseDown);
+sliderPrecisionInput.addEventListener('change', readSliderPrecision);
+fileInput.addEventListener('change', handleFileInput);
+dropArea.addEventListener('drop', handleDrop, false);
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
 });
-err.addEventListener('click', function () {
-    document.getElementById('output').classList.toggle('error');
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, function() {
+        dropArea.classList.add('highlight');
+    }, false);
 });
-inf.addEventListener('click', function () {
-    document.getElementById('output').classList.toggle('info');
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, function() {
+        dropArea.classList.remove('highlight');
+    }, false);
 });
 
 rdSlide.addEventListener('input', function () {
@@ -82,25 +89,15 @@ dvSlide.addEventListener('input', function () {
 });
 
 function changeTheme() {
-    let body = document.getElementsByTagName('body');
-    let current = (body[0].classList[0] === 'dark');
-    body[0].classList.remove(current ? 'dark' : 'light');
-    body[0].classList.add(current ? 'light' : 'dark');
-}
-
-function highlightErr(target) {
-    if (document.getElementsByClassName('selected').length != 0) {
-        document.getElementsByClassName('selected')[0].classList.remove('selected');
-    }
-
-    target.classList.add('selected')
+    let body = document.getElementsByTagName('body')[0];
+    body.classList.toggle('dark');
+    body.classList.toggle('light');
 }
 
 // fancy click handler based off of https://jsfiddle.net/KyleMit/1jr12rd3/
 // converted to pure js from jquery and added up/down handlers
 // should this be in ui or render?
-var mouseHandle = false
-renderContainer.addEventListener('mousedown', handleMouseDown);
+var mouseHandle = false;
 
 var cursorX = -1;
 var cursorY = 0;
@@ -143,20 +140,10 @@ async function handleMouseDown(e) {
 
         while (mouseHandle == true) {
             await new Promise(r => setTimeout(r, 1000 / 30));
-            scrollDelta((initialY - cursorY) / 100);
+            scrollDelta((initialY - cursorY) / 300);
         }
     }
 }
-
-function until(condition) {
-    const poll = resolve => {
-        if (condition()) resolve();
-        else setTimeout(_ => poll(resolve), 67);
-    }
-
-    return new Promise(poll);
-}
-
 function handleMouseUp(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -172,39 +159,14 @@ function handleMouseUp(e) {
         renderContainer.classList.remove('scrolling');
     }
 }
-
 function getMousePos(e) {
     cursorX = e.clientX;
     cursorY = e.clientY;
 }
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-});
-
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-});
-
-dropArea.addEventListener('drop', handleDrop, false);
-
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function highlight(e) {
-    dropArea.classList.add('highlight');
-}
-
-function unhighlight(e) {
-    dropArea.classList.remove('highlight');
-}
+// todo: feature detection for drag and drop?
+//  although tbf the overlap between transform 3d and drag/drop is probably pretty big
 
 function handleDrop(e) {
     let dt = e.dataTransfer;
@@ -281,4 +243,18 @@ function getScrollLineHeight() {
     const fontSize = window.getComputedStyle(el).fontSize;
     document.body.removeChild(el);
     return fontSize ? window.parseInt(fontSize) : 16;
+}
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function until(condition) {
+    const poll = resolve => {
+        if (condition()) resolve();
+        else setTimeout(_ => poll(resolve), 67);
+    }
+
+    return new Promise(poll);
 }
