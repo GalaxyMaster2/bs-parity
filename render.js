@@ -6,9 +6,10 @@
 console.log('render js loaded');
 
 var perspectiveMultiplier = parseFloat(piSlide.value);
-var divisionValue = parseFloat(dvSlide.value);
 var renderDistance = parseFloat(rdSlide.value);
+var divisionValue = parseFloat(dvSlide.value);
 var timeScale = parseFloat(tsSlide.value);
+
 var centerBeat = 0; // changed to match values in html
 
 // angle (0,0) is looking directly at the notes from player perspective
@@ -48,8 +49,8 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
-document.addEventListener('keydown', rotate);
 renderContainer.addEventListener('wheel', scroll);
+document.addEventListener('keydown', rotate);
 
 function scroll(event) {
     event.preventDefault();
@@ -114,6 +115,8 @@ function render(notes) {
 
     // container size in pixels
     // TODO: render the page again when the width / height changes
+    //        this could be done with a listener, but it would kill resizing performance
+    //        if we didn't delay / debounce (?) it to a reasonable degree
     let containerWidth = renderContainer.offsetWidth;
     let containerHeight = renderContainer.offsetHeight;
 
@@ -191,11 +194,11 @@ function render(notes) {
 
     for (let beat of beatMarkers) {
         let marker = document.createElement('div');
-        let line = document.createElement('div');
         let number = document.createElement('div');
+        let line = document.createElement('div');
 
-        marker.classList.add('marker');
         line.classList.add('marker-line');
+        marker.classList.add('marker');
 
         number.classList.add('marker-number');
         number.textContent = beat;
@@ -228,6 +231,7 @@ function render(notes) {
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
+        
         if (fakeMarker) {
             marker.style.setProperty('opacity', 1 - (0.7) * (relTime - renderDistance));
         }

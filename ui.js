@@ -30,9 +30,8 @@ const renderContainer = document.getElementById('render-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
-const fileInput = document.getElementById('file');
 const sliderPrecisionInput = document.getElementById('slider-precision');
-const submit = document.getElementById('submit');
+const fileInput = document.getElementById('file');
 
 const dropArea = document.getElementById('drag-file');
 const introDiv = document.getElementById('intro');
@@ -42,20 +41,20 @@ const warn = document.getElementById('warnings');
 const err = document.getElementById('errors');
 const inf = document.getElementById('info');
 
-const rdSlide = document.getElementById('renderDistance');
-const tsSlide = document.getElementById('timeScale');
 const piSlide = document.getElementById('perspectiveIntensity');
+const rdSlide = document.getElementById('renderDistance');
 const dvSlide = document.getElementById('divisionValue');
+const tsSlide = document.getElementById('timeScale');
 
 warn.addEventListener('click', function () { output.classList.toggle('warning'); });
 err.addEventListener('click', function () { output.classList.toggle('error'); });
 inf.addEventListener('click', function () { output.classList.toggle('info'); });
 
-themeBut.addEventListener('click', changeTheme);
-renderContainer.addEventListener('mousedown', handleMouseDown);
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
+renderContainer.addEventListener('mousedown', handleMouseDown);
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
+themeBut.addEventListener('click', changeTheme);
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
