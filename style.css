@@ -200,7 +200,7 @@ body .theme {
   cursor: default;
 }
 .main #render-container #grid-container .marker.transl {
-  opacity: 0.7;
+  opacity: 0.5;
 }
 .main #render-container #grid-container .marker .marker-line {
   background-color: var(--etext);
