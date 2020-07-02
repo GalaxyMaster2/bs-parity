@@ -85,7 +85,7 @@ class Parity {
 const scrollLineHeight = getScrollLineHeight();
 
 var notesArray;
-var sliderPrecision = Infinity;
+var sliderPrecision = 0;
 var ready = false;
 
 const output = document.getElementById('output');
@@ -307,7 +307,7 @@ function checkParity() {
             let offset = 1;
             let offsetNote = notesArray[i + offset];
             while ((i + offset) < notesArray.length &&
-                (offsetNote._time - note._time - (1 / sliderPrecision)) <= comparisonTolerance) {
+                (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
                     parity.invert(type);
                     break;

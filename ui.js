@@ -235,7 +235,7 @@ function readFile(files) {
 }
 
 function readSliderPrecision() {
-    sliderPrecision = parseInt(sliderPrecisionInput.value) || Infinity;
+    sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
     checkParity();
 }
 
