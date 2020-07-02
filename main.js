@@ -85,7 +85,7 @@ class Parity {
 const scrollLineHeight = getScrollLineHeight();
 
 var notesArray;
-var sliderPrecision = 0;
+var sliderPrecision = 1 / 8;
 var ready = false;
 
 const output = document.getElementById('output');
