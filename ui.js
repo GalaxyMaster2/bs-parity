@@ -269,3 +269,15 @@ function getNotes(obj) {
     });
     return notes;
 }
+
+// used to detect the scroll line height in FireFox
+// graciously provided by StackOverflow: https://stackoverflow.com/a/57788612
+function getScrollLineHeight() {
+    const el = document.createElement('div');
+    el.style.fontSize = 'initial';
+    el.style.display = 'none';
+    document.body.appendChild(el);
+    const fontSize = window.getComputedStyle(el).fontSize;
+    document.body.removeChild(el);
+    return fontSize ? window.parseInt(fontSize) : 16;
+}

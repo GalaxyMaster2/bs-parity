@@ -82,6 +82,8 @@ class Parity {
     }
 }
 
+const scrollLineHeight = getScrollLineHeight();
+
 var notesArray;
 var sliderPrecision = Infinity;
 var ready = false;

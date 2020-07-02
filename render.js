@@ -54,8 +54,8 @@ renderContainer.addEventListener('wheel', scroll);
 function scroll(event) {
     event.preventDefault();
     delta = event.deltaY;
-    if (event.deltaMode == 1) { // mode == 1 when firefox, line scrolling vs pixel scrolling
-        delta *= 100 / 3
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+        delta *= scrollLineHeight;
     }
     centerBeat = Math.max(0, centerBeat + delta / -100);
     highlightElements(centerBeat);
