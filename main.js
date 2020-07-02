@@ -218,6 +218,12 @@ function checkParity() {
     let parity = new Parity();
     parity.init(notesArray);
 
+    if (notesArray[0]._time < 2) {
+        let plural = (notesArray[0]._time == 1) ? ' beat ' : ' beats ';
+        outputMessage('potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning');
+        warnCount++;
+    }
+
     for (let i = 0; i < notesArray.length; i++) {
         let note = notesArray[i];
         let type = types[note._type];
