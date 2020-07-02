@@ -35,11 +35,10 @@ function rotate(event) {
     render(notesArray);
 }
 
+// TODO: merge with rotate()?
 function mouseRotate(y, x) {
-    angleX = x;
-    angleY = y;
-    angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360);
+    angleX = mod(x, 360);
+    angleY = mod(y, 360);
     render(notesArray);
 }
 
@@ -63,6 +62,7 @@ function scroll(event) {
     render(notesArray);
 }
 
+// TODO: this seems extraneous?
 function scrollDelta(delta) {
     centerBeat = Math.max(0, centerBeat + delta);
     highlightElements(centerBeat);
