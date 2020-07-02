@@ -318,7 +318,7 @@ function checkParity() {
 
     summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors, ') + 
         ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning, ' : ' warnings, ') + 
-        'and generated' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
+        'and generated ' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
         outputMessage('No errors found', 'success');
