@@ -32,7 +32,7 @@ function rotate(event) {
     }
     angleX = mod(angleX, 360);
     angleY = mod(angleY, 360);
-    render(notesArray, centerBeat);
+    render(notesArray);
 }
 
 function mouseRotate(y, x) {
@@ -40,7 +40,7 @@ function mouseRotate(y, x) {
     angleY = y;
     angleX = mod(angleX, 360);
     angleY = mod(angleY, 360);
-    render(notesArray, centerBeat);
+    render(notesArray);
 }
 
 // js modulo operator does not work well with negative values
@@ -60,14 +60,14 @@ function scroll(event) {
     centerBeat = Math.max(0, centerBeat + delta / -100);
     highlightElements(centerBeat);
 
-    render(notesArray, centerBeat);
+    render(notesArray);
 }
 
 function scrollDelta(delta) {
     centerBeat = Math.max(0, centerBeat + delta);
     highlightElements(centerBeat);
 
-    render(notesArray, centerBeat);
+    render(notesArray);
 }
 
 let scrolling = false;
@@ -96,13 +96,13 @@ async function scrollVal(end, framerate = 30) {
         pos = bezierLut[a] * (1 - 30 * ((i / frames) - (a / 30))) + bezierLut[b] * 30 * ((i / frames) - (a / 30)); // there are many brackets in this line that could be reduced
         centerBeat = (initial * (1 - pos)) + (end * pos);
 
-        render(notesArray, centerBeat);
+        render(notesArray);
         await new Promise(r => setTimeout(r, delay)); // icky async but it works
     }
     scrolling = false;
 }
 
-function render(notes, centerBeat) {
+function render(notes) {
     if (!ready) {
         clearOutput();
         outputMessage('File loading not ready, try again', 'error');

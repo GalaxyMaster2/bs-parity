@@ -66,19 +66,19 @@ inf.addEventListener('click', function () {
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
-    render(notesArray, centerBeat);
+    render(notesArray);
 });
 tsSlide.addEventListener('input', function () {
     timeScale = parseFloat(tsSlide.value);
-    render(notesArray, centerBeat);
+    render(notesArray);
 });
 piSlide.addEventListener('input', function () {
     perspectiveMultiplier = parseFloat(piSlide.value);
-    render(notesArray, centerBeat);
+    render(notesArray);
 });
 dvSlide.addEventListener('input', function () {
     divisionValue = parseFloat(dvSlide.value);
-    render(notesArray, centerBeat);
+    render(notesArray);
 });
 
 function changeTheme() {
@@ -229,7 +229,8 @@ function readFile(files) {
         console.log('successful read!');
 
         ready = true;
-        render(notesArray, 0);
+        centerBeat = 0;
+        render(notesArray);
         checkParity();
     });
 }
