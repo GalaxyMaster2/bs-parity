@@ -79,6 +79,8 @@ async function scrollVal(end, framerate = 30) {
 
     highlightElements(end);
 
+    end -= 0.5;
+
     let initial = centerBeat;
     let pos, a, b;
     let delay = 1000 / framerate;
@@ -124,12 +126,12 @@ function render(notes, centerBeat) {
 
     // filter notes outside of range
     notes = notes.filter(function (note) {
-        return (note._time >= centerBeat - renderDistance + 0.5 && note._time <= centerBeat + renderDistance + 0.5);
+        return (note._time >= centerBeat - renderDistance && note._time <= centerBeat + renderDistance);
     });
 
     // calculate note position, make note element and add to the container
     for (let note of notes) {
-        let relTime = note._time - centerBeat + 0.5;
+        let relTime = note._time - centerBeat;
 
         let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
@@ -153,7 +155,7 @@ function render(notes, centerBeat) {
                     (face === 'front' ? 'front_' : 'side_') + types[note._type];
             }
             noteFace.classList.add('note-face', face, imgClass);
-            if (relTime < 0.5) {
+            if (relTime < 0) {
                 noteFace.classList.add('transl');
             }
             noteContainer.appendChild(noteFace);
@@ -181,7 +183,7 @@ function render(notes, centerBeat) {
     }
 
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance)); i <= Math.floor(centerBeat + renderDistance + 1.5); i++) {
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
         if (i <= Math.floor(centerBeat + renderDistance + 1)) {
             for (let j = 0; j < divisionValue; j++) {
                 beatMarkers.push(i + (j / divisionValue));
@@ -200,7 +202,7 @@ function render(notes, centerBeat) {
         number.classList.add('marker-number');
         number.textContent = beat;
 
-        let relTime = beat - centerBeat + 0.5;
+        let relTime = beat - centerBeat;
         let fakeMarker = false, decimalTime = false, translucent = false;
         if (Math.abs(relTime) > renderDistance) {
             fakeMarker = true;
@@ -208,7 +210,7 @@ function render(notes, centerBeat) {
         if (!Number.isInteger(beat)) {
             decimalTime = true;
         }
-        if (relTime < 0.5) {
+        if (relTime < 0) {
             translucent = true;
         }
         let lineWidth = gridHeight * 4 / 3;
