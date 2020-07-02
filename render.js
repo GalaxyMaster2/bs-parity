@@ -79,8 +79,6 @@ async function scrollVal(end, framerate = 30) {
 
     highlightElements(end);
 
-    end -= 0.5;
-
     let initial = centerBeat;
     let pos, a, b;
     let delay = 1000 / framerate;
@@ -243,6 +241,6 @@ function render(notes) {
         gridContainer.appendChild(marker);
     }
 
-    gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px)' +
-        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg)');
+    gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px) ' +
+        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) translateZ(' + containerHeight / -3 + 'px)');
 }
