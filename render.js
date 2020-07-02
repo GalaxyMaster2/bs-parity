@@ -205,7 +205,7 @@ function render(notes, centerBeat) {
         if (Math.abs(relTime) > renderDistance) {
             fakeMarker = true;
         }
-        if (beat != Math.floor(beat)) {
+        if (!Number.isInteger(beat)) {
             decimalTime = true;
         }
         if (relTime < 0.5) {
