@@ -166,15 +166,15 @@ function render(notes, centerBeat) {
         noteContainer.addEventListener('click', function () { scrollVal(note._time); });
 
         if (note.error) {
-            noteContainer.classList.add("error");
+            noteContainer.classList.add('error');
         } else if (note.precedingError) {
-            noteContainer.classList.add("precedingError");
+            noteContainer.classList.add('precedingError');
         }
 
         if (note.warn) {
-            noteContainer.classList.add("warn");
+            noteContainer.classList.add('warn');
         } else if (note.precedingWarn) {
-            noteContainer.classList.add("precedingWarn");
+            noteContainer.classList.add('precedingWarn');
         }
 
         gridContainer.appendChild(noteContainer);

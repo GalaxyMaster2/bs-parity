@@ -226,7 +226,7 @@ function readFile(files) {
         notesArray = getNotes(JSON.parse(fr.result));
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
-        console.log("successful read!");
+        console.log('successful read!');
 
         ready = true;
         render(notesArray, 0);
@@ -249,10 +249,10 @@ function highlightElements(time) {
         (element) => { element.classList.remove('partialSelected') }
     )
 
-    document.querySelectorAll("[data-time='" + timeInd + "']").forEach(
+    document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
         (element) => { element.classList.add('selected'); }
     )
-    document.querySelectorAll("[data-time2='" + timeInd + "']").forEach(
+    document.querySelectorAll('[data-time2="' + timeInd + '"]').forEach(
         (element) => { element.classList.add('partialSelected'); }
     )
 }
