@@ -54,9 +54,15 @@ sliderPrecisionInput.addEventListener('change', readSliderPrecision);
 // submit.addEventListener('click', checkParity);
 
 themeBut.addEventListener('click', changeTheme);
-warn.addEventListener('click', function() { document.getElementById('output').classList.toggle('warning'); });
-err.addEventListener('click', function()  { document.getElementById('output').classList.toggle('error');   });
-inf.addEventListener('click', function()  { document.getElementById('output').classList.toggle('info');    });
+warn.addEventListener('click', function () {
+    document.getElementById('output').classList.toggle('warning');
+});
+err.addEventListener('click', function () {
+    document.getElementById('output').classList.toggle('error');
+});
+inf.addEventListener('click', function () {
+    document.getElementById('output').classList.toggle('info');
+});
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
@@ -105,9 +111,9 @@ async function handleMouseDown(e) {
         mouseHandle = true;
         cursorX = -1;
 
-        document.addEventListener('mouseup',     handleMouseUp);
-        document.addEventListener('contextmenu', preventDefaults, {once: true});
-        document.addEventListener('mousemove',   getMousePos);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('contextmenu', preventDefaults, { once: true });
+        document.addEventListener('mousemove', getMousePos);
 
         let initialRotX = angleX;
         let initialRotY = angleY;
@@ -141,14 +147,16 @@ async function handleMouseDown(e) {
         }
     }
 }
+
 function until(condition) {
     const poll = resolve => {
-        if(condition()) resolve();
+        if (condition()) resolve();
         else setTimeout(_ => poll(resolve), 67);
     }
 
     return new Promise(poll);
 }
+
 function handleMouseUp(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -164,6 +172,7 @@ function handleMouseUp(e) {
         renderContainer.classList.remove('scrolling');
     }
 }
+
 function getMousePos(e) {
     cursorX = e.clientX;
     cursorY = e.clientY;
@@ -233,10 +242,10 @@ function readSliderPrecision() {
 function highlightElements(time) {
     let timeInd = time.toFixed(3);
 
-    document.querySelectorAll('.selected').forEach( 
+    document.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected') }
     )
-    document.querySelectorAll('.partialSelected').forEach( 
+    document.querySelectorAll('.partialSelected').forEach(
         (element) => { element.classList.remove('partialSelected') }
     )
 

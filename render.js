@@ -6,9 +6,9 @@
 console.log('render js loaded');
 
 var perspectiveMultiplier = parseFloat(piSlide.value);
-var divisionValue  = parseFloat(dvSlide.value);
+var divisionValue = parseFloat(dvSlide.value);
 var renderDistance = parseFloat(rdSlide.value);
-var timeScale      = parseFloat(tsSlide.value);
+var timeScale = parseFloat(tsSlide.value);
 var centerBeat = 0; // changed to match values in html
 
 // angle (0,0) is looking directly at the notes from player perspective
@@ -31,7 +31,7 @@ function rotate(event) {
             break;
     }
     angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360); 
+    angleY = mod(angleY, 360);
     render(notesArray, centerBeat);
 }
 
@@ -39,7 +39,7 @@ function mouseRotate(y, x) {
     angleX = x;
     angleY = y;
     angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360); 
+    angleY = mod(angleY, 360);
     render(notesArray, centerBeat);
 }
 
@@ -74,8 +74,8 @@ let scrolling = false;
 async function scrollVal(end, framerate = 30) {
     if (scrolling) { return };
     scrolling = true; // prevent multiple copies of this function from running at once
-                      // todo: make a queue system or a way to cancel and start again with new values?
-                      // unless lots of smoothing code is added this will jerk it though :/
+    // todo: make a queue system or a way to cancel and start again with new values?
+    // unless lots of smoothing code is added this will jerk it though :/
 
     highlightElements(end);
 
@@ -153,9 +153,10 @@ function render(notes, centerBeat) {
                     (face === 'front' ? 'front_' : 'side_') + types[note._type];
             }
             noteFace.classList.add('note-face', face, imgClass);
-            if (relTime < 0.5) noteFace.classList.add('transl');
+            if (relTime < 0.5) {
+                noteFace.classList.add('transl');
+            }
             noteContainer.appendChild(noteFace);
-            
         }
 
         noteContainer.style.setProperty('left', posX + 'px');
@@ -163,12 +164,18 @@ function render(notes, centerBeat) {
         noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
         noteContainer.addEventListener('click', function () { scrollVal(note._time); });
-        
-        if (note.error)               { noteContainer.classList.add("error"); }
-        else if (note.precedingError) { noteContainer.classList.add("precedingError"); }
 
-        if (note.warn)                { noteContainer.classList.add("warn");}
-        else if (note.precedingWarn)  { noteContainer.classList.add("precedingWarn");}
+        if (note.error) {
+            noteContainer.classList.add("error");
+        } else if (note.precedingError) {
+            noteContainer.classList.add("precedingError");
+        }
+
+        if (note.warn) {
+            noteContainer.classList.add("warn");
+        } else if (note.precedingWarn) {
+            noteContainer.classList.add("precedingWarn");
+        }
 
         gridContainer.appendChild(noteContainer);
     }
@@ -195,9 +202,15 @@ function render(notes, centerBeat) {
 
         let relTime = beat - centerBeat + 0.5;
         let fakeMarker = false, decimalTime = false, translucent = false;
-        if ( Math.abs(relTime) > renderDistance ) { fakeMarker = true;  }
-        if ( beat != Math.floor(beat) )           { decimalTime = true; }
-        if ( relTime < 0.5 )                      { translucent = true; }
+        if (Math.abs(relTime) > renderDistance) {
+            fakeMarker = true;
+        }
+        if (beat != Math.floor(beat)) {
+            decimalTime = true;
+        }
+        if (relTime < 0.5) {
+            translucent = true;
+        }
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
@@ -205,7 +218,9 @@ function render(notes, centerBeat) {
 
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
-        if (!decimalTime) number.addEventListener('click', function () { scrollVal(beat); });
+        if (!decimalTime) {
+            number.addEventListener('click', function () { scrollVal(beat); });
+        };
 
         marker.appendChild(line);
         marker.appendChild(number);
@@ -213,9 +228,15 @@ function render(notes, centerBeat) {
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
-        if (fakeMarker)  marker.style.setProperty('opacity', 1 - (0.7)*(relTime - renderDistance));
-        if (decimalTime) marker.classList.add('decimalTime');
-        if (translucent) marker.classList.add('transl');
+        if (fakeMarker) {
+            marker.style.setProperty('opacity', 1 - (0.7) * (relTime - renderDistance));
+        }
+        if (decimalTime) {
+            marker.classList.add('decimalTime');
+        }
+        if (translucent) {
+            marker.classList.add('transl');
+        }
 
         gridContainer.appendChild(marker);
     }

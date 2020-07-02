@@ -5,7 +5,7 @@
 console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
-const cutAngles     = [ 180,      0,     90,     270,      135,       225,         45,         315,     0];
+const cutAngles = [180, 0, 90, 270, 135, 225, 45, 315, 0];
 
 // bombs are type 3 for some reason
 const types = {
@@ -14,7 +14,7 @@ const types = {
     3: 'bomb'
 };
 const lineIndices = ['left', 'middleLeft', 'middleRight', 'right'];
-const lineLayers  = ['bottom', 'middle', 'top'];
+const lineLayers = ['bottom', 'middle', 'top'];
 
 // the minimum time between the last note or bomb for a bomb to be considered for each saber
 // make user configurable?
@@ -136,7 +136,7 @@ function outputUI(note, parity, time2, errString, errType) {
     }
 
     let element = document.createElement('div');
-    
+
     element.classList.add('parent');
     element.classList.add(errType);
 
@@ -176,7 +176,9 @@ function clearOutput() {
 
 function findCol(jsonData, type, lastVal) {
     for (let i = lastVal; i >= 0; i--) {
-        if (types[jsonData[i]._type] === type) { return i }
+        if (types[jsonData[i]._type] === type) {
+            return i
+        }
     }
     return -1;
 }
@@ -273,7 +275,9 @@ function checkParity() {
                     last.precedingWarn = true;
                     lastTime = last._time.toFixed(3);
                 }
-                catch { console.log('error finding note!'); }
+                catch {
+                    console.log('error finding note!');
+                }
 
                 outputUI(note, parity, lastTime, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
                 parity.invert(type);
@@ -283,13 +287,15 @@ function checkParity() {
                 let deltaTime = 0;
                 let lastTime = -1;
                 try {
-                    let last = notesArray[findCol(notesArray, type, i - 1)]
-                    deltaTime = (note._time - last._time).toFixed(3)
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats'
+                    let last = notesArray[findCol(notesArray, type, i - 1)];
+                    deltaTime = (note._time - last._time).toFixed(3);
+                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
                     last.precedingError = true;
                     lastTime = last._time.toFixed(3);
                 }
-                catch { console.log('error finding note!'); }
+                catch {
+                    console.log('error finding note!');
+                }
 
                 outputUI(note, parity, lastTime, 'Bad hit, wrist reset is necessary in ' + deltaTime, 'error');
                 errCount++;
