@@ -52,25 +52,12 @@ async function handleMouseDown(e) {
     if (mouseHandle == true) { return; }
     if (e.which == 3) {
         mouseHandle = true;
-        cursorX = -1;
 
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('contextmenu', preventDefaults, { once: true });
-        document.addEventListener('mousemove', getMousePos);
-
-        let initialRotX = angleX;
-        let initialRotY = angleY;
+        document.addEventListener('mousemove', mouseRotate);
 
         renderContainer.classList.add('rotating');
-
-        await until(_ => cursorX != -1);
-        let initialX = cursorX;
-        let initialY = cursorY;
-
-        while (mouseHandle == true) {
-            await new Promise(r => setTimeout(r, 1000 / 30));
-            mouseRotate(initialRotY + 0.5 * (cursorX - initialX), initialRotX + -0.5 * (cursorY - initialY));
-        }
     }
     if (e.which === 2) {
         mouseHandle = true;
@@ -98,7 +85,9 @@ function handleMouseUp(e) {
     mouseHandle = false;
 
     document.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener('mousemove', mouseRotate);
     document.removeEventListener('mousemove', getMousePos);
+
     if (e.which == 3) {
         renderContainer.classList.remove('rotating');
     }
@@ -141,9 +130,9 @@ function handleKeyDown(event) {
     render(notesArray);
 }
 
-function mouseRotate(y, x) {
-    angleX = mod(x, 360);
-    angleY = mod(y, 360);
+function mouseRotate(e) {
+    angleX = mod(angleX - e.movementY * 0.5, 360);
+    angleY = mod(angleY + e.movementX * 0.5, 360);
     render(notesArray);
 }
 
