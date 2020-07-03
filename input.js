@@ -112,6 +112,15 @@ function getMousePos(e) {
     cursorY = e.clientY;
 }
 
+function until(condition) {
+    const poll = resolve => {
+        if (condition()) resolve();
+        else setTimeout(_ => poll(resolve), 67);
+    }
+
+    return new Promise(poll);
+}
+
 function rotate(event) {
     switch (event.key) {
         case 'w':

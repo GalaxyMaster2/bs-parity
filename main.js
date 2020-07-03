@@ -88,6 +88,41 @@ var notesArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
+function getNotes(obj) {
+    let notes = obj._notes;
+    notes.sort(function (a, b) {
+        return a._time - b._time;
+    })
+
+    // filter out invalid note types
+    notes = notes.filter(function (note) {
+        return types[note._type] !== undefined;
+    });
+    return notes;
+}
+
+// used to detect the scroll line height in FireFox
+// graciously provided by StackOverflow: https://stackoverflow.com/a/57788612
+function getScrollLineHeight() {
+    const el = document.createElement('div');
+    el.style.fontSize = 'initial';
+    el.style.display = 'none';
+    document.body.appendChild(el);
+    const fontSize = window.getComputedStyle(el).fontSize;
+    document.body.removeChild(el);
+    return fontSize ? window.parseInt(fontSize) : 16;
+}
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+// js modulo operator does not work well with negative values
+function mod(n, m) {
+    return ((n % m) + m) % m;
+}
+
 function logNote(note, parity) {
     let time = note._time;
     let type = types[note._type];
@@ -316,8 +351,8 @@ function checkParity() {
         }
     }
 
-    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors, ') + 
-        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning, ' : ' warnings, ') + 
+    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors, ') +
+        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning, ' : ' warnings, ') +
         'and generated ' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
 
     if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {

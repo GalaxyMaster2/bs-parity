@@ -16,11 +16,6 @@ var centerBeat = 0; // changed to match values in html
 var angleX = 330;
 var angleY = 320;
 
-// js modulo operator does not work well with negative values
-function mod(n, m) {
-    return ((n % m) + m) % m;
-}
-
 // TODO: this seems extraneous?
 function scrollDelta(delta) {
     centerBeat = Math.max(0, centerBeat + delta);
