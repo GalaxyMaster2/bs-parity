@@ -5,7 +5,7 @@ console.log('input js loaded');
 
 renderContainer.addEventListener('wheel', scroll);
 renderContainer.addEventListener('mousedown', handleMouseDown);
-document.addEventListener('keydown', rotate);
+document.addEventListener('keydown', handleKeyDown);
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
@@ -121,7 +121,7 @@ function until(condition) {
     return new Promise(poll);
 }
 
-function rotate(event) {
+function handleKeyDown(event) {
     switch (event.key) {
         case 'w':
             angleX -= 10;
@@ -141,7 +141,6 @@ function rotate(event) {
     render(notesArray);
 }
 
-// TODO: merge with rotate()?
 function mouseRotate(y, x) {
     angleX = mod(x, 360);
     angleY = mod(y, 360);
