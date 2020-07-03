@@ -16,51 +16,9 @@ var centerBeat = 0; // changed to match values in html
 var angleX = 330;
 var angleY = 320;
 
-function rotate(event) {
-    switch (event.key) {
-        case 'w':
-            angleX -= 10;
-            break;
-        case 'a':
-            angleY += 10;
-            break;
-        case 's':
-            angleX += 10;
-            break;
-        case 'd':
-            angleY -= 10;
-            break;
-    }
-    angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360);
-    render(notesArray);
-}
-
-// TODO: merge with rotate()?
-function mouseRotate(y, x) {
-    angleX = mod(x, 360);
-    angleY = mod(y, 360);
-    render(notesArray);
-}
-
 // js modulo operator does not work well with negative values
 function mod(n, m) {
     return ((n % m) + m) % m;
-}
-
-renderContainer.addEventListener('wheel', scroll);
-document.addEventListener('keydown', rotate);
-
-function scroll(event) {
-    event.preventDefault();
-    delta = event.deltaY;
-    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-        delta *= scrollLineHeight;
-    }
-    centerBeat = Math.max(0, centerBeat + delta / -100);
-    highlightElements(centerBeat);
-
-    render(notesArray);
 }
 
 // TODO: this seems extraneous?
@@ -231,7 +189,7 @@ function render(notes) {
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
-        
+
         if (fakeMarker) {
             marker.style.setProperty('opacity', 1 - (0.7) * (relTime - renderDistance));
         }

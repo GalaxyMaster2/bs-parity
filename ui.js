@@ -46,122 +46,22 @@ const rdSlide = document.getElementById('renderDistance');
 const dvSlide = document.getElementById('divisionValue');
 const tsSlide = document.getElementById('timeScale');
 
-warn.addEventListener('click', function () { output.classList.toggle('warning'); });
-err.addEventListener('click', function () { output.classList.toggle('error'); });
-inf.addEventListener('click', function () { output.classList.toggle('info'); });
-
-sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-renderContainer.addEventListener('mousedown', handleMouseDown);
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
-themeBut.addEventListener('click', changeTheme);
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 });
 ['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, function() {
+    dropArea.addEventListener(eventName, function () {
         dropArea.classList.add('highlight');
     }, false);
 });
 ['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, function() {
+    dropArea.addEventListener(eventName, function () {
         dropArea.classList.remove('highlight');
     }, false);
 });
-
-rdSlide.addEventListener('input', function () {
-    renderDistance = parseFloat(rdSlide.value);
-    render(notesArray);
-});
-tsSlide.addEventListener('input', function () {
-    timeScale = parseFloat(tsSlide.value);
-    render(notesArray);
-});
-piSlide.addEventListener('input', function () {
-    perspectiveMultiplier = parseFloat(piSlide.value);
-    render(notesArray);
-});
-dvSlide.addEventListener('input', function () {
-    divisionValue = parseFloat(dvSlide.value);
-    render(notesArray);
-});
-
-function changeTheme() {
-    let body = document.getElementsByTagName('body')[0];
-    body.classList.toggle('dark');
-    body.classList.toggle('light');
-}
-
-// fancy click handler based off of https://jsfiddle.net/KyleMit/1jr12rd3/
-// converted to pure js from jquery and added up/down handlers
-// should this be in ui or render?
-var mouseHandle = false;
-
-var cursorX = -1;
-var cursorY = 0;
-
-async function handleMouseDown(e) {
-    if (mouseHandle == true) { return; }
-    if (e.which == 3) {
-        mouseHandle = true;
-        cursorX = -1;
-
-        document.addEventListener('mouseup', handleMouseUp);
-        document.addEventListener('contextmenu', preventDefaults, { once: true });
-        document.addEventListener('mousemove', getMousePos);
-
-        let initialRotX = angleX;
-        let initialRotY = angleY;
-
-        renderContainer.classList.add('rotating');
-
-        await until(_ => cursorX != -1);
-        let initialX = cursorX;
-        let initialY = cursorY;
-
-        while (mouseHandle == true) {
-            await new Promise(r => setTimeout(r, 1000 / 30));
-            mouseRotate(initialRotY + 0.5 * (cursorX - initialX), initialRotX + -0.5 * (cursorY - initialY));
-        }
-    }
-    if (e.which === 2) {
-        mouseHandle = true;
-        cursorX = -1;
-
-        document.addEventListener('mouseup', handleMouseUp);
-        document.addEventListener('mousemove', getMousePos);
-
-        renderContainer.classList.add('scrolling');
-
-        await until(_ => cursorX != -1);
-        initialY = cursorY;
-
-        while (mouseHandle == true) {
-            await new Promise(r => setTimeout(r, 1000 / 30));
-            scrollDelta((initialY - cursorY) / 300);
-        }
-    }
-}
-function handleMouseUp(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    mouseHandle = false;
-
-    document.removeEventListener('mouseup', handleMouseUp);
-    document.removeEventListener('mousemove', getMousePos);
-    if (e.which == 3) {
-        renderContainer.classList.remove('rotating');
-    }
-    if (e.which == 2) {
-        renderContainer.classList.remove('scrolling');
-    }
-}
-function getMousePos(e) {
-    cursorX = e.clientX;
-    cursorY = e.clientY;
-}
 
 // drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
 // todo: feature detection for drag and drop?
@@ -194,11 +94,6 @@ function readFile(files) {
         render(notesArray);
         checkParity();
     });
-}
-
-function readSliderPrecision() {
-    sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
-    checkParity();
 }
 
 function highlightElements(time) {
