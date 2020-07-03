@@ -73,7 +73,9 @@ async function handleMouseDown(e) {
 
         while (mouseHandle == true) {
             await new Promise(r => setTimeout(r, 1000 / 30));
-            scrollDelta((initialY - cursorY) / 300);
+            centerBeat = Math.max(0, centerBeat + (initialY - cursorY) / 300);
+            highlightElements(centerBeat);
+            render(notesArray);
         }
     }
 }
