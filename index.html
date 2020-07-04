@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +9,7 @@
 
     <body class="dark">
         <h1>the currently-unnamed parity tool</h1>
+
         <div class="intro" id="intro">
             <div class="drag-file" id="drag-file">
                 <input type="file" name="file" id="file" class="inputfile" accept=".dat" />
@@ -21,13 +21,16 @@
                 <span class="done">done!</span>
             </div>
         </div>
+
         <div class="main">
             <span class="theme">night mode <input type="checkbox" name="theme" id="theme" checked></span>
+
             <br><br>
             <div id="render-container">
                 <div id="grid-container"></div>
             </div>
             <br>
+
             <div class="slider">
                 <input type="range" min="1" max="4" value="2.5" step="0.05" id="renderDistance" name="rd">
                 <label for="rd">render distance</label>
@@ -41,25 +44,28 @@
             </div>
             <div class="slider"><input type="range" min="0.5" max="2" value="0.85" step="0.05" id="perspectiveIntensity" name="pi">
                 <label for="pi">perspective intensity</label>
-            </div>
-            <br>
+            </div><br>
+
             <label for="slider-precision">slider precision: 1/</label>
             <input type="number" name="slider-precision" id="slider-precision" style="width:30px" min="0" max="64" value="8">
             &nbsp;
             (blank / zero assumes no sliders)
             <br><br>
+
             show &nbsp;
             <input type="checkbox" id="warnings" checked>&nbsp;warnings &nbsp;
             <input type="checkbox" id="errors" checked>&nbsp;errors &nbsp;
             <input type="checkbox" id="info">&nbsp;debug messages
             <br><br>
+
             <span id="summary"></span>
+
             <div id="output" class="error warning"></div>
         </div>
     </body>
+
     <script src="main.js" defer></script>
     <script src="ui.js" defer></script>
     <script src="input.js" defer></script>
     <script src="render.js" defer></script>
-
 </html>
