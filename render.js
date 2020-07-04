@@ -109,7 +109,7 @@ function render(notes) {
                     (face === 'front' ? 'front_' : 'side_') + types[note._type];
             }
             noteFace.classList.add('note-face', face, imgClass);
-            if (relTime < 0) {
+            if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
                 noteFace.classList.add('transl');
             }
             noteContainer.appendChild(noteFace);
@@ -164,7 +164,7 @@ function render(notes) {
         if (!Number.isInteger(beat)) {
             decimalTime = true;
         }
-        if (relTime < 0) {
+        if (relTime < -2 * comparisonTolerance) {
             translucent = true;
         }
         let lineWidth = gridHeight * 4 / 3;
