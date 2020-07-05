@@ -69,20 +69,28 @@ dropArea.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
     let dt = e.dataTransfer;
-    let files = dt.files;
-    readFile(files);
+    let file = dt.files[0];
+    if (files.name.substr(-3) == "dat") {
+        readFile(file);
+    } else {
+        readZip(file);
+    }
 }
 
 function handleFileInput(e) {
-    let files = this.files;
-    readFile(files);
+    let file = this.files[0];
+    if (file.name.substr(-3) == "dat") {
+        readFile(file);
+    } else {
+        readZip(file);
+    }
 }
 
-function readFile(files) {
+function readFile(file) {
     ready = false;
     introDiv.classList.add('uploading');
     const fr = new FileReader();
-    fr.readAsText(files[0]);
+    fr.readAsText(file);
     fr.addEventListener('load', function () {
         notesArray = getNotes(JSON.parse(fr.result));
         introDiv.classList.remove('uploading');
@@ -93,6 +101,31 @@ function readFile(files) {
         centerBeat = 0;
         render(notesArray);
         checkParity();
+    });
+}
+
+var datFiles = [], infoDat, outputFile;
+
+function readZip(file) {
+    ready = false;
+    introDiv.classList.add('uploading');
+    let zip = new JSZip();
+    const fr = new FileReader();
+    fr.readAsArrayBuffer(file);
+    fr.addEventListener('load', function () {
+        zip.loadAsync(fr.result) // there is not a semicolon here intentionally
+        .then(function (unzipped) {
+            outputFile = unzipped;
+            for (unzippedFile in unzipped.files) {
+                if (unzippedFile.substr(-3) == "dat") {
+                    if (unzippedFile == "info.dat" || unzippedFile == "Info.dat") {
+                        infoDat = unzippedFile;
+                    }
+                    else { datFiles.push(unzippedFile); }
+                }
+            }
+            
+        })
     });
 }
 
