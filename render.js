@@ -43,6 +43,8 @@ async function scrollVal(end, framerate = 30) {
         render();
         await new Promise(r => setTimeout(r, delay)); // icky async but it works
     }
+
+    centerBeat = end;
     scrolling = false;
 }
 
