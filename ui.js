@@ -126,6 +126,7 @@ async function readZip(file) {
                         zip.file(filename).async("text")
                         .then( function (content) {
                             infoDat = JSON.parse(content);
+                            bpm = infoDat._beatsPerMinute;
                         });
                     }
                     else {
@@ -161,6 +162,7 @@ async function readZip(file) {
     select.addEventListener('change', function() {
         let select = document.getElementsByTagName("select")[0];
         notesArray = datFiles[select.value];
+        getInfoDat(select.value);
         render(notesArray);
         checkParity();
     });
@@ -169,16 +171,20 @@ async function readZip(file) {
 
     notesArray = datFiles[key];
     centerBeat = 0;
-    render();
+    
+    getInfo(key);
     checkParity();
+    render();
 }
 
 function highlightElements(time) {
+    let timeInd = time.toFixed(3);
+
     document.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected'); }
     );
 
-    document.querySelectorAll('[data-time="' + time + '"]').forEach(
+    document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
         (element) => { element.classList.add('selected'); }
     );
 }

@@ -4,6 +4,10 @@
 
 console.log('main js loaded');
 
+// things we find out from intro.dat:
+var bpm = 120;
+var offset = 0;
+
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 const cutAngles = [180, 0, 90, 270, 135, 225, 45, 315, 0];
 
@@ -104,6 +108,26 @@ function getNotes(obj) {
     return notes;
 }
 
+function getInfo(fName) {
+    let songInfo = findInfo(fName, infoDat._difficultyBeatmapSets);
+    let localOffset = 0;
+    let globalOffset = infoDat._songTimeOffset;
+    try {
+        localOffset = songInfo._customData._editorOffset
+    } catch {}
+    offset = - (localOffset * 0.001 + globalOffset) * bpm / 60;
+}
+
+function findInfo(fname, json) {
+    for (let i = 0; i < json.length; i++) {
+        for (let j = 0; j < json[i]._difficultyBeatmaps.length; j++) {
+            if (json[i]._difficultyBeatmaps[j]._beatmapFilename == fname) {
+                return (json[i]._difficultyBeatmaps[j]);
+            };
+        }
+    }
+}
+
 // used to detect the scroll line height in FireFox
 // graciously provided by StackOverflow: https://stackoverflow.com/a/57788612
 function getScrollLineHeight() {
@@ -127,7 +151,7 @@ function mod(n, m) {
 }
 
 function outputUI(note, parity, message, messageType) {
-    let time = note._time;
+    let time = note._time + offset;
     let type = types[note._type];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
@@ -148,7 +172,7 @@ function outputUI(note, parity, message, messageType) {
 
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
-    element.dataset.time = time;
+    element.dataset.time = time.toFixed(3);
     element.addEventListener('click', function () { scrollVal(time); });
 
     let img = document.createElement('img');
@@ -272,8 +296,14 @@ function checkParity() {
                 let deltaTime = 0;
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
-                    deltaTime = (note._time - last._time).toFixed(3);
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
+                    if (zipFile) {
+                        deltaTime = (bpm * (note._time - last._time) / 60).toFixed(3);
+                        deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
+                    }
+                    else { 
+                        deltaTime = (note._time - last._time).toFixed(3);
+                        deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
+                    }
                     last.precedingError = true;
                 }
                 catch {
