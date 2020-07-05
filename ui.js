@@ -148,6 +148,8 @@ async function readZip(file) {
     ready = true;
 
     let fileSelector = document.getElementById("fileSelector");
+    fileSelector.removeChild(fileSelector.firstChild);
+    
     let select = document.createElement("select");
 
     for (var key in datFiles) {

@@ -128,7 +128,7 @@ body .theme {
   height: 2.1rem;
   position: relative;
   cursor: pointer;
-  left: 1rem;
+  left: 0.5rem;
 }
 .main #output .parent.warning img {
   border: 2px solid var(--warning);
@@ -140,8 +140,8 @@ body .theme {
 }
 .main #output .parent .text {
   width: 50%;
-  width: calc(100% - 5rem);
-  left: 2rem;
+  width: calc(100% - 5.5rem);
+  left: 1.5rem;
   top: -0.28rem;
   display: inline-block;
   position: relative;
@@ -285,7 +285,7 @@ h1 {
   left: 50%;
   font-size: 1.5rem;
   transform: translateX(-50%);
-  transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s;
+  transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s, top var(--trans) 0.4s;
 }
 input#file {
   width: 0.1px;
@@ -318,6 +318,8 @@ input[type=range] + label {
   left: 3px;
 }
 select {
+  position: relative;
+  left: calc(50vw - 451px - 1.2em);
   margin-bottom: 3px;
   background-color: var(--ebg);
   color: var(--etext);
@@ -397,10 +399,19 @@ label .submit:hover {
     height: calc(100vh - 6.3rem);
     max-height: none;
   }
+  select {
+    left: 0px;
+  }
+}
+@media screen and (max-width: 932px) {
+  select {
+    left: 0rem;
+  }
 }
 @media screen and (max-width: 800px) {
   h1 {
     left: 1rem;
+    top: -0.7rem;
     transform: none;
   }
   .intro .drag-file {
@@ -412,6 +423,9 @@ label .submit:hover {
   h1 {
     font-size: 1em;
     top: 0.1em;
+  }
+  .main #output {
+    max-height: calc(100vh - 20rem - 300px);
   }
 }
 ::-webkit-scrollbar {
