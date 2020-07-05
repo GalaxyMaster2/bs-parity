@@ -47,6 +47,9 @@ const cuts = {
     }
 };
 
+const badHitText = 'Bad hit, wrist reset is necessary in ';
+const borderlineHitText = 'Borderline hit, not all players might read or be able to play this correctly';
+
 class Parity {
     constructor() {
         this.red = 'forehand';
@@ -123,83 +126,40 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
-function logNote(note, parity) {
+function outputUI(note, parity, message, messageType) {
     let time = note._time;
     let type = types[note._type];
-    let cutDirection = cutDirections[note._cutDirection];
     let column = lineIndices[note._lineIndex];
     let row = lineLayers[note._lineLayer];
 
-    if (type === 'bomb') {
-        return ('Bomb at beat ' + time + ' -- ' + column + ' -- ' + row);
-    } else {
-        return ('Note at beat ' + time + ' -- ' + type + ' -- ' + cutDirection + ' -- ' + column + ' -- ' + row + ' -- ' + parity[type]);
-    }
-}
-
-function outputMessage(text, type) {
-    let element = document.createElement('div');
-    let textNode = document.createElement('pre');
-    textNode.textContent = text;
-    element.classList.add('outline', type);
-    element.appendChild(textNode);
-    output.appendChild(element);
-}
-
-function outputUI(note, parity, time2, errString, errType) {
-    let time_raw = note._time
-    let time = time_raw.toFixed(3);
-    let type = types[note._type];
-    let cutDirection = cutDirections[note._cutDirection];
-    let column = lineIndices[note._lineIndex];
-    let row = lineLayers[note._lineLayer];
-
-    let imgClass;
-    if (type === 'bomb') {
-        imgClass = 'bomb';
-    } else {
-        imgClass = ((cutDirection === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
-    }
-
+    let imgSrc = 'assets/';
     let infoString;
     if (type === 'bomb') {
-        infoString = 'Bomb at beat ' + time + ': ';
+        imgSrc += 'bomb';
+        infoString = 'Bomb at beat ' + time.toFixed(3) + ':';
+        message = message[0].toUpperCase() + message.slice(1) + ' parity set to ' + parity; // ugly, but it works
     } else {
-        infoString = (parity[type] == 'forehand') ? 'Forehand (' : 'Backhand (' // capitalisation
+        imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
+        infoString = (parity === 'forehand') ? 'Forehand (' : 'Backhand ('; // capitalisation
         infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
-        infoString += ', ' + row + ' row) at beat ' + time + ': ';
+        infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
     }
+    imgSrc += '.svg';
 
     let element = document.createElement('div');
-
-    element.classList.add('parent');
-    element.classList.add(errType);
-
+    element.classList.add('parent', messageType);
     element.dataset.time = time;
-    element.dataset.time2 = time2;
-
-    element.addEventListener('click', function () { scrollVal(time_raw); });
+    element.addEventListener('click', function () { scrollVal(time); });
 
     let img = document.createElement('img');
-    img.src = 'assets/' + imgClass + '.svg';
+    img.src = imgSrc;
     img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
-
-    element.appendChild(img);
 
     let text = document.createElement('div');
     text.classList.add('text');
 
-    let infoStringNode = document.createTextNode(infoString);
-    let errStringNode = document.createTextNode(errString);
-    let br = document.createElement('br');
-
-    text.appendChild(infoStringNode);
-    text.appendChild(br);
-    text.appendChild(errStringNode);
-
-    element.appendChild(text);
-    // structure allows easier css styling for each error in the list
-
+    text.append(infoString, document.createElement('br'), message);
+    element.append(img, text);
     output.appendChild(element);
 }
 
@@ -221,7 +181,8 @@ function findCol(jsonData, type, lastVal) {
 function checkParity() {
     clearOutput();
     if (!ready) {
-        outputMessage('File loading not ready, try again', 'error');
+        // TODO: reimplement this with outputUI()?
+        console.log('File loading not ready, try again');
         return;
     }
 
@@ -280,59 +241,46 @@ function checkParity() {
             }
 
             // invert parity if needed and log the bomb if so
-            let logString = '';
             for (let color in setParity) {
                 if (setParity[color]) {
-                    if (row === 'bottom' && parity[color] === 'backhand') {
+                    if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
                         parity.invert(color);
-                        logString += '\n' + color + ' parity set to ' + parity[color];
-                    }
-                    if (row === 'top' && parity[color] === 'forehand') {
-                        parity.invert(color);
-                        logString += '\n' + color + ' parity set to ' + parity[color];
+                        outputUI(note, parity[color], color, 'info');
+                        infCount++;
                     }
                 }
-            }
-            if (logString) {
-                logString = logNote(note, parity) + logString;
-                outputMessage(logString, 'info');
-                infCount++;
             }
         } else {
             if (cuts[type].good[parity[type]].includes(cutDirection)) {
                 parity.invert(type);
             } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
                 note.warn = true;
-                let lastTime = -1;
 
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
                     last.precedingWarn = true;
-                    lastTime = last._time.toFixed(3);
                 }
                 catch {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity, lastTime, 'Borderline hit, not all players might read or be able to play this correctly', 'warning');
+                outputUI(note, parity[type], borderlineHitText, 'warning');
                 parity.invert(type);
                 warnCount++;
             } else {
                 note.error = true;
                 let deltaTime = 0;
-                let lastTime = -1;
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
                     deltaTime = (note._time - last._time).toFixed(3);
                     deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
                     last.precedingError = true;
-                    lastTime = last._time.toFixed(3);
                 }
                 catch {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity, lastTime, 'Bad hit, wrist reset is necessary in ' + deltaTime, 'error');
+                outputUI(note, parity[type], badHitText + deltaTime, 'error');
                 errCount++;
             }
 
@@ -355,7 +303,8 @@ function checkParity() {
         ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning, ' : ' warnings, ') +
         'and generated ' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
 
-    if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
-        outputMessage('No errors found', 'success');
-    }
+    // TODO: reimplement this with outputUI()?
+    // if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
+    //     outputMessage('No errors found', 'success');
+    // }
 }

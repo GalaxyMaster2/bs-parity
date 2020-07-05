@@ -48,8 +48,8 @@ async function scrollVal(end, framerate = 30) {
 
 function render(notes) {
     if (!ready) {
-        clearOutput();
-        outputMessage('File loading not ready, try again', 'error');
+        // TODO: reimplement this with outputUI()?
+        console.log('File loading not ready, try again');
         return;
     }
 
