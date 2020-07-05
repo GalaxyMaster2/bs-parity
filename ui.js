@@ -67,7 +67,7 @@ dropArea.addEventListener('drop', handleDrop, false);
 // todo: feature detection for drag and drop?
 //  although tbf the overlap between transform 3d and drag/drop is probably pretty big
 var zipFile = false;
-var datFiles = [];
+var datFiles = {};
 var infoDat;
 var file = null;
 
@@ -108,6 +108,7 @@ function readFile(file) {
     });
 }
 
+var debug;
 async function readZip(file) {
     ready = false;
     zipFile = true;
@@ -119,31 +120,27 @@ async function readZip(file) {
     fr.addEventListener('load', function () {
         zip.loadAsync(fr.result) // there is no semicolon here intentionally
         .then(function (unzipped) {
-            outputFile = unzipped;
-            for (unzippedFile in unzipped.files) {
-                if (unzippedFile.substr(-3) == "dat") {
-                    if (unzippedFile == "info.dat" || unzippedFile == "Info.dat") {
-                        zip.file(unzippedFile).async("text")
-                        .then( function (content) { 
+            for (filename in unzipped.files) {
+                if (filename.substr(-3) == "dat") {
+                    if (filename == "info.dat" || filename == "Info.dat") {
+                        zip.file(filename).async("text")
+                        .then( function (content) {
                             infoDat = JSON.parse(content);
                         });
                     }
-                    else { 
-                        zip.file(unzippedFile).async("text")
-                        .then( function (content) { 
-                            datFiles.push(getNotes(JSON.parse(content)));
+                    else {
+                        let name = filename; // async hates me but i think this works
+                        zip.file(filename).async("text")
+                        .then(function (content) {
+                            datFiles[name] = getNotes(JSON.parse(content));
                         });
                     }
                 }
             }
-            
         });
     });
 
-    await new Promise(r => setTimeout(r, 100));
-    // for some reason there are timing errors in loading the zip, but in general it seems to work
-    // fairly quickly for small zip files so a 100ms async delay works for now 
-    // THIS SHOULD BE REPLACED - ITS HORRIBLE PRACTICE
+    await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
 
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');
@@ -164,15 +161,13 @@ async function readZip(file) {
     select.addEventListener('change', function() {
         let select = document.getElementsByTagName("select")[0];
         notesArray = datFiles[select.value];
-        render();
+        render(notesArray);
         checkParity();
     });
         
     fileSelector.append(select);
 
-    ready = true;
-    console.log(datFiles);
-    notesArray = datFiles[0]; // todo: select
+    notesArray = datFiles[key];
     centerBeat = 0;
     render();
     checkParity();
