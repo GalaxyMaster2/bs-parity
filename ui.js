@@ -147,7 +147,28 @@ async function readZip(file) {
 
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');
-    console.log('successful read!');
+    ready = true;
+
+    let fileSelector = document.getElementById("fileSelector");
+    let select = document.createElement("select");
+
+    for (var key in datFiles) {
+        let item = document.createElement("option");
+        item.value = key;
+        item.append(key.slice(0, -4));
+        select.append(item);
+    };
+
+    select.lastChild.selected = true;
+    
+    select.addEventListener('change', function() {
+        let select = document.getElementsByTagName("select")[0];
+        notesArray = datFiles[select.value];
+        render();
+        checkParity();
+    });
+        
+    fileSelector.append(select);
 
     ready = true;
     console.log(datFiles);
