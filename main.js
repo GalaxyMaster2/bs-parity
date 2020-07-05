@@ -148,7 +148,7 @@ function outputUI(note, parity, message, messageType) {
 
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
-    element.dataset.time = time;
+    element.dataset.time = time.toFixed(3);
     element.addEventListener('click', function () { scrollVal(time); });
 
     let img = document.createElement('img');

@@ -97,11 +97,13 @@ function readFile(files) {
 }
 
 function highlightElements(time) {
+    timeInd = time.toFixed(3);
+
     document.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected'); }
     );
 
-    document.querySelectorAll('[data-time="' + time + '"]').forEach(
+    document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
         (element) => { element.classList.add('selected'); }
     );
 }
