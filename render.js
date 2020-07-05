@@ -16,14 +16,6 @@ var centerBeat = 0; // changed to match values in html
 var angleX = 330;
 var angleY = 320;
 
-// TODO: this seems extraneous?
-function scrollDelta(delta) {
-    centerBeat = Math.max(0, centerBeat + delta);
-    highlightElements(centerBeat);
-
-    render(notesArray);
-}
-
 let scrolling = false;
 async function scrollVal(end, framerate = 30) {
     if (scrolling) { return };
@@ -56,8 +48,8 @@ async function scrollVal(end, framerate = 30) {
 
 function render(notes) {
     if (!ready) {
-        clearOutput();
-        outputMessage('File loading not ready, try again', 'error');
+        // TODO: reimplement this with outputUI()?
+        console.log('File loading not ready, try again');
         return;
     }
 

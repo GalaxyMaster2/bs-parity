@@ -158,19 +158,11 @@ async function readZip(file) {
 }
 
 function highlightElements(time) {
-    let timeInd = time.toFixed(3);
-
     document.querySelectorAll('.selected').forEach(
-        (element) => { element.classList.remove('selected') }
-    )
-    document.querySelectorAll('.partialSelected').forEach(
-        (element) => { element.classList.remove('partialSelected') }
-    )
+        (element) => { element.classList.remove('selected'); }
+    );
 
-    document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
+    document.querySelectorAll('[data-time="' + time + '"]').forEach(
         (element) => { element.classList.add('selected'); }
-    )
-    document.querySelectorAll('[data-time2="' + timeInd + '"]').forEach(
-        (element) => { element.classList.add('partialSelected'); }
-    )
+    );
 }

@@ -119,10 +119,6 @@ body .theme {
   transition: background-color 0.4s var(--trans), color 0.75s var(--trans), transform 0.75s var(--trans);
   border-radius: 1.5rem;
 }
-.main #output .parent.partialSelected {
-  color: var(--etext);
-  transform: translateX(0.25rem);
-}
 .main #output .parent.selected {
   background-color: var(--ebg);
   color: var(--etext);
