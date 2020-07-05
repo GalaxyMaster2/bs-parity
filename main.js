@@ -297,7 +297,7 @@ function checkParity() {
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
                     if (zipFile) {
-                        deltaTime = (bpm * (note._time - last._time) / 60).toFixed(3);
+                        deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
                         deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
                     }
                     else { 
