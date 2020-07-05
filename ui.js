@@ -108,7 +108,6 @@ function readFile(file) {
     });
 }
 
-var debug;
 async function readZip(file) {
     ready = false;
     zipFile = true;

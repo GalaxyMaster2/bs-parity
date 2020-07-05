@@ -215,6 +215,15 @@ function checkParity() {
     let warnCount = 0;
     let summary = document.getElementById('summary');
 
+    if (!zipFile) {
+        infCount ++;
+        let element = document.createElement('div');
+        element.textContent = "note that while .dat files are still supported, not all features are available - consider using a zip file instead!";
+        element.classList.add('parent', 'info');
+        element.style.setProperty('padding-bottom', '10px');
+        output.appendChild(element);
+    }
+
     let parity = new Parity();
     parity.init(notesArray);
 
