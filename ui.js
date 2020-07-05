@@ -162,6 +162,7 @@ async function readZip(file) {
         let select = document.getElementsByTagName("select")[0];
         notesArray = datFiles[select.value];
         render(notesArray);
+        checkParity();
     });
         
     fileSelector.append(select);
