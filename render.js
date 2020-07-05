@@ -40,13 +40,13 @@ async function scrollVal(end, framerate = 30) {
         pos = bezierLut[a] * (1 - 30 * ((i / frames) - (a / 30))) + bezierLut[b] * 30 * ((i / frames) - (a / 30)); // there are many brackets in this line that could be reduced
         centerBeat = (initial * (1 - pos)) + (end * pos);
 
-        render(notesArray);
+        render();
         await new Promise(r => setTimeout(r, delay)); // icky async but it works
     }
     scrolling = false;
 }
 
-function render(notes) {
+function render(notes = notesArray) {
     if (!ready) {
         // TODO: reimplement this with outputUI()?
         console.log('File loading not ready, try again');

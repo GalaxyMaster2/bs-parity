@@ -103,7 +103,7 @@ function readFile(file) {
 
         ready = true;
         centerBeat = 0;
-        render(notesArray);
+        render();
         checkParity();
     });
 }
@@ -153,7 +153,7 @@ async function readZip(file) {
     console.log(datFiles);
     notesArray = datFiles[0]; // todo: select
     centerBeat = 0;
-    render(notesArray);
+    render();
     checkParity();
 }
 
