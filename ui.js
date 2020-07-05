@@ -91,7 +91,7 @@ function readFile(files) {
 
         ready = true;
         centerBeat = 0;
-        render(notesArray);
+        render();
         checkParity();
     });
 }

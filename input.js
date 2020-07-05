@@ -9,19 +9,19 @@ document.addEventListener('keydown', handleKeyDown);
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
-    render(notesArray);
+    render();
 });
 tsSlide.addEventListener('input', function () {
     timeScale = parseFloat(tsSlide.value);
-    render(notesArray);
+    render();
 });
 piSlide.addEventListener('input', function () {
     perspectiveMultiplier = parseFloat(piSlide.value);
-    render(notesArray);
+    render();
 });
 dvSlide.addEventListener('input', function () {
     divisionValue = parseFloat(dvSlide.value);
-    render(notesArray);
+    render();
 });
 
 warn.addEventListener('click', function () { output.classList.toggle('warning'); });
@@ -75,7 +75,7 @@ async function handleMouseDown(e) {
             await new Promise(r => setTimeout(r, 1000 / 30));
             centerBeat = Math.max(0, centerBeat + (initialY - cursorY) / 300);
             highlightElements(centerBeat);
-            render(notesArray);
+            render();
         }
     }
 }
@@ -129,13 +129,13 @@ function handleKeyDown(event) {
     }
     angleX = mod(angleX, 360);
     angleY = mod(angleY, 360);
-    render(notesArray);
+    render();
 }
 
 function mouseRotate(e) {
     angleX = mod(angleX - e.movementY * 0.5, 360);
     angleY = mod(angleY + e.movementX * 0.5, 360);
-    render(notesArray);
+    render();
 }
 
 function scroll(event) {
@@ -147,5 +147,5 @@ function scroll(event) {
     centerBeat = Math.max(0, centerBeat + delta / -100);
     highlightElements(centerBeat);
 
-    render(notesArray);
+    render();
 }
