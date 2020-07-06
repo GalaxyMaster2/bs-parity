@@ -4,6 +4,10 @@
 
 console.log('main js loaded');
 
+// things we find out from intro.dat:
+var bpm = 120;
+var offset = 0;
+
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 const cutAngles = [180, 0, 90, 270, 135, 225, 45, 315, 0];
 
@@ -102,6 +106,26 @@ function getNotes(obj) {
         return types[note._type] !== undefined;
     });
     return notes;
+}
+
+function getInfo(fName) {
+    let songInfo = findInfo(fName, infoDat._difficultyBeatmapSets);
+    let localOffset = 0;
+    let globalOffset = infoDat._songTimeOffset;
+    try {
+        localOffset = songInfo._customData._editorOffset
+    } catch {}
+    offset = - (localOffset * 0.001 + globalOffset) * bpm / 60;
+}
+
+function findInfo(fname, json) {
+    for (let i = 0; i < json.length; i++) {
+        for (let j = 0; j < json[i]._difficultyBeatmaps.length; j++) {
+            if (json[i]._difficultyBeatmaps[j]._beatmapFilename == fname) {
+                return (json[i]._difficultyBeatmaps[j]);
+            };
+        }
+    }
 }
 
 // used to detect the scroll line height in FireFox
@@ -206,6 +230,15 @@ function checkParity() {
     let warnCount = 0;
     let summary = document.getElementById('summary');
 
+    if (!zipFile) {
+        infCount ++;
+        let element = document.createElement('div');
+        element.textContent = "note that while .dat files are still supported, not all features are available - consider using a zip file instead!";
+        element.classList.add('parent', 'info');
+        element.style.setProperty('padding-bottom', '10px');
+        output.appendChild(element);
+    }
+
     let parity = new Parity();
     parity.init(notesArray);
 
@@ -287,8 +320,14 @@ function checkParity() {
                 let deltaTime = 0;
                 try {
                     let last = notesArray[findCol(notesArray, type, i - 1)];
-                    deltaTime = (note._time - last._time).toFixed(3);
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
+                    if (zipFile) {
+                        deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
+                        deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
+                    }
+                    else { 
+                        deltaTime = (note._time - last._time).toFixed(3);
+                        deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
+                    }
                     last.precedingError = true;
                 }
                 catch {
