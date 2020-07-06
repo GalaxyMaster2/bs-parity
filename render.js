@@ -17,10 +17,10 @@ var angleX = 330;
 var angleY = 320;
 
 let scrolling = false;
+let animationFrameId;
 function scrollVal(target) {
-    // TODO: more graceful handling of function call when scrolling
     if (scrolling) {
-        return;
+        window.cancelAnimationFrame(animationFrameId);
     }
     scrolling = true;
 
@@ -50,12 +50,12 @@ function scrollVal(target) {
         render();
 
         if (elapsedTime < animationTime) {
-            window.requestAnimationFrame(scrollValStep);
+            animationFrameId = window.requestAnimationFrame(scrollValStep);
         } else {
             scrolling = false;
         }
     }
-    window.requestAnimationFrame(scrollValStep);
+    animationFrameId = window.requestAnimationFrame(scrollValStep);
 }
 
 function render(notes = notesArray) {
