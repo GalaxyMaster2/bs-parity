@@ -127,7 +127,7 @@ function mod(n, m) {
 }
 
 function outputUI(note, parity, message, messageType) {
-    let time, imgSrc, infoString;
+    let time, imgSrc, infoString, oneLine;
     if (note != false) { // if note passed in note function
         time = note._time;
         let type = types[note._type];
@@ -155,12 +155,14 @@ function outputUI(note, parity, message, messageType) {
         } else {
             infoString = message;
             message = '';
+            oneLine = true;
         }
     }
 
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
     if (note == false) element.classList.add('noHighlight');
+    if (oneLine) element.classList.add('oneLine');
 
     element.dataset.time = time.toFixed(3);
     element.addEventListener('click', function () { scrollVal(time); });
@@ -195,8 +197,7 @@ function findCol(jsonData, type, lastVal) {
 function checkParity() {
     clearOutput();
     if (!ready) {
-        // TODO: reimplement this with outputUI()?
-        console.log('File loading not ready, try again');
+        outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
         return;
     }
 
@@ -313,12 +314,10 @@ function checkParity() {
         }
     }
 
-    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors, ') +
-        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning, ' : ' warnings, ') +
-        'and generated ' + ((infCount === 0) ? 'no' : infCount) + ' debug messages:';
+    summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors and ') +
+        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning.' : ' warnings.');;
 
-    // TODO: reimplement this with outputUI()?
-    // if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
-    //     outputMessage('No errors found', 'success');
-    // }
+    if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
+        outputUI(false, 0, 'No errors found!', 'success');
+    }
 }

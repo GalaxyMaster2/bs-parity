@@ -151,6 +151,9 @@ body .theme {
   position: relative;
   cursor: pointer;
 }
+.main #output .parent.oneLine .text {
+  top: -0.83rem;
+}
 .main #output .parent.info,
 .main #output .parent.warning,
 .main #output .parent.error {
