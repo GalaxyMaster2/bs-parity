@@ -159,9 +159,9 @@ body .theme {
 .main #output .parent.error {
   display: none;
 }
-.main #output.info .info,
-.main #output.warning .warning,
-.main #output.error .error {
+.main #output.showInfo .info,
+.main #output.showWarnings .warning,
+.main #output.showErrors .error {
   display: block;
 }
 .main #render-container {

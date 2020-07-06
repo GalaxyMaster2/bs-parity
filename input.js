@@ -24,8 +24,8 @@ dvSlide.addEventListener('input', function () {
     render();
 });
 
-warn.addEventListener('click', function () { output.classList.toggle('warning'); });
-err.addEventListener('click', function () { output.classList.toggle('error'); });
+warn.addEventListener('click', function () { output.classList.toggle('showWarnings'); });
+err.addEventListener('click', function () { output.classList.toggle('showErrors'); });
 
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
 themeBut.addEventListener('click', changeTheme);
