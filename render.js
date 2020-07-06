@@ -17,35 +17,45 @@ var angleX = 330;
 var angleY = 320;
 
 let scrolling = false;
-async function scrollVal(end, framerate = 30) {
-    if (scrolling) { return };
-    scrolling = true; // prevent multiple copies of this function from running at once
-    // todo: make a queue system or a way to cancel and start again with new values?
-    // unless lots of smoothing code is added this will jerk it though :/
+function scrollVal(target) {
+    // TODO: more graceful handling of function call when scrolling
+    if (scrolling) {
+        return;
+    }
+    scrolling = true;
 
-    highlightElements(end);
+    highlightElements(target);
 
     let initial = centerBeat;
-    let pos, a, b;
-    let delay = 1000 / framerate;
-    let frames = Math.abs(end - initial) * 3;
+    let distance = target - centerBeat;
+    let maxIndex = bezierLut.length - 1;
 
-    frames = (frames > 60) ? 60 : frames;
-    frames = (frames < 8) ? 8 : frames;
+    // EPSILON needed to avoid dividing by 0
+    let animationTime = Math.log(Math.abs(distance) + 1 + Number.EPSILON) * 500;
 
-    for (let i = 1; i <= frames; i++) {
-        b = Math.ceil((i / frames) * 30); // find values of lut to interpolate between
-        a = b - 1;
+    let animationStartTime;
+    function scrollValStep(timestamp) {
+        if (animationStartTime === undefined) {
+            animationStartTime = timestamp;
+        }
+        let elapsedTime = timestamp - animationStartTime;
 
-        pos = bezierLut[a] * (1 - 30 * ((i / frames) - (a / 30))) + bezierLut[b] * 30 * ((i / frames) - (a / 30)); // there are many brackets in this line that could be reduced
-        centerBeat = (initial * (1 - pos)) + (end * pos);
+        // calculate interpolated position from bezierLut
+        let bezierPos = Math.min(elapsedTime, animationTime) / animationTime * maxIndex;
+        let indexA = Math.floor(bezierPos);
+        let indexB = Math.ceil(bezierPos);
+        let lerp = bezierLut[indexA] * (indexA - bezierPos + 1) + bezierLut[indexB] * (bezierPos - indexA);
 
+        centerBeat = initial + lerp * distance;
         render();
-        await new Promise(r => setTimeout(r, delay)); // icky async but it works
-    }
 
-    centerBeat = end;
-    scrolling = false;
+        if (elapsedTime < animationTime) {
+            window.requestAnimationFrame(scrollValStep);
+        } else {
+            scrolling = false;
+        }
+    }
+    window.requestAnimationFrame(scrollValStep);
 }
 
 function render(notes = notesArray) {
