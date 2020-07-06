@@ -102,11 +102,12 @@ function highlightElements(time) {
     document.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
-
-    let QScount = document.querySelectorAll('[data-time="' + timeInd + '"]').length;
+    
+    let selector = '.showWarnings > [data-time="' + timeInd + '"].warning, .showErrors > [data-time="' + timeInd + '"].error';
+    let QScount = document.querySelectorAll(selector).length;
     let i = 0;
 
-    document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
+    document.querySelectorAll(selector).forEach(
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
@@ -116,7 +117,6 @@ function highlightElements(time) {
             } else {
                 element.classList.add('selected');
             }
-            
         }
     );
 }
