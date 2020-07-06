@@ -10,6 +10,7 @@ var offset = 0;
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 const cutAngles = [180, 0, 90, 270, 135, 225, 45, 315, 0];
+const cutVectors = [[0, 1], [0, -1], [-1, 0], [1, 0], [-Math.SQRT1_2, Math.SQRT1_2], [Math.SQRT1_2, Math.SQRT1_2], [-Math.SQRT1_2, -Math.SQRT1_2], [Math.SQRT1_2, -Math.SQRT1_2], [0, 0]]
 
 // bombs are type 3 for some reason
 const types = {
@@ -237,6 +238,8 @@ function checkParity() {
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
+        checkHandclap(i);
+
         note.error = false;
         note.warn = false;
         note.precedingError = false;
@@ -351,23 +354,71 @@ function checkParity() {
     // }
 }
 
-function checkHandclap() {
-    clearOutput();
-    if (!ready) {
-        console.log('File loading not ready, try again');
-        return;
+lastNote = 0;
+function checkHandclap(i) {
+    if (i < lastNote) return;
+    let note = notesArray[i];
+    let time = note._time;
+
+    let surroundingNotes = notesArray.filter(function (note) {
+        return (Math.abs(note._time - time) <= 4 * comparisonTolerance);
+    }); // get notes in same effective 2d frame - this could be expanded to a 3d slice in the future if i am feeling masochistic
+
+    if (surroundingNotes.length == 1) return; // ignore single-beat frames
+
+    // console.log(surroundingNotes.length + " beats in one frame at " + time);
+
+    sNoteTypes = [[], [], []];
+    for (let j = 0; j < surroundingNotes.length; j++) { // filter into groups of notes
+        sNoteTypes[surroundingNotes[j]._type].push(surroundingNotes[j]);
     }
 
-    for (let i = 0; i < notesArray.length; i++) {
-        let note = notesArray[i];
-        let time = note._time;
-        let type = types[note._type];
-        let cutDirection = cutDirections[note._cutDirection];
-        let column = lineIndices[note._lineIndex];
-        let row = lineLayers[note._lineLayer];
+    if (sNoteTypes[0].length == 1 && sNoteTypes[1].length == 1) { // single note in blue and red, no need to regress to get hand movement direction
+        redLine = [
+            sNoteTypes[0][0]._lineIndex, sNoteTypes[0][0]._lineLayer,
+            cutVectors[sNoteTypes[0][0]._cutDirection][0],
+            cutVectors[sNoteTypes[0][0]._cutDirection][1]
+        ];
 
-        surroundingNotes = notesArray.filter
+        blueLine = [
+            sNoteTypes[1][0]._lineIndex, sNoteTypes[1][0]._lineLayer,
+            cutVectors[sNoteTypes[1][0]._cutDirection][0],
+            cutVectors[sNoteTypes[1][0]._cutDirection][1]
+        ];
+
+        // console.log(redLine, blueLine);
+        intersection = checkIntersection(redLine, blueLine);
+        if (intersection <= 1) outputMessage('handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+        else if (intersection <= 1.5) outputMessage('potential handclap detected at beat ' + (note._time + offset).toFixed(3), 'warning');
+    } 
+    
+    
+    else { // ugh noooooo please don't make me do this
+
     }
+
+    lastNote = i + surroundingNotes.length; // only show each frame once
+}
+
+// based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
+function checkIntersection(a, b) {
+    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { return 'dot'; } // one of the notes is a dot
+    if (a[2] == b[2] && a[3] == b[3]) { return 'parallel'; } // cut dirs are parallel
+
+    let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0]));
+    let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
+    let bottom = (b[3] * a[2]) - (b[2] * a[3]);
+
+    if (bottom == 0) { // they are the same line but flipped, find the vertical and horizontal distances and compare to cut dirs to see if claps can occur
+        let dX = (a[0] - b[0])/(2 * a[2]);
+        let dY = (a[1] - b[1])/(2 * a[3]);
+        if (dX == Infinity || dY == Infinity) { return 'opposite, but not a HC'}
+        if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX);
+        if (isNaN(dX) && !isNaN(dY)) return Math.abs(dX);
+        return (Math.min(Math.abs(dX), Math.abs(dY))).toFixed(3);
+    }
+
+    return (Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom))).toFixed(3);
 }
 
 function outputMessage(text, type) { // when outputui no longer needs notes, replace this
