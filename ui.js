@@ -106,6 +106,67 @@ function readFile(file) {
         render();
         checkParity();
     });
+}
+
+async function readZip(file) {
+    ready = false;
+    zipFile = true;
+    introDiv.classList.add('uploading');
+    let zip = new JSZip();
+    const fr = new FileReader();
+    fr.readAsArrayBuffer(file);
+
+    fr.addEventListener('load', function () {
+        zip.loadAsync(fr.result) // there is no semicolon here intentionally
+        .then(function (unzipped) {
+            for (filename in unzipped.files) {
+                if (filename.substr(-3) == "dat") {
+                    if (filename == "info.dat" || filename == "Info.dat") {
+                        zip.file(filename).async("text")
+                        .then( function (content) {
+                            infoDat = JSON.parse(content);
+                            bpm = infoDat._beatsPerMinute;
+                        });
+                    }
+                    else {
+                        let name = filename; // async hates me but i think this works
+                        zip.file(filename).async("text")
+                        .then(function (content) {
+                            datFiles[name] = getNotes(JSON.parse(content));
+                        });
+                    }
+                }
+            }
+        });
+    });
+
+    await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
+
+    introDiv.classList.remove('uploading');
+    introDiv.classList.add('done');
+    ready = true;
+
+    let fileSelector = document.getElementById("fileSelector");
+    fileSelector.removeChild(fileSelector.firstChild);
+
+    let select = document.createElement("select");
+
+    for (var key in datFiles) {
+        let item = document.createElement("option");
+        item.value = key;
+        item.append(key.slice(0, -4));
+        select.append(item);
+    };
+
+    select.lastChild.selected = true;
+
+    select.addEventListener('change', function() {
+        let select = document.getElementsByTagName("select")[0];
+        notesArray = datFiles[select.value];
+        getInfoDat(select.value);
+        render(notesArray);
+        checkParity();
+    });
         
     fileSelector.append(select);
 
