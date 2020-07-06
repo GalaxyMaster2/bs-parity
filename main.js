@@ -232,25 +232,20 @@ function checkParity() {
     let summary = document.getElementById('summary');
 
     if (!zipFile) {
-        infCount ++;
-        let element = document.createElement('div');
-        element.textContent = "note that while .dat files are still supported, not all features are available - consider using a zip file instead!";
-        element.classList.add('parent', 'info');
-        element.style.setProperty('padding-bottom', '10px');
-        output.appendChild(element);
+        outputUI(false, 0, 'Note that while .dat files are still supported, not all features are available:|Consider using a zip file instead!', 'warning');
     }
 
     let parity = new Parity();
     parity.init(notesArray);
 
-    if ((notesArray[0]._time * 60 / bpm) < 1.5) {
+    if (((notesArray[0]._time + offset) * 60 / bpm) < 1.5) {
         if (!zipFile) { 
-            let plural = (notesArray[0]._time == 1) ? ' beat ' : ' beats ';
-            outputMessage('potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning'); 
+            let plural = (notesArray[0]._time + offset == 1) ? ' beat ' : ' beats ';
+            outputUI(false, notesArray[0]._time + offset, 'Potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning'); 
         }
         else {
-            let plural = (notesArray[0]._time == 1) ? ' second ' : ' seconds ';
-            outputMessage('potential hot start - first note is ' + (notesArray[0] * 60 / bpm)._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning');
+            let plural = (((notesArray[0]._time + offset) * 60 / bpm) == 1) ? ' second ' : ' seconds ';
+            outputUI(false, notesArray[0]._time + offset, 'Potential hot start - first note is ' + ((notesArray[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning');
         }
         warnCount++;
     }
@@ -410,8 +405,8 @@ function checkHandclap(i) {
 
         // console.log(redLine, blueLine);
         intersection = checkIntersection(redLine, blueLine);
-        if (intersection <= 1) outputMessage('handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
-        else if (intersection <= 1.5) outputMessage('potential handclap detected at beat ' + (note._time + offset).toFixed(3), 'warning');
+        if (intersection <= 1) outputUI(false, note._time + offset, 'handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+        else if (intersection <= 1.5) outputUI(false, note._time + offset, 'potential handclap detected at beat ' + (note._time + offset).toFixed(3), 'warning');
     } 
     
     
@@ -441,12 +436,4 @@ function checkIntersection(a, b) {
     }
 
     return (Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom))).toFixed(3);
-}
-
-function outputMessage(text, type) { // when outputui no longer needs notes, replace this
-    let element = document.createElement('div');
-    element.textContent = text;
-    element.classList.add('parent', type);
-    element.style.setProperty('padding-bottom', '10px');
-    output.appendChild(element);
 }
