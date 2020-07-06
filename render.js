@@ -28,7 +28,6 @@ function scrollVal(target) {
 
     let initial = centerBeat;
     let distance = target - centerBeat;
-    let maxIndex = bezierLut.length - 1;
 
     // EPSILON needed to avoid dividing by 0
     let animationTime = Math.log(Math.abs(distance) + 1 + Number.EPSILON) * 500;
@@ -38,15 +37,13 @@ function scrollVal(target) {
         if (animationStartTime === undefined) {
             animationStartTime = timestamp;
         }
+
         let elapsedTime = timestamp - animationStartTime;
+        let relTime = Math.min(elapsedTime, animationTime) / animationTime;
+        let pos = (1 - Math.cos(relTime * Math.PI)) / 2;
 
-        // calculate interpolated position from bezierLut
-        let bezierPos = Math.min(elapsedTime, animationTime) / animationTime * maxIndex;
-        let indexA = Math.floor(bezierPos);
-        let indexB = Math.ceil(bezierPos);
-        let lerp = bezierLut[indexA] * (indexA - bezierPos + 1) + bezierLut[indexB] * (bezierPos - indexA);
+        centerBeat = initial + pos * distance;
 
-        centerBeat = initial + lerp * distance;
         render();
 
         if (elapsedTime < animationTime) {
