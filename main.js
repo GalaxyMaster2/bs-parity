@@ -257,7 +257,9 @@ function checkParity() {
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
-        checkHandclap(i);
+        let hcErr = checkHandclap(i);
+        if (hcErr == 1) warnCount++;
+        if (hcErr == 2) errCount++;
 
         note.error = false;
         note.warn = false;
@@ -373,7 +375,8 @@ function checkParity() {
 
 lastNote = 0;
 function checkHandclap(i) {
-    if (i < lastNote) return;
+    let state = 0;
+    if (i < lastNote) return state;
     let note = notesArray[i];
     let time = note._time;
 
@@ -381,7 +384,7 @@ function checkHandclap(i) {
         return (Math.abs(note._time - time) <= 4 * comparisonTolerance);
     }); // get notes in same effective 2d frame - this could be expanded to a 3d slice in the future if i am feeling masochistic
 
-    if (surroundingNotes.length == 1) return; // ignore single-beat frames
+    if (surroundingNotes.length == 1) return state; // ignore single-beat frames
 
     // console.log(surroundingNotes.length + " beats in one frame at " + time);
 
@@ -404,10 +407,19 @@ function checkHandclap(i) {
         ];
 
         // console.log(redLine, blueLine);
-        let intersection = checkIntersection(redLine, blueLine);
+        let intersection = checkIntersection(redLine, blueLine, time);
         if (intersection == -1) {} // do nothing - invalid
-        else if (intersection <= 1) outputUI(false, note._time + offset, 'handclap detected at beat ' + (note._time + offset).toFixed(3) + '|'+intersection, 'error');
-        else if (intersection <= 1.5) outputUI(false, note._time + offset, 'potential handclap detected at beat ' + (note._time + offset).toFixed(3), 'warning');
+        else if (intersection <= 1) {
+            outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+            state = 2;
+            surroundingNotes.forEach(element => {
+                element.error = true;
+            });
+        }
+        else if (intersection <= 2) {
+            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter misses some contextual clues, and thus may flag incorrectly', 'warning');
+            state = 1;
+        }
     } 
     
     
@@ -416,10 +428,11 @@ function checkHandclap(i) {
     }
 
     lastNote = i + surroundingNotes.length; // only show each frame once
+    return state;
 }
 
 // based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
-function checkIntersection(a, b) {
+function checkIntersection(a, b, time = 0) {
     if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { return -1; } // one of the notes is a dot
     if (a[2] == b[2] && a[3] == b[3]) { return -1; } // cut dirs are parallel
 
@@ -431,10 +444,11 @@ function checkIntersection(a, b) {
         let dX = (a[0] - b[0])/(2 * a[2]);
         let dY = (a[1] - b[1])/(2 * a[3]);
         if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; }
+        console.log(dX + ' ' + dY + ' @ ' + time);
         if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX);
         if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
-        return (Math.min(Math.abs(dX), Math.abs(dY)));
+        return ((Math.abs(dX) +  Math.abs(dY)) / 2);
     }
 
-    return (Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom)));
+    return Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom));
 }
