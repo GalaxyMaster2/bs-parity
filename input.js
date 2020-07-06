@@ -26,7 +26,6 @@ dvSlide.addEventListener('input', function () {
 
 warn.addEventListener('click', function () { output.classList.toggle('warning'); });
 err.addEventListener('click', function () { output.classList.toggle('error'); });
-inf.addEventListener('click', function () { output.classList.toggle('info'); });
 
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
 themeBut.addEventListener('click', changeTheme);

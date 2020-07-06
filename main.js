@@ -154,7 +154,7 @@ function mod(n, m) {
 function outputUI(note, parity, message, messageType) {
     let time, imgSrc, infoString, oneLine;
     if (note != false) { // if note passed in note function
-        time = note._time;
+        time = note._time + offset;
         let type = types[note._type];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
@@ -404,8 +404,9 @@ function checkHandclap(i) {
         ];
 
         // console.log(redLine, blueLine);
-        intersection = checkIntersection(redLine, blueLine);
-        if (intersection <= 1) outputUI(false, note._time + offset, 'handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+        let intersection = checkIntersection(redLine, blueLine);
+        if (intersection == -1) {} // do nothing - invalid
+        else if (intersection <= 1) outputUI(false, note._time + offset, 'handclap detected at beat ' + (note._time + offset).toFixed(3) + '|'+intersection, 'error');
         else if (intersection <= 1.5) outputUI(false, note._time + offset, 'potential handclap detected at beat ' + (note._time + offset).toFixed(3), 'warning');
     } 
     
@@ -419,8 +420,8 @@ function checkHandclap(i) {
 
 // based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
 function checkIntersection(a, b) {
-    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { return 'dot'; } // one of the notes is a dot
-    if (a[2] == b[2] && a[3] == b[3]) { return 'parallel'; } // cut dirs are parallel
+    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { return -1; } // one of the notes is a dot
+    if (a[2] == b[2] && a[3] == b[3]) { return -1; } // cut dirs are parallel
 
     let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0]));
     let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
@@ -429,11 +430,11 @@ function checkIntersection(a, b) {
     if (bottom == 0) { // they are the same line but flipped, find the vertical and horizontal distances and compare to cut dirs to see if claps can occur
         let dX = (a[0] - b[0])/(2 * a[2]);
         let dY = (a[1] - b[1])/(2 * a[3]);
-        if (dX == Infinity || dY == Infinity) { return 'opposite, but not a HC'}
+        if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; }
         if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX);
-        if (isNaN(dX) && !isNaN(dY)) return Math.abs(dX);
-        return (Math.min(Math.abs(dX), Math.abs(dY))).toFixed(3);
+        if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
+        return (Math.min(Math.abs(dX), Math.abs(dY)));
     }
 
-    return (Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom))).toFixed(3);
+    return (Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom)));
 }
