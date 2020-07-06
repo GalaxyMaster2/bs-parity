@@ -111,7 +111,7 @@ body .theme {
   top: 0.7em;
 }
 .main #output .parent {
-  padding: 0.4rem 0rem 0.12rem 0rem;
+  padding: 0.4rem 0rem 0.15rem 0rem;
   width: calc(100% - 1rem);
   background-color: var(--bg);
   color: var(--text);
@@ -136,6 +136,10 @@ body .theme {
 }
 .main #output .parent.error img {
   border: 2px solid var(--error);
+  border-radius: 23%;
+}
+.main #output .parent.noHighlight img {
+  border: 2px solid transparent;
   border-radius: 23%;
 }
 .main #output .parent .text {

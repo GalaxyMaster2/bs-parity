@@ -127,33 +127,47 @@ function mod(n, m) {
 }
 
 function outputUI(note, parity, message, messageType) {
-    let time = note._time;
-    let type = types[note._type];
-    let column = lineIndices[note._lineIndex];
-    let row = lineLayers[note._lineLayer];
+    let time, imgSrc, infoString;
+    if (note != false) { // if note passed in note function
+        time = note._time;
+        let type = types[note._type];
+        let column = lineIndices[note._lineIndex];
+        let row = lineLayers[note._lineLayer];
 
-    let imgSrc = 'assets/';
-    let infoString;
-    if (type === 'bomb') {
-        imgSrc += 'bomb';
-        infoString = 'Bomb at beat ' + time.toFixed(3) + ':';
-        message = message[0].toUpperCase() + message.slice(1) + ' parity set to ' + parity; // ugly, but it works
-    } else {
-        imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
-        infoString = (parity === 'forehand') ? 'Forehand (' : 'Backhand ('; // capitalisation
-        infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
-        infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
+        imgSrc = 'assets/';
+        if (type === 'bomb') {
+            imgSrc += 'bomb';
+            infoString = 'Bomb at beat ' + time.toFixed(3) + ':';
+            message = message[0].toUpperCase() + message.slice(1) + ' parity set to ' + parity; // ugly, but it works
+        } else {
+            imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
+            infoString = (parity === 'forehand') ? 'Forehand (' : 'Backhand ('; // capitalisation
+            infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
+            infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
+        }
+        imgSrc += '.svg';
+    } else { // message output mode
+        time = parity;
+        imgSrc = 'assets/' + messageType + '.svg';
+        if (message.includes('|')) {
+            infoString = message.split('|')[0];
+            message = message.split('|')[1];
+        } else {
+            infoString = message;
+            message = '';
+        }
     }
-    imgSrc += '.svg';
 
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
+    if (note == false) element.classList.add('noHighlight');
+
     element.dataset.time = time.toFixed(3);
     element.addEventListener('click', function () { scrollVal(time); });
 
     let img = document.createElement('img');
     img.src = imgSrc;
-    img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
+    if (note != false) img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
 
     let text = document.createElement('div');
     text.classList.add('text');
