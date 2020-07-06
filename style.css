@@ -116,8 +116,17 @@ body .theme {
   background-color: var(--bg);
   color: var(--text);
   transform: translateX(0);
-  transition: background-color 0.4s var(--trans), color 0.75s var(--trans), transform 0.4s var(--trans);
+  transition: background-color 0.4s var(--trans), color 0.75s var(--trans), transform 0.4s var(--trans), border-radius 0.4s var(--trans);
   border-radius: 1rem;
+}
+.main #output .parent.multiSelected {
+  border-radius: 0rem;
+}
+.main #output .parent.multiSelected.firstSelected {
+  border-radius: 1rem 1rem 0rem 0rem;
+}
+.main #output .parent.multiSelected.lastSelected {
+  border-radius: 0rem 0rem 1rem 1rem;
 }
 .main #output .parent.selected {
   background-color: var(--ebg);

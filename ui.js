@@ -100,10 +100,23 @@ function highlightElements(time) {
     timeInd = time.toFixed(3);
 
     document.querySelectorAll('.selected').forEach(
-        (element) => { element.classList.remove('selected'); }
+        (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
+    let QScount = document.querySelectorAll('[data-time="' + timeInd + '"]').length;
+    let i = 0;
+
     document.querySelectorAll('[data-time="' + timeInd + '"]').forEach(
-        (element) => { element.classList.add('selected'); }
+        (element) => {
+            if (QScount > 1) {
+                element.classList.add('selected', 'multiSelected');
+                if (i == 0) element.classList.add('firstSelected');
+                if (i == QScount - 1) element.classList.add('lastSelected');
+                i ++;
+            } else {
+                element.classList.add('selected');
+            }
+            
+        }
     );
 }
