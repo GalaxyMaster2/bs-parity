@@ -218,9 +218,15 @@ function checkParity() {
     let parity = new Parity();
     parity.init(notesArray);
 
-    if (notesArray[0]._time < 2) {
-        let plural = (notesArray[0]._time == 1) ? ' beat ' : ' beats ';
-        outputMessage('potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning');
+    if ((notesArray[0]._time * 60 / bpm) < 1.5) {
+        if (!zipFile) { 
+            let plural = (notesArray[0]._time == 1) ? ' beat ' : ' beats ';
+            outputMessage('potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning'); 
+        }
+        else {
+            let plural = (notesArray[0]._time == 1) ? ' second ' : ' seconds ';
+            outputMessage('potential hot start - first note is ' + (notesArray[0] * 60 / bpm)._time.toFixed(3) + plural + 'into the song - consider waiting before the first note or adding silence', 'warning');
+        }
         warnCount++;
     }
 
@@ -343,4 +349,31 @@ function checkParity() {
     // if (document.getElementsByClassName('warning').length === 0 && document.getElementsByClassName('error').length === 0) {
     //     outputMessage('No errors found', 'success');
     // }
+}
+
+function checkHandclap() {
+    clearOutput();
+    if (!ready) {
+        console.log('File loading not ready, try again');
+        return;
+    }
+
+    for (let i = 0; i < notesArray.length; i++) {
+        let note = notesArray[i];
+        let time = note._time;
+        let type = types[note._type];
+        let cutDirection = cutDirections[note._cutDirection];
+        let column = lineIndices[note._lineIndex];
+        let row = lineLayers[note._lineLayer];
+
+        surroundingNotes = notesArray.filter
+    }
+}
+
+function outputMessage(text, type) { // when outputui no longer needs notes, replace this
+    let element = document.createElement('div');
+    element.textContent = text;
+    element.classList.add('parent', type);
+    element.style.setProperty('padding-bottom', '10px');
+    output.appendChild(element);
 }
