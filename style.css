@@ -324,6 +324,14 @@ input[type=range] + label {
   top: -4px;
   left: 3px;
 }
+select {
+  margin-bottom: 3px;
+  background-color: var(--ebg);
+  color: var(--etext);
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 0px 1px;
+}
 label {
   cursor: pointer;
   display: inline-block;

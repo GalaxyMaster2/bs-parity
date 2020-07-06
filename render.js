@@ -74,12 +74,12 @@ function render(notes = notesArray) {
 
     // filter notes outside of range
     notes = notes.filter(function (note) {
-        return (note._time >= centerBeat - renderDistance && note._time <= centerBeat + renderDistance);
+        return (note._time + offset >= centerBeat - renderDistance && note._time + offset <= centerBeat + renderDistance);
     });
 
     // calculate note position, make note element and add to the container
     for (let note of notes) {
-        let relTime = note._time - centerBeat;
+        let relTime = note._time + offset - centerBeat;
 
         let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
         let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);

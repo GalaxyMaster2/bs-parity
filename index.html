@@ -12,9 +12,9 @@
 
         <div class="intro" id="intro">
             <div class="drag-file" id="drag-file">
-                <input type="file" name="file" id="file" class="inputfile" accept=".dat" />
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat,.zip" />
                 <label for="file">
-                    <strong>choose a difficulty.dat</strong>
+                    <strong>choose a zipped map</strong>
                     <span class="drag"> or drag it here</span>.
                 </label>
                 <span class="uploading">uploading&hellip;</span>
@@ -25,7 +25,8 @@
         <div class="main">
             <span class="theme">night mode <input type="checkbox" name="theme" id="theme" checked></span>
 
-            <br><br>
+            <br>
+            <span id="fileSelector"></span>
             <div id="render-container">
                 <div id="grid-container"></div>
             </div>
@@ -67,4 +68,5 @@
     <script src="ui.js" defer></script>
     <script src="input.js" defer></script>
     <script src="render.js" defer></script>
+    <script src="jszip.min.js" defer></script>
 </html>
