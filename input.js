@@ -68,14 +68,27 @@ async function handleMouseDown(e) {
         renderContainer.classList.add('scrolling');
 
         await until(_ => cursorX != -1);
-        initialY = cursorY;
 
-        while (mouseHandle == true) {
-            await new Promise(r => setTimeout(r, 1000 / 30));
-            centerBeat = Math.max(0, centerBeat + (initialY - cursorY) / 300);
+        let initialY = cursorY;
+        let lastTimestamp;
+        function mouseScrollStep(timestamp) {
+            if (lastTimestamp === undefined) {
+                lastTimestamp = timestamp;
+            }
+            let deltaTime = timestamp - lastTimestamp;
+
+            let deltaScroll = (initialY - cursorY) * deltaTime / 10000;
+            centerBeat = Math.max(0, centerBeat + deltaScroll);
+
             highlightElements(centerBeat);
             render();
+
+            if (mouseHandle) {
+                lastTimestamp = timestamp;
+                window.requestAnimationFrame(mouseScrollStep);
+            }
         }
+        window.requestAnimationFrame(mouseScrollStep);
     }
 }
 
