@@ -60,8 +60,7 @@ function scrollVal(target) {
 
 function render(notes = notesArray) {
     if (!ready) {
-        // TODO: reimplement this with outputUI()?
-        console.log('File loading not ready, try again');
+        outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
         return;
     }
 
