@@ -386,7 +386,7 @@ function checkClap(i) {
 
     if (surroundingNotes.length == 1) return state; // ignore single-beat frames
 
-    sNoteTypes = [[], [], [], []]; // bombs are type 3 of course, so sNT[2] will always be empty which is a bit of a waste
+    let sNoteTypes = [[], [], [], []]; // bombs are type 3 of course, so sNT[2] will always be empty which is a bit of a waste
 
     for (let j = 0; j < surroundingNotes.length; j++) { // filter into groups of notes
         sNoteTypes[surroundingNotes[j]._type].push(surroundingNotes[j]);
@@ -417,34 +417,33 @@ function checkClap(i) {
             outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter misses some contextual clues, and thus may flag incorrectly', 'warning');
             state[0] += 1;
         }
-    } 
+    }
     
-    
-    else if (sNoteTypes[0].length <= 1 && sNoteTypes[1].length <= 1) { // up to one of each note in frame - hammer hit detection
-        for (let i = 0; i < sNoteTypes[3].length; i++) { // for every bomb, check collision with every block
-            let bombX = sNoteTypes[3][i]._lineIndex;
-            let bombY = sNoteTypes[3][i]._lineLayer;
+    if (sNoteTypes[0].length <= 1 && sNoteTypes[1].length <= 1) { // up to one of each note in frame - hammer hit detection
+        let lines = [];
 
-            let lines = [];
+        sNoteTypes[0].forEach(element => { // add all notes to lines[] array
+            let line = [element._lineIndex, element._lineLayer,
+                        cutVectors[element._cutDirection][0],
+                        cutVectors[element._cutDirection][1] ];
+            lines.push(line);
+        });
 
-            sNoteTypes[0].forEach(element => { // add all notes to lines[] array
-                let line = [element._lineIndex, element._lineLayer,
-                            cutVectors[element._cutDirection][0],
-                            cutVectors[element._cutDirection][1] ];
-                lines.push(line);
-            });
-            sNoteTypes[1].forEach(element => {
-                let line = [element._lineIndex, element._lineLayer,
-                    cutVectors[element._cutDirection][0],
-                    cutVectors[element._cutDirection][1] ];
-                lines.push(line);
-            });
+        sNoteTypes[1].forEach(element => {
+            let line = [element._lineIndex, element._lineLayer,
+                cutVectors[element._cutDirection][0],
+                cutVectors[element._cutDirection][1] ];
+            lines.push(line);
+        });
 
-            console.log(time);
-            console.log(lines);
+        for (let j = 0; j < sNoteTypes[3].length; j++) { // for every bomb, check collision with every block
+            let bombX = sNoteTypes[3][j]._lineIndex;
+            let bombY = sNoteTypes[3][j]._lineLayer;
             
             lines.forEach(element => {
-                let intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
+                intersection = -1;
+                intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
+                console.log(intersection + '@' + note._time);
                 if (intersection == -1) {}
                 else if (intersection <= 1) {
                     outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
@@ -494,7 +493,6 @@ function checkIntersection(a, b, time = 0) {
         if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; } // if d(A) is infinity, there is distance but no direction in d(A) so no clap would be expected
         if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX); // if d(A) is NaN, both distance and direction are zero (eg deltaY in a |>| |<| handclap) so return the other value
         if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
-        if (time != 0) console.log(dX + ' ' + dY + ' @ ' + time); // debug
         return ((Math.abs(dX) +  Math.abs(dY)) / 2); // if distance in A is zero but velocity is >0, the notes are potentially in the same block
                                                      // which unlikely enough that it should not need to be handled
     }
