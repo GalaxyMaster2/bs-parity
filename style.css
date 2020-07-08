@@ -259,6 +259,24 @@ body .theme {
 .main #render-container #grid-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
+.main #render-container #grid-container .note .note-face.bomb.front {
+  transform: rotateY(0deg) translateZ(0);
+}
+.main #render-container #grid-container .note .note-face.bomb.back {
+  transform: rotateY(45deg) translateZ(0);
+}
+.main #render-container #grid-container .note .note-face.bomb.left {
+  transform: rotateY(90deg) translateZ(0);
+}
+.main #render-container #grid-container .note .note-face.bomb.right {
+  transform: rotateZ(135deg) translateZ(0);
+}
+.main #render-container #grid-container .note .note-face.bomb.top {
+  transform: rotateX(-45deg) translateZ(0);
+}
+.main #render-container #grid-container .note .note-face.bomb.bottom {
+  transform: rotateX(45deg) translateZ(0);
+}
 .main #render-container #grid-container .note .note-face.transl {
   opacity: 0.3;
 }

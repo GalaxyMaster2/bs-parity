@@ -254,6 +254,13 @@ body {
                     &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
                     &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
 
+                    &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
+                    &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
+                    &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
+                    &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
+                    &.bomb.top    { transform: rotateX(-45deg)  translateZ(0); }
+                    &.bomb.bottom { transform: rotateX(45deg) translateZ(0); }
+
                     &.transl { opacity: 0.3; }
 
 
