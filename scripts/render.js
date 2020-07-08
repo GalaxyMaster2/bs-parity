@@ -18,19 +18,28 @@ var angleY = 320;
 
 let scrolling = false;
 let animationFrameId;
+let olaPosition = Ola(0);
 function scrollVal(target) {
     if (scrolling) {
         window.cancelAnimationFrame(animationFrameId);
+    } else {
+        scrolling = true;
+
+        // recreate to start at current centerBeat
+        // unfortunately setting new position with transition time of 0 doesn't seem to work
+        // alternative would be to update olaPosition every time centerBeat is updated elsewhere
+        olaPosition = Ola(centerBeat);
     }
-    scrolling = true;
 
     highlightElements(target);
 
-    let initial = centerBeat;
     let distance = target - centerBeat;
 
     // EPSILON needed to avoid dividing by 0
+    // TODO: take current speed into account
     let animationTime = Math.log(Math.abs(distance) + 1 + Number.EPSILON) * 500;
+
+    olaPosition.set({ value: target }, animationTime);
 
     let animationStartTime;
     function scrollValStep(timestamp) {
@@ -39,10 +48,8 @@ function scrollVal(target) {
         }
 
         let elapsedTime = timestamp - animationStartTime;
-        let relTime = Math.min(elapsedTime, animationTime) / animationTime;
-        let pos = (1 - Math.cos(relTime * Math.PI)) / 2;
 
-        centerBeat = initial + pos * distance;
+        centerBeat = olaPosition.value;
 
         render();
 
