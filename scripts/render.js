@@ -34,10 +34,13 @@ function scrollVal(target) {
     highlightElements(target);
 
     let distance = target - centerBeat;
+    // in beats per second
+    let speed = Math.abs(olaPosition._value.getSpeed(Date.now()));
 
     // EPSILON needed to avoid dividing by 0
-    // TODO: take current speed into account
     let animationTime = Math.log(Math.abs(distance) + 1 + Number.EPSILON) * 500;
+    // roll off to minimum time based on speed
+    animationTime = Math.pow(Math.pow(animationTime, 3) + Math.pow(speed * 10, 3), 1 / 3);
 
     olaPosition.set({ value: target }, animationTime);
 
