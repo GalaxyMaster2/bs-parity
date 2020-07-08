@@ -9,18 +9,22 @@ document.addEventListener('keydown', handleKeyDown);
 
 rdSlide.addEventListener('input', function () {
     renderDistance = parseFloat(rdSlide.value);
+    rdSlide.setAttribute('title', parseFloat(rdSlide.value).toFixed(2) + ' beats');
     render();
 });
 tsSlide.addEventListener('input', function () {
     timeScale = parseFloat(tsSlide.value);
-    render();
-});
-piSlide.addEventListener('input', function () {
-    perspectiveMultiplier = parseFloat(piSlide.value);
+    tsSlide.setAttribute('title', parseFloat(tsSlide.value).toFixed(2) + 'x');
     render();
 });
 dvSlide.addEventListener('input', function () {
     divisionValue = parseFloat(dvSlide.value);
+    dvSlide.setAttribute('title', '1/' + parseFloat(dvSlide.value).toFixed(0));
+    render();
+});
+piSlide.addEventListener('input', function () {
+    perspectiveMultiplier = parseFloat(piSlide.value);
+    piSlide.setAttribute('title', parseFloat(piSlide.value).toFixed(2));
     render();
 });
 
