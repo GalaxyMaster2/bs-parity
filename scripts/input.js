@@ -36,6 +36,7 @@ themeBut.addEventListener('click', changeTheme);
 
 function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
+    sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
     checkParity();
 }
 
