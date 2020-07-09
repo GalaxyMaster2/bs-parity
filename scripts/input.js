@@ -159,6 +159,7 @@ function mouseRotate(e) {
 
 let wheelScrolling = false;
 let oldTarget = 0;
+let lastScrollTime = Date.now();
 function scroll(event) {
     event.preventDefault();
     delta = event.deltaY;
@@ -175,9 +176,12 @@ function scroll(event) {
     oldTarget = target;
     highlightElements(target);
 
-    olaPosition.set({ value: target }, Math.abs(delta));
+    let now = Date.now();
+    olaPosition.set({ value: target }, Math.max(Math.abs(delta) * Math.min((now - lastScrollTime) / 200, 1), Number.EPSILON));
 
     if (animationFrameId === undefined) {
         animationFrameId = window.requestAnimationFrame(renderTransition);
     }
+
+    lastScrollTime = now;
 }
