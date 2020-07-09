@@ -83,10 +83,14 @@ async function handleMouseDown(e) {
             let deltaTime = timestamp - lastTimestamp;
 
             let deltaScroll = (initialY - cursorY) * deltaTime / 10000;
-            centerBeat = Math.max(0, centerBeat + deltaScroll);
+            target = Math.max(0, olaPosition.value + deltaScroll);
 
-            highlightElements(centerBeat);
-            render();
+            highlightElements(target);
+            olaPosition.set({ value: target }, Number.EPSILON);
+
+            if (animationFrameId === undefined) {
+                animationFrameId = window.requestAnimationFrame(renderTransition);
+            }
 
             if (mouseHandle) {
                 lastTimestamp = timestamp;
@@ -161,8 +165,13 @@ function scroll(event) {
     if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
         delta *= scrollLineHeight;
     }
-    centerBeat = Math.max(0, centerBeat + delta / -100);
-    highlightElements(centerBeat);
 
-    render();
+    let target = Math.max(0, olaPosition.value + delta / -100);
+    highlightElements(target);
+
+    olaPosition.set({ value: target }, Number.EPSILON);
+
+    if (animationFrameId === undefined) {
+        animationFrameId = window.requestAnimationFrame(renderTransition);
+    }
 }

@@ -165,7 +165,7 @@ function outputUI(note, parity, message, messageType) {
     if (oneLine) element.classList.add('oneLine');
 
     element.dataset.time = time.toFixed(3);
-    element.addEventListener('click', function () { scrollVal(time); });
+    element.addEventListener('click', function () { scrollTo(time); });
 
     let img = document.createElement('img');
     img.src = imgSrc;

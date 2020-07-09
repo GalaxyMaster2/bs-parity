@@ -70,6 +70,7 @@ function readFile(files) {
 
         ready = true;
         centerBeat = 0;
+        olaPosition = Ola(0);
         render();
         checkParity();
     });

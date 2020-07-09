@@ -11,58 +11,46 @@ var divisionValue = parseFloat(dvSlide.value);
 var timeScale = parseFloat(tsSlide.value);
 
 var centerBeat = 0; // changed to match values in html
+var olaPosition = Ola(0);
 
 // angle (0,0) is looking directly at the notes from player perspective
 var angleX = 330;
 var angleY = 320;
 
-let scrolling = false;
-let animationFrameId;
-let olaPosition = Ola(0);
-function scrollVal(target) {
-    if (scrolling) {
-        window.cancelAnimationFrame(animationFrameId);
+var animationFrameId;
+
+// assumes centerBeat is never updated on its own, aside from here
+function renderTransition(timestamp) {
+    // this could lead to a very unlikely edge case where we pass precisely over the target
+    // in the middle of a transition instantly stopping the animation
+    if (olaPosition._value.to === centerBeat) {
+        animationFrameId = undefined;
     } else {
-        scrolling = true;
-
-        // recreate to start at current centerBeat
-        // unfortunately setting new position with transition time of 0 doesn't seem to work
-        // alternative would be to update olaPosition every time centerBeat is updated elsewhere
-        olaPosition = Ola(centerBeat);
+        animationFrameId = window.requestAnimationFrame(renderTransition);
+        centerBeat = olaPosition.value;
+        render();
     }
+}
 
+function scrollTo(target) {
     highlightElements(target);
 
-    let distance = target - centerBeat;
+    let distance = target - olaPosition.value;
+
     // in beats per second
     let speed = Math.abs(olaPosition._value.getSpeed(Date.now()));
 
-    // EPSILON needed to avoid dividing by 0
-    let animationTime = Math.log(Math.abs(distance) + 1 + Number.EPSILON) * 500;
+    let animationTime = Math.log(Math.abs(distance) + 1) * 500;
+
     // roll off to minimum time based on speed
-    animationTime = Math.pow(Math.pow(animationTime, 3) + Math.pow(speed * 10, 3), 1 / 3);
+    // EPSILON needed because Ola doesn't work with 0 time
+    animationTime = Math.pow(Math.pow(animationTime, 3) + Math.pow(speed * 10, 3), 1 / 3) + Number.EPSILON;
 
     olaPosition.set({ value: target }, animationTime);
 
-    let animationStartTime;
-    function scrollValStep(timestamp) {
-        if (animationStartTime === undefined) {
-            animationStartTime = timestamp;
-        }
-
-        let elapsedTime = timestamp - animationStartTime;
-
-        centerBeat = olaPosition.value;
-
-        render();
-
-        if (elapsedTime < animationTime) {
-            animationFrameId = window.requestAnimationFrame(scrollValStep);
-        } else {
-            scrolling = false;
-        }
+    if (animationFrameId === undefined) {
+        animationFrameId = window.requestAnimationFrame(renderTransition);
     }
-    animationFrameId = window.requestAnimationFrame(scrollValStep);
 }
 
 function render(notes = notesArray) {
@@ -129,7 +117,7 @@ function render(notes = notesArray) {
         noteContainer.style.setProperty('top', posY + 'px');
         noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-        noteContainer.addEventListener('click', function () { scrollVal(note._time); });
+        noteContainer.addEventListener('click', function () { scrollTo(note._time); });
 
         if (note.error) {
             noteContainer.classList.add('error');
@@ -185,7 +173,7 @@ function render(notes = notesArray) {
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
         if (!decimalTime) {
-            number.addEventListener('click', function () { scrollVal(beat); });
+            number.addEventListener('click', function () { scrollTo(beat); });
         };
 
         marker.appendChild(line);
