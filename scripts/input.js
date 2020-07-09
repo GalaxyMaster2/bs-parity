@@ -84,14 +84,11 @@ async function handleMouseDown(e) {
             let deltaTime = timestamp - lastTimestamp;
 
             let deltaScroll = (initialY - cursorY) * deltaTime / 10000;
-            target = Math.max(0, olaPosition.value + deltaScroll);
+            centerBeat = Math.max(0, olaPosition.value + deltaScroll);
+            olaPosition = Ola(centerBeat);
 
-            highlightElements(target);
-            olaPosition.set({ value: target }, Number.EPSILON);
-
-            if (animationFrameId === undefined) {
-                animationFrameId = window.requestAnimationFrame(renderTransition);
-            }
+            highlightElements(centerBeat);
+            render();
 
             if (mouseHandle) {
                 lastTimestamp = timestamp;
