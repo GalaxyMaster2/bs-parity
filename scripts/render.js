@@ -25,6 +25,7 @@ function renderTransition(timestamp) {
     // in the middle of a transition instantly stopping the animation
     if (olaPosition._value.to === centerBeat) {
         animationFrameId = undefined;
+        wheelScrolling = false;
     } else {
         animationFrameId = window.requestAnimationFrame(renderTransition);
         centerBeat = olaPosition.value;
@@ -33,6 +34,7 @@ function renderTransition(timestamp) {
 }
 
 function scrollTo(target) {
+    wheelScrolling = false;
     highlightElements(target);
 
     let distance = target - olaPosition.value;

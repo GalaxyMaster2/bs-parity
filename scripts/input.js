@@ -77,6 +77,7 @@ async function handleMouseDown(e) {
         let initialY = cursorY;
         let lastTimestamp;
         function mouseScrollStep(timestamp) {
+            wheelScrolling = false;
             if (lastTimestamp === undefined) {
                 lastTimestamp = timestamp;
             }
@@ -159,6 +160,8 @@ function mouseRotate(e) {
     render();
 }
 
+let wheelScrolling = false;
+let oldTarget = 0;
 function scroll(event) {
     event.preventDefault();
     delta = event.deltaY;
@@ -166,10 +169,16 @@ function scroll(event) {
         delta *= scrollLineHeight;
     }
 
-    let target = Math.max(0, olaPosition.value + delta / -100);
+    if (!wheelScrolling) {
+        oldTarget = olaPosition.value;
+        wheelScrolling = true;
+    }
+
+    let target = Math.max(0, oldTarget + delta / -100);
+    oldTarget = target;
     highlightElements(target);
 
-    olaPosition.set({ value: target }, Number.EPSILON);
+    olaPosition.set({ value: target }, Math.abs(delta));
 
     if (animationFrameId === undefined) {
         animationFrameId = window.requestAnimationFrame(renderTransition);
