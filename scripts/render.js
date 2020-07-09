@@ -5,10 +5,10 @@
 
 console.log('render js loaded');
 
-var perspectiveMultiplier = parseFloat(piSlide.value);
-var renderDistance = parseFloat(rdSlide.value);
-var divisionValue = parseFloat(dvSlide.value);
-var timeScale = parseFloat(tsSlide.value);
+var perspectiveMultiplier = parseFloat(perspectiveSlider.value);
+var renderDistance = parseFloat(renderDistanceSlider.value);
+var divisionValue = parseFloat(divisionValueSlider.value);
+var timeScale = parseFloat(timeScaleSlider.value);
 
 var centerBeat = 0; // changed to match values in html
 var olaPosition = Ola(0);
@@ -110,7 +110,7 @@ function render(notes = notesArray) {
             }
             noteFace.classList.add('note-face', face, imgClass);
             if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
-                noteFace.classList.add('transl');
+                noteFace.classList.add('translucent');
             }
             noteContainer.appendChild(noteFace);
         }
@@ -192,7 +192,7 @@ function render(notes = notesArray) {
             marker.classList.add('decimalTime');
         }
         if (translucent) {
-            marker.classList.add('transl');
+            marker.classList.add('translucent');
         }
 
         gridContainer.appendChild(marker);

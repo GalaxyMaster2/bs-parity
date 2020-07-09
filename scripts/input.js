@@ -7,32 +7,32 @@ renderContainer.addEventListener('wheel', scroll);
 renderContainer.addEventListener('mousedown', handleMouseDown);
 document.addEventListener('keydown', handleKeyDown);
 
-rdSlide.addEventListener('input', function () {
-    renderDistance = parseFloat(rdSlide.value);
-    rdSlide.setAttribute('title', parseFloat(rdSlide.value).toFixed(2) + ' beats');
+renderDistanceSlider.addEventListener('input', function () {
+    renderDistance = parseFloat(renderDistanceSlider.value);
+    renderDistanceSlider.setAttribute('title', parseFloat(renderDistanceSlider.value).toFixed(2) + ' beats');
     render();
 });
-tsSlide.addEventListener('input', function () {
-    timeScale = parseFloat(tsSlide.value);
-    tsSlide.setAttribute('title', parseFloat(tsSlide.value).toFixed(2) + 'x');
+timeScaleSlider.addEventListener('input', function () {
+    timeScale = parseFloat(timeScaleSlider.value);
+    timeScaleSlider.setAttribute('title', parseFloat(timeScaleSlider.value).toFixed(2) + 'x');
     render();
 });
-dvSlide.addEventListener('input', function () {
-    divisionValue = parseFloat(dvSlide.value);
-    dvSlide.setAttribute('title', '1/' + parseFloat(dvSlide.value).toFixed(0));
+divisionValueSlider.addEventListener('input', function () {
+    divisionValue = parseFloat(divisionValueSlider.value);
+    divisionValueSlider.setAttribute('title', '1/' + parseFloat(divisionValueSlider.value).toFixed(0));
     render();
 });
-piSlide.addEventListener('input', function () {
-    perspectiveMultiplier = parseFloat(piSlide.value);
-    piSlide.setAttribute('title', parseFloat(piSlide.value).toFixed(2));
+perspectiveSlider.addEventListener('input', function () {
+    perspectiveMultiplier = parseFloat(perspectiveSlider.value);
+    perspectiveSlider.setAttribute('title', parseFloat(perspectiveSlider.value).toFixed(2));
     render();
 });
 
-warn.addEventListener('click', function () { output.classList.toggle('showWarnings'); });
-err.addEventListener('click', function () { output.classList.toggle('showErrors'); });
+warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); });
+errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); });
 
 sliderPrecisionInput.addEventListener('change', readSliderPrecision);
-themeBut.addEventListener('click', changeTheme);
+themeToggle.addEventListener('click', changeTheme);
 
 function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;

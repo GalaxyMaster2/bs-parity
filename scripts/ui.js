@@ -14,16 +14,16 @@ const fileInput = document.getElementById('file');
 
 const dropArea = document.getElementById('drag-file');
 const introDiv = document.getElementById('intro');
-const themeBut = document.getElementById('theme');
+const themeToggle = document.getElementById('theme');
 
-const warn = document.getElementById('warnings');
-const err = document.getElementById('errors');
-const inf = document.getElementById('info');
+const warningToggle = document.getElementById('warnings');
+const errorToggle = document.getElementById('errors');
+const infoToggle = document.getElementById('info');
 
-const piSlide = document.getElementById('perspectiveIntensity');
-const rdSlide = document.getElementById('renderDistance');
-const dvSlide = document.getElementById('divisionValue');
-const tsSlide = document.getElementById('timeScale');
+const perspectiveSlider = document.getElementById('perspectiveIntensity');
+const renderDistanceSlider = document.getElementById('renderDistance');
+const divisionValueSlider = document.getElementById('divisionValue');
+const timeScaleSlider = document.getElementById('timeScale');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
