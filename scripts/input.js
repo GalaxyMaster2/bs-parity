@@ -31,7 +31,7 @@ perspectiveSlider.addEventListener('input', function () {
 warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); });
 errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); });
 
-sliderPrecisionInput.addEventListener('change', readSliderPrecision);
+sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('click', changeTheme);
 
 function readSliderPrecision() {
