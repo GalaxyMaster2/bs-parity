@@ -10,13 +10,15 @@ body {
   --error: #ee0000;
   --trans: cubic-bezier(0.58, 0.11, 0.51, 0.97);
   margin: 0;
-  border: none;
   background-color: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
   font-family: sans-serif;
-  transition: background-color 0.4s var(--trans) 0s, color 0.3s var(--trans) 0.1s;
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
   height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 html.dark,
 body.dark {
@@ -34,424 +36,422 @@ body.light {
   --text: #222222;
   --etext: #111111;
 }
-html .theme,
-body .theme {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 11;
-  font-size: 17.5px;
+.topbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.topbar div {
+  flex: 1;
+  white-space: nowrap;
+}
+.topbar div.left {
+  padding-right: 1rem;
+}
+.topbar div.right {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-left: 1rem;
+}
+.topbar div.right div {
+  flex: 0;
+}
+.topbar div.right div label,
+.topbar div.right div input {
+  vertical-align: middle;
+  cursor: pointer;
+}
+.topbar div h1 {
+  margin: 0;
+  text-align: center;
 }
 .intro {
   position: absolute;
   z-index: 0;
-  top: 0px;
-  left: 0px;
   width: 100%;
   height: 100%;
-  transition: top 1.5s var(--trans);
+  transition: transform 1s var(--trans);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .intro .drag-file {
+  width: 36rem;
+  height: 18rem;
   background-color: var(--text);
-  outline: 2px dashed var(--bg);
+  border-radius: calc(0.75rem / 2);
+  outline: 0.125rem dashed var(--bg);
+  outline-offset: -1rem;
   color: var(--bg);
-  outline-offset: -15px;
-  border-radius: 5px;
-  padding: 120px 20px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  width: 100%;
-  /* vscode throws an error on this but it is needed */
-  max-width: 680px;
   font-size: 1.25rem;
-  display: block;
+  line-height: 18rem;
   text-align: center;
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
 }
 .intro .drag-file.highlight {
   background-color: var(--etext);
 }
-.intro .uploading,
-.intro .done {
+.intro .drag-file input {
   display: none;
+}
+.intro .drag-file label {
+  cursor: pointer;
+}
+.intro .drag-file label:focus strong,
+.intro .drag-file label:hover strong {
+  color: var(--blue);
+}
+.intro .drag-file .uploading-text,
+.intro .drag-file .done-text {
+  display: none;
+}
+.intro + .main {
+  transform: translateX(-100%);
 }
 .intro.uploading label,
 .intro.done label {
   display: none;
 }
-.intro.uploading .uploading {
+.intro.uploading .uploading-text {
   display: inline;
-}
-.intro.done .done {
-  display: inline;
-}
-.intro + .main {
-  position: absolute;
-  left: -100%;
-  transition: left 1.5s var(--trans) 0.5s;
 }
 .intro.done {
-  top: -101%;
+  transform: translateX(100%);
+}
+.intro.done .done-text {
+  display: inline;
 }
 .intro.done + .main {
-  left: 0%;
+  transition: transform 1s var(--trans);
+  transform: translateX(0%);
 }
 .main {
-  padding: 1rem;
+  position: relative;
+  --gap: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 0 var(--gap) var(--gap) var(--gap);
+}
+.main .renderbox {
+  padding: 0 var(--gap) 0 0;
+  min-width: 35rem;
+  max-width: 50rem;
+  flex: 1;
+}
+.main .renderbox #render-container {
+  position: relative;
   width: 100%;
-  width: calc(100% - 2rem);
-}
-.main #output {
-  max-height: 350px;
-  max-height: calc(100vh - 19rem - 300px);
-  min-height: 200px;
-  overflow-y: auto;
-  position: relative;
-  top: 0.7em;
-}
-.main #output .parent {
-  padding: 0.4rem 0rem 0.15rem 0rem;
-  width: calc(100% - 1rem);
-  background-color: var(--bg);
-  color: var(--text);
-  transform: translateX(0);
-  transition: background-color 0.4s var(--trans), color 0.75s var(--trans), transform 0.4s var(--trans), border-radius 0.4s var(--trans);
-  border-radius: 1rem;
-}
-.main #output .parent.multiSelected {
-  border-radius: 0rem;
-}
-.main #output .parent.multiSelected.firstSelected {
-  border-radius: 1rem 1rem 0rem 0rem;
-}
-.main #output .parent.multiSelected.lastSelected {
-  border-radius: 0rem 0rem 1rem 1rem;
-}
-.main #output .parent.selected {
+  height: 20rem;
+  margin-bottom: var(--gap);
+  border-radius: calc(0.75rem / 2);
   background-color: var(--ebg);
-  color: var(--etext);
-  transform: translateX(0.5rem);
-}
-.main #output .parent img {
-  height: 2.1rem;
-  position: relative;
-  cursor: pointer;
-  left: 1rem;
-}
-.main #output .parent.warning img {
-  border: 2px solid var(--warning);
-  border-radius: 23%;
-}
-.main #output .parent.error img {
-  border: 2px solid var(--error);
-  border-radius: 23%;
-}
-.main #output .parent.noHighlight img {
-  border: 2px solid transparent;
-  border-radius: 23%;
-}
-.main #output .parent .text {
-  width: 50%;
-  width: calc(100% - 5rem);
-  left: 2rem;
-  top: -0.28rem;
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-}
-.main #output .parent.oneLine .text {
-  top: -0.83rem;
-}
-.main #output .parent.info,
-.main #output .parent.warning,
-.main #output .parent.error {
-  display: none;
-}
-.main #output.showInfo .info,
-.main #output.showWarnings .warning,
-.main #output.showErrors .error {
-  display: block;
-}
-.main #render-container {
-  position: relative;
-  max-width: 900px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100vw - 2rem);
-  height: 300px;
-  border: 1px solid black;
-  border-radius: 4px;
+  transition: background-color 0.3s var(--trans);
   overflow: hidden;
-  background-color: var(--ebg);
-  transition: background-color 0.4s var(--trans), transform 0.3s var(--trans), left 0.4s var(--trans), max-width 0.4s var(--trans);
 }
-.main #render-container.rotating {
+.main .renderbox #render-container.rotating {
   cursor: all-scroll;
 }
-.main #render-container.scrolling {
+.main .renderbox #render-container.scrolling {
   cursor: s-resize;
 }
-.main #render-container #grid-container {
-  --width: 200px;
-  --height: 150px;
+.main .renderbox #render-container #grid-container {
   position: absolute;
+  --width: calc(10rem * 4 / 3);
+  --height: 10rem;
   left: calc(50% - (var(--width) / 2));
   top: calc(50% - (var(--height) / 2));
   width: var(--width);
   height: var(--height);
   transform-style: preserve-3d;
 }
-.main #render-container #grid-container .marker {
+.main .renderbox #render-container #grid-container .marker {
   display: flex;
   align-items: center;
   position: absolute;
 }
-.main #render-container #grid-container .marker.decimalTime .marker-number {
+.main .renderbox #render-container #grid-container .marker.decimalTime .marker-number {
   opacity: 0;
   cursor: default;
 }
-.main #render-container #grid-container .marker.translucent {
+.main .renderbox #render-container #grid-container .marker.translucent {
   opacity: 0.5;
 }
-.main #render-container #grid-container .marker .marker-line {
+.main .renderbox #render-container #grid-container .marker .marker-line {
   background-color: var(--etext);
-  transition: background-color 0.3s var(--trans) 0.1s;
+  transition: background-color 0.3s var(--trans);
 }
-.main #render-container #grid-container .marker .marker-number {
+.main .renderbox #render-container #grid-container .marker .marker-number {
   color: var(--etext);
   margin-left: 0.3rem;
   font-size: 1.8rem;
   font-weight: bold;
-  transition: color 0.3s var(--trans) 0.1s;
+  transition: color 0.3s var(--trans);
   cursor: pointer;
 }
-.main #render-container #grid-container .note {
-  --size: 50px;
+.main .renderbox #render-container #grid-container .note {
+  --size: 2.36rem;
   width: var(--size);
   height: var(--size);
   position: absolute;
   transform-style: preserve-3d;
   cursor: pointer;
 }
-.main #render-container #grid-container .note .note-face {
+.main .renderbox #render-container #grid-container .note .note-face {
   position: absolute;
   display: block;
   width: var(--size);
   height: var(--size);
-  border-radius: 2px;
+  border-radius: 0.125rem;
 }
-.main #render-container #grid-container .note .note-face.front {
+.main .renderbox #render-container #grid-container .note .note-face.front {
   transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.back {
+.main .renderbox #render-container #grid-container .note .note-face.back {
   transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.left {
+.main .renderbox #render-container #grid-container .note .note-face.left {
   transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.right {
+.main .renderbox #render-container #grid-container .note .note-face.right {
   transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.top {
+.main .renderbox #render-container #grid-container .note .note-face.top {
   transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.bottom {
+.main .renderbox #render-container #grid-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main #render-container #grid-container .note .note-face.bomb.front {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.front {
   transform: rotateY(0deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.bomb.back {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.back {
   transform: rotateY(45deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.bomb.left {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.left {
   transform: rotateY(90deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.bomb.right {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.right {
   transform: rotateZ(135deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.bomb.top {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.top {
   transform: rotateX(-45deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.bomb.bottom {
+.main .renderbox #render-container #grid-container .note .note-face.bomb.bottom {
   transform: rotateX(45deg) translateZ(0);
 }
-.main #render-container #grid-container .note .note-face.translucent {
+.main .renderbox #render-container #grid-container .note .note-face.translucent {
   opacity: 0.3;
 }
-.main #render-container #grid-container .note .note-face.bomb {
+.main .renderbox #render-container #grid-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
 }
-.main #render-container #grid-container .note .note-face.dot_front_blue {
+.main .renderbox #render-container #grid-container .note .note-face.dot_front_blue {
   background-image: url('assets/dot_front_blue.svg');
 }
-.main #render-container #grid-container .note .note-face.dot_front_red {
+.main .renderbox #render-container #grid-container .note .note-face.dot_front_red {
   background-image: url('assets/dot_front_red.svg');
 }
-.main #render-container #grid-container .note .note-face.note_front_blue {
+.main .renderbox #render-container #grid-container .note .note-face.note_front_blue {
   background-image: url('assets/note_front_blue.svg');
 }
-.main #render-container #grid-container .note .note-face.note_front_red {
+.main .renderbox #render-container #grid-container .note .note-face.note_front_red {
   background-image: url('assets/note_front_red.svg');
 }
-.main #render-container #grid-container .note .note-face.note_side_blue {
+.main .renderbox #render-container #grid-container .note .note-face.note_side_blue {
   background-image: url('assets/note_side_blue.svg');
 }
-.main #render-container #grid-container .note .note-face.note_side_red {
+.main .renderbox #render-container #grid-container .note .note-face.note_side_red {
   background-image: url('assets/note_side_red.svg');
 }
-.main #render-container #grid-container .note.precedingError .note-face {
-  border: 1px solid black;
+.main .renderbox #render-container #grid-container .note.precedingError .note-face {
+  border: 0.0625rem solid black;
 }
-.main #render-container #grid-container .note.precedingWarn .note-face {
-  border: 1px solid black;
+.main .renderbox #render-container #grid-container .note.precedingWarn .note-face {
+  border: 0.0625rem solid black;
 }
-.main #render-container #grid-container .note.error .note-face {
-  border: 1px solid var(--error);
+.main .renderbox #render-container #grid-container .note.error .note-face {
+  border: 0.0625rem solid var(--error);
 }
-.main #render-container #grid-container .note.warn .note-face {
-  border: 1px solid var(--warning);
+.main .renderbox #render-container #grid-container .note.warn .note-face {
+  border: 0.0625rem solid var(--warning);
 }
-h1 {
-  position: absolute;
-  top: -0.2rem;
-  left: 50%;
-  font-size: 1.5rem;
-  transform: translateX(-50%);
-  transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s;
+.main .renderbox .slider input,
+.main .renderbox .slider label {
+  vertical-align: middle;
 }
-input#file {
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
+.main .renderbox .slider input {
+  width: 12rem;
 }
-input#file:focus + label strong,
-input#file + label:hover strong {
-  color: var(--blue);
-}
-input[type=number] {
+.main .outputbox {
   position: relative;
-  top: -1px;
-  padding: 6px 4px;
-  border-radius: 5px;
-  background-color: var(--ebg);
-  box-shadow: none;
-  border: 1px var(--ebg);
-  color: var(--text);
+  min-width: 40rem;
+  max-width: 60rem;
+  min-height: 15rem;
+  flex: 1.18;
+  display: flex;
+  flex-direction: column;
 }
-input[type=range] {
-  width: 200px;
+.main .outputbox .outboxline {
+  padding-bottom: 0.5rem;
 }
-input[type=range] + label {
-  position: relative;
-  top: -4px;
-  left: 3px;
-}
-label {
+.main .outputbox .outboxline input,
+.main .outputbox .outboxline label {
+  vertical-align: middle;
   cursor: pointer;
-  display: inline-block;
 }
-label:hover strong {
-  color: var(--blue);
+.main .outputbox .outboxline #errors {
+  margin-right: 1rem;
 }
-label .submit {
-  padding: 4px 6px;
-  border-radius: 5px;
+.main .outputbox .outboxline input[type=number] {
+  cursor: auto;
+  background-color: var(--ebg);
+  color: var(--text);
+  border: none;
+  outline: none;
+  border-radius: calc(0.75rem / 2);
+  padding: 0.3rem;
+  width: 2rem;
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+  -moz-appearance: textfield;
+}
+.main .outputbox .outboxline input[type=number]::-webkit-inner-spin-button,
+.main .outputbox .outboxline input[type=number]::-webkit-outer-spin-button {
+  display: none;
+}
+.main .outputbox .outputwrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+}
+.main .outputbox .outputwrapper #output {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+.main .outputbox .outputwrapper #output::-webkit-scrollbar {
+  width: 0.75rem;
+}
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-track {
+  border-radius: calc(0.75rem / 2);
+  background-color: var(--dbg);
+}
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb {
+  border-radius: calc(0.75rem / 2);
   background-color: var(--ebg);
 }
-label .submit:hover {
-  color: var(--blue);
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text);
+}
+@supports ((scrollbar-width: thin) and (scrollbar-color: #000 #000)) {
+  .main .outputbox .outputwrapper #output {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ebg) var(--dbg);
+    transition: scrollbar-color 0.3s var(--trans);
+  }
+}
+.main .outputbox .outputwrapper #output .parent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: calc(0.75rem / 2);
+  cursor: pointer;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+}
+.main .outputbox .outputwrapper #output .parent.selected {
+  background-color: var(--ebg);
+  color: var(--etext);
+  margin: 0 1rem;
+}
+.main .outputbox .outputwrapper #output .parent.multiSelected {
+  border-radius: 0rem;
+}
+.main .outputbox .outputwrapper #output .parent.multiSelected.firstSelected {
+  border-radius: calc(0.75rem / 2) calc(0.75rem / 2) 0rem 0rem;
+}
+.main .outputbox .outputwrapper #output .parent.multiSelected.lastSelected {
+  border-radius: 0rem 0rem calc(0.75rem / 2) calc(0.75rem / 2);
+}
+.main .outputbox .outputwrapper #output .parent.info,
+.main .outputbox .outputwrapper #output .parent.warning,
+.main .outputbox .outputwrapper #output .parent.error {
+  display: none;
+}
+.main .outputbox .outputwrapper #output .parent img {
+  height: 2rem;
+  margin: 0.7rem;
+  border-radius: 23%;
+}
+.main .outputbox .outputwrapper #output .parent.warning img {
+  border: 0.125rem solid var(--warning);
+}
+.main .outputbox .outputwrapper #output .parent.error img {
+  border: 0.125rem solid var(--error);
+}
+.main .outputbox .outputwrapper #output .parent .text {
+  flex: 1;
+}
+.main .outputbox .outputwrapper #output.showInfo .info,
+.main .outputbox .outputwrapper #output.showWarnings .warning,
+.main .outputbox .outputwrapper #output.showErrors .error {
+  display: flex;
+}
+@media (max-width: calc(35rem + 40rem + 3 * 1rem)) {
+  .main {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .main .renderbox {
+    flex: 0;
+    width: 100%;
+    padding: 0 0 var(--gap) 0;
+  }
+  .main .outputbox {
+    flex: 1;
+    width: 100%;
+    padding: 0;
+  }
 }
 @supports ((-webkit-appearance: none) or (-moz-appearance: none) or (appearance: none)) {
   input[type='checkbox'] {
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
-    height: 20px;
-    width: 40px;
-    border-radius: 11px;
+    height: 1.2rem;
+    width: 2.4rem;
+    border-radius: 0.6rem;
     outline: none;
-    display: inline-block;
-    vertical-align: top;
     position: relative;
     margin: 0;
-    cursor: pointer;
-    border: 1px solid var(--bg);
     background: var(--red);
-    transition: background 0.4s var(--trans), border 0.4s var(--trans);
+    transition: background 0.3s var(--trans);
+    --x: 0rem;
   }
   input[type='checkbox']:after {
     content: '';
-    display: block;
     position: absolute;
-    transition: transform 0.4s var(--trans);
-    left: 3px;
-    top: 2px;
+    transition: transform 0.3s var(--trans);
     border-radius: 50%;
-    width: 14px;
-    height: 14px;
+    width: 1rem;
+    height: 1rem;
+    top: 50%;
+    left: 0.1rem;
+    transform: translateX(var(--x)) translateY(-50%);
     background: #eeeeee;
-    transform: translateX(var(--x, 0));
   }
   input[type='checkbox']:checked {
     background: var(--blue);
-    --x: 18px;
+    --x: 1.2rem;
   }
-}
-@media screen and (min-width: 1300px) {
-  .main #render-container {
-    max-width: 600px;
-    left: 0%;
-    transform: translateX(0%);
-  }
-  .main #summary {
-    display: block;
-    position: absolute;
-    left: calc(600px + 2rem);
-    top: 3.4rem;
-    width: calc(100vw - 600px - 3rem);
-  }
-  .main #output {
-    position: absolute;
-    left: calc(600px + 2rem);
-    top: 5.3rem;
-    width: calc(100vw - 600px - 3rem);
-    height: calc(100vh - 6.3rem);
-    max-height: none;
-  }
-}
-@media screen and (max-width: 800px) {
-  h1 {
-    left: 1rem;
-    transform: none;
-  }
-  .intro .drag-file {
-    padding: 120px 20px;
-    max-width: 420px;
-  }
-}
-@media screen and (max-width: 632px) {
-  h1 {
-    font-size: 1em;
-    top: 0.1em;
-  }
-}
-::-webkit-scrollbar {
-  width: 12px;
-}
-::-webkit-scrollbar-track {
-  background-color: var(--dbg);
-  border-radius: 6px;
-  opacity: 0.5;
-}
-::-webkit-scrollbar-thumb {
-  background-color: var(--ebg);
-  border-radius: 6px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text);
 }

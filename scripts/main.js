@@ -322,7 +322,7 @@ function checkParity() {
     }
 
     summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors and ') +
-        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning.' : ' warnings.');;
+        ((warnCount === 0) ? 'no' : warnCount) + ((warnCount === 1) ? ' warning' : ' warnings');;
 
     if (warnCount === 0 && errCount === 0) {
         outputUI(false, 0, 'No errors found!', 'success');
