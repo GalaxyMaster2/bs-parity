@@ -101,6 +101,13 @@ function getNotes(obj) {
     notes = notes.filter(function (note) {
         return types[note._type] !== undefined;
     });
+
+    // assign an id to each note
+    // for use in more efficient rendering
+    notes.forEach(function (note, index) {
+        note.id = index;
+    });
+
     return notes;
 }
 

@@ -61,9 +61,31 @@ function render(notes = notesArray) {
         return;
     }
 
-    // clear container
-    while (gridContainer.lastChild) {
-        gridContainer.removeChild(gridContainer.lastChild);
+    function renderNote(time) {
+        return (time >= centerBeat - renderDistance && time <= centerBeat + renderDistance);
+    }
+
+    // filter notes outside of range
+    notes = notes.filter(function (note) {
+        return renderNote(note._time);
+    });
+
+    // remove notes not to be rendered and store the remaining ones in presentNotes
+    let presentNotes = [];
+    let i = 0;
+    while (i < gridContainer.childNodes.length) {
+        let child = gridContainer.childNodes[i];
+        let id = child.dataset.note_id;
+
+        if (id === undefined || !renderNote(notesArray[id]._time)) {
+            gridContainer.removeChild(child);
+        } else {
+            let index = notes.findIndex(function (note) {
+                return note.id == id;
+            });
+            presentNotes[index] = child;
+            i++;
+        }
     }
 
     // container size in pixels
@@ -78,62 +100,91 @@ function render(notes = notesArray) {
 
     let noteSize = gridHeight / 3 / Math.SQRT2;
 
-    // filter notes outside of range
-    notes = notes.filter(function (note) {
-        return (note._time >= centerBeat - renderDistance && note._time <= centerBeat + renderDistance);
-    });
-
     // calculate note position, make note element and add to the container
-    for (let note of notes) {
-        let relTime = note._time - centerBeat;
+    let iterator = notes.entries();
+    for (let [index, note] of iterator) {
+        if (presentNotes[index] !== undefined) {
+            let relTime = note._time - centerBeat;
+            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            let noteAngle = cutAngles[note._cutDirection];
+            let noteContainer = presentNotes[index];
 
-        let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
-        let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            noteContainer.style.setProperty('--size', noteSize + 'px');
+            noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-        let noteAngle = cutAngles[note._cutDirection];
-        let dot = (cutDirections[note._cutDirection] === 'dot');
-
-        let noteContainer = document.createElement('div');
-        noteContainer.classList.add('note');
-        noteContainer.style.setProperty('--size', noteSize + 'px');
-
-        let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-        for (let face of faces) {
-            let noteFace = document.createElement('div');
-            let imgClass;
-            if (types[note._type] === 'bomb') {
-                imgClass = 'bomb';
-            } else {
-                imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                    (face === 'front' ? 'front_' : 'side_') + types[note._type];
+            let translucent = relTime < -2 * comparisonTolerance;
+            for (let face of noteContainer.childNodes) {
+                if (translucent) {
+                    face.classList.add('translucent');
+                } else {
+                    face.classList.remove('translucent');
+                }
             }
-            noteFace.classList.add('note-face', face, imgClass);
-            if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
-                noteFace.classList.add('translucent');
+
+            noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn');
+            if (note.error) {
+                noteContainer.classList.add('error');
+            } else if (note.precedingError) {
+                noteContainer.classList.add('precedingError');
             }
-            noteContainer.appendChild(noteFace);
+            if (note.warn) {
+                noteContainer.classList.add('warn');
+            } else if (note.precedingWarn) {
+                noteContainer.classList.add('precedingWarn');
+            }
+        } else {
+            let relTime = note._time - centerBeat;
+
+            let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
+            let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
+            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+
+            let noteAngle = cutAngles[note._cutDirection];
+            let dot = (cutDirections[note._cutDirection] === 'dot');
+
+            let noteContainer = document.createElement('div');
+            noteContainer.classList.add('note');
+            noteContainer.style.setProperty('--size', noteSize + 'px');
+
+            let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+            for (let face of faces) {
+                let noteFace = document.createElement('div');
+                let imgClass;
+                if (types[note._type] === 'bomb') {
+                    imgClass = 'bomb';
+                } else {
+                    imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
+                        (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                }
+                noteFace.classList.add('note-face', face, imgClass);
+                if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
+                    noteFace.classList.add('translucent');
+                }
+                noteContainer.appendChild(noteFace);
+            }
+
+            noteContainer.style.setProperty('left', posX + 'px');
+            noteContainer.style.setProperty('top', posY + 'px');
+            noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+            noteContainer.addEventListener('click', function () { scrollTo(note._time); });
+
+            if (note.error) {
+                noteContainer.classList.add('error');
+            } else if (note.precedingError) {
+                noteContainer.classList.add('precedingError');
+            }
+
+            if (note.warn) {
+                noteContainer.classList.add('warn');
+            } else if (note.precedingWarn) {
+                noteContainer.classList.add('precedingWarn');
+            }
+
+            noteContainer.dataset.note_id = note.id;
+
+            gridContainer.appendChild(noteContainer);
         }
-
-        noteContainer.style.setProperty('left', posX + 'px');
-        noteContainer.style.setProperty('top', posY + 'px');
-        noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
-
-        noteContainer.addEventListener('click', function () { scrollTo(note._time); });
-
-        if (note.error) {
-            noteContainer.classList.add('error');
-        } else if (note.precedingError) {
-            noteContainer.classList.add('precedingError');
-        }
-
-        if (note.warn) {
-            noteContainer.classList.add('warn');
-        } else if (note.precedingWarn) {
-            noteContainer.classList.add('precedingWarn');
-        }
-
-        gridContainer.appendChild(noteContainer);
     }
 
     let beatMarkers = [];
