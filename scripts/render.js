@@ -92,7 +92,6 @@ function render(notes = notesArray) {
     // TODO: render the page again when the width / height changes
     //        this could be done with a listener, but it would kill resizing performance
     //        if we didn't delay / debounce (?) it to a reasonable degree
-    let containerWidth = renderContainer.offsetWidth;
     let containerHeight = renderContainer.offsetHeight;
 
     // TODO: set grid-container CSS dimensions here
@@ -105,7 +104,7 @@ function render(notes = notesArray) {
     for (let [index, note] of iterator) {
         if (presentNotes[index] !== undefined) {
             let relTime = note._time - centerBeat;
-            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let noteAngle = cutAngles[note._cutDirection];
             let noteContainer = presentNotes[index];
 
@@ -137,7 +136,7 @@ function render(notes = notesArray) {
 
             let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
 
             let noteAngle = cutAngles[note._cutDirection];
             let dot = (cutDirections[note._cutDirection] === 'dot');
@@ -221,7 +220,7 @@ function render(notes = notesArray) {
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
-        let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+        let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
 
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
