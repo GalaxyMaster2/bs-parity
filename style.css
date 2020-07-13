@@ -82,15 +82,16 @@ body.light {
   align-items: center;
 }
 .intro .drag-file {
-  width: 36rem;
-  height: 18rem;
+  width: 45vw;
+  min-width: 36rem;
+  min-height: 20rem;
   background-color: var(--text);
-  border-radius: calc(0.75rem / 2);
+  border-radius: 0.375rem;
   outline: 0.125rem dashed var(--bg);
   outline-offset: -1rem;
   color: var(--bg);
   font-size: 1.25rem;
-  line-height: 18rem;
+  line-height: 20rem;
   text-align: center;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
 }
@@ -155,7 +156,7 @@ body.light {
   width: 100%;
   height: 20rem;
   margin-bottom: var(--gap);
-  border-radius: calc(0.75rem / 2);
+  border-radius: 0.375rem;
   background-color: var(--ebg);
   transition: background-color 0.3s var(--trans);
   overflow: hidden;
@@ -304,7 +305,7 @@ body.light {
   flex-direction: column;
 }
 .main .outputbox .outboxline {
-  padding-bottom: 0.5rem;
+  line-height: 1.875rem;
 }
 .main .outputbox .outboxline input,
 .main .outputbox .outboxline label {
@@ -315,13 +316,15 @@ body.light {
   margin-right: 1rem;
 }
 .main .outputbox .outboxline input[type=number] {
+  position: relative;
   cursor: auto;
   background-color: var(--ebg);
   color: var(--text);
-  border: none;
+  border: 0.0625rem solid transparent;
   outline: none;
-  border-radius: calc(0.75rem / 2);
+  border-radius: 0.375rem;
   padding: 0.3rem;
+  bottom: 0.0625rem;
   width: 2rem;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
   -moz-appearance: textfield;
@@ -329,6 +332,10 @@ body.light {
 .main .outputbox .outboxline input[type=number]::-webkit-inner-spin-button,
 .main .outputbox .outboxline input[type=number]::-webkit-outer-spin-button {
   display: none;
+}
+.main .outputbox .outboxline input[type=number]:active,
+.main .outputbox .outboxline input[type=number]:focus {
+  border: 0.0625rem solid var(--etext);
 }
 .main .outputbox .outputwrapper {
   position: relative;
@@ -339,17 +346,17 @@ body.light {
   position: absolute;
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .main .outputbox .outputwrapper #output::-webkit-scrollbar {
   width: 0.75rem;
 }
 .main .outputbox .outputwrapper #output::-webkit-scrollbar-track {
-  border-radius: calc(0.75rem / 2);
+  border-radius: 0.375rem;
   background-color: var(--dbg);
 }
 .main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb {
-  border-radius: calc(0.75rem / 2);
+  border-radius: 0.375rem;
   background-color: var(--ebg);
 }
 .main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb:hover {
@@ -366,7 +373,7 @@ body.light {
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-radius: calc(0.75rem / 2);
+  border-radius: 1rem;
   cursor: pointer;
   background-color: var(--bg);
   color: var(--text);
@@ -381,10 +388,10 @@ body.light {
   border-radius: 0rem;
 }
 .main .outputbox .outputwrapper #output .parent.multiSelected.firstSelected {
-  border-radius: calc(0.75rem / 2) calc(0.75rem / 2) 0rem 0rem;
+  border-radius: 1rem 1rem 0rem 0rem;
 }
 .main .outputbox .outputwrapper #output .parent.multiSelected.lastSelected {
-  border-radius: 0rem 0rem calc(0.75rem / 2) calc(0.75rem / 2);
+  border-radius: 0rem 0rem 1rem 1rem;
 }
 .main .outputbox .outputwrapper #output .parent.info,
 .main .outputbox .outputwrapper #output .parent.warning,
@@ -432,9 +439,9 @@ body.light {
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
-    height: 1.2rem;
-    width: 2.4rem;
-    border-radius: 0.6rem;
+    height: 1.25rem;
+    width: 2.5rem;
+    border-radius: 0.5625rem;
     outline: none;
     position: relative;
     margin: 0;
@@ -450,12 +457,18 @@ body.light {
     width: 1rem;
     height: 1rem;
     top: 50%;
-    left: 0.1rem;
+    left: 0.125rem;
     transform: translateX(var(--x)) translateY(-50%);
     background: #eeeeee;
   }
   input[type='checkbox']:checked {
     background: var(--blue);
     --x: 1.2rem;
+  }
+  input[type='checkbox']:focus {
+    border: 0.0625rem solid var(--etext);
+  }
+  input[type='checkbox']:focus:after {
+    left: 0.0625rem;
   }
 }
