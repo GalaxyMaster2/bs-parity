@@ -55,6 +55,7 @@ var cursorY = 0;
 async function handleMouseDown(e) {
     if (mouseHandle == true) { return; }
     if (e.which == 3) {
+        preventDefaults(e);
         mouseHandle = true;
 
         document.addEventListener('mouseup', handleMouseUp);
@@ -64,6 +65,7 @@ async function handleMouseDown(e) {
         renderContainer.classList.add('rotating');
     }
     if (e.which === 2) {
+        preventDefaults(e);
         mouseHandle = true;
         cursorX = -1;
 
@@ -100,8 +102,7 @@ async function handleMouseDown(e) {
 }
 
 function handleMouseUp(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    preventDefaults(e);
 
     mouseHandle = false;
 
@@ -161,7 +162,7 @@ let wheelScrolling = false;
 let oldTarget = 0;
 let lastScrollTime = Date.now();
 function scroll(event) {
-    event.preventDefault();
+    preventDefaults(event);
     delta = event.deltaY;
     if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
         delta *= scrollLineHeight;
