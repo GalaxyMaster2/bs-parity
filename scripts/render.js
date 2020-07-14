@@ -70,21 +70,55 @@ function render(notes = notesArray) {
         return renderNote(note._time);
     });
 
+    // generate all valid beats within the range
+    let bmCountOld = gridContainer.querySelectorAll('.marker').length;
+    let beatMarkers = [];
+    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
+        if (i <= Math.floor(centerBeat + renderDistance + 1)) {
+            for (let j = 0; j < divisionValue; j++) {
+                beatMarkers.push(i + (j / divisionValue));
+            }
+        }
+    }
+    let deltaMarkers = beatMarkers.length - bmCountOld;
+
     // remove notes not to be rendered and store the remaining ones in presentNotes
     let presentNotes = [];
-    let i = 0;
-    while (i < gridContainer.childNodes.length) {
-        let child = gridContainer.childNodes[i];
+    
+    for (let i = 0; i < notesContainer.childNodes.length;) {
+        let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
 
         if (id === undefined || !renderNote(notesArray[id]._time)) {
-            gridContainer.removeChild(child);
+            notesContainer.removeChild(child);
         } else {
             let index = notes.findIndex(function (note) {
                 return note.id == id;
             });
             presentNotes[index] = child;
             i++;
+        }
+    }
+
+    if (deltaMarkers != 0) {
+        while (deltaMarkers < 0) {
+            markerContainer.childNodes[0].remove();
+            deltaMarkers++;
+        }
+        while (deltaMarkers > 0) {
+            let marker = document.createElement('div');
+            let number = document.createElement('div');
+            let line = document.createElement('div');
+
+            marker.classList.add('marker');
+            number.classList.add('marker-number');
+            line.classList.add('marker-line');
+
+            marker.appendChild(line);
+            marker.appendChild(number);
+            markerContainer.appendChild(marker);
+
+            deltaMarkers--;
         }
     }
 
@@ -182,41 +216,25 @@ function render(notes = notesArray) {
 
             noteContainer.dataset.note_id = note.id;
 
-            gridContainer.appendChild(noteContainer);
+            notesContainer.appendChild(noteContainer);
         }
     }
 
-    let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
-        if (i <= Math.floor(centerBeat + renderDistance + 1)) {
-            for (let j = 0; j < divisionValue; j++) {
-                beatMarkers.push(i + (j / divisionValue));
-            }
-        }
-    }
-
+    let i = 0;
     for (let beat of beatMarkers) {
-        let marker = document.createElement('div');
-        let number = document.createElement('div');
-        let line = document.createElement('div');
+        let marker = markerContainer.childNodes[i];
+        let number = marker.getElementsByClassName('marker-number')[0];
+        let line = marker.getElementsByClassName('marker-line')[0];
 
-        line.classList.add('marker-line');
-        marker.classList.add('marker');
-
-        number.classList.add('marker-number');
         number.textContent = beat;
 
         let relTime = beat - centerBeat;
         let fakeMarker = false, decimalTime = false, translucent = false;
-        if (Math.abs(relTime) > renderDistance) {
-            fakeMarker = true;
-        }
-        if (!Number.isInteger(beat)) {
-            decimalTime = true;
-        }
-        if (relTime < -2 * comparisonTolerance) {
-            translucent = true;
-        }
+
+        fakeMarker = Math.abs(relTime) > renderDistance;
+        decimalTime = !Number.isInteger(beat);
+        translucent = relTime < -2 * comparisonTolerance;
+
         let lineWidth = gridHeight * 4 / 3;
         let posX = (gridHeight / 3) * 2 - (lineWidth / 2);
         let posY = gridHeight;
@@ -224,28 +242,33 @@ function render(notes = notesArray) {
 
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
-        if (!decimalTime) {
-            number.addEventListener('click', function () { scrollTo(beat); });
-        };
 
-        marker.appendChild(line);
-        marker.appendChild(number);
+
+        if (!decimalTime) {
+            number.onclick = function() {scrollTo(beat);}; // addEventListener can run multiple times - as an alternative, onClick works just as well
+        };
 
         marker.style.setProperty('left', posX + 'px');
         marker.style.setProperty('top', posY + 'px');
         marker.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateX(90deg)');
 
-        if (fakeMarker) {
-            marker.style.setProperty('opacity', 1 - (0.7) * (relTime - renderDistance));
+        if (fakeMarker && relTime > 0) {
+            marker.style.setProperty('opacity', Math.max(0, 1 - (0.7) * (relTime - renderDistance)));
+        } else {
+            marker.style.removeProperty('opacity');
         }
         if (decimalTime) {
             marker.classList.add('decimalTime');
+        } else {
+            marker.classList.remove('decimalTime');
         }
         if (translucent) {
             marker.classList.add('translucent');
+        } else {
+            marker.classList.remove('translucent');
         }
 
-        gridContainer.appendChild(marker);
+        i++;
     }
 
     gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px) ' +

@@ -6,6 +6,8 @@
 console.log('ui js loaded');
 
 const renderContainer = document.getElementById('render-container');
+const markerContainer = document.getElementById('marker-container');
+const notesContainer = document.getElementById('note-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
