@@ -22,22 +22,38 @@
         </div>
         <div class="intro" id="intro">
             <div class="drag-file" id="drag-file">
-                <input type="file" name="file" id="file" class="inputfile" accept=".dat,.zip" />
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat">
                 <label for="file">
-                    <strong>choose a zipped map</strong>
-                    <span class="drag"> or drag it here</span>.
+                    <strong>choose a difficulty.dat</strong> or drag it here
                 </label>
                 <span class="uploading-text">uploading&hellip;</span>
                 <span class="done-text">done!</span>
             </div>
         </div>
         <div class="main">
-            <span class="theme">night mode <input type="checkbox" name="theme" id="theme" checked></span>
-
-            <br>
-            <span id="fileSelector"><br></span>
-            <div id="render-container">
-                <div id="grid-container"></div>
+            <div class="renderbox">
+                <div id="render-container">
+                    <div id="grid-container">
+                        <div id="marker-container"></div>
+                        <div id="note-container"></div>
+                    </div>
+                </div>
+                <div class="slider">
+                    <input type="range" min="1" max="4" value="2.5" step="0.05" id="renderDistance" title="2.50 beats">
+                    <label for="renderDistance">render distance</label>
+                </div>
+                <div class="slider">
+                    <input type="range" min="0.5" max="2" value="1.25" step="0.05" id="timeScale" title="1.25x">
+                    <label for="timeScale">time scaling</label>
+                </div>
+                <div class="slider">
+                    <input type="range" min="1" max="8" value="4" step="1" id="divisionValue" title="1/4">
+                    <label for="divisionValue">beat marker subdivision</label>
+                </div>
+                <div class="slider">
+                    <input type="range" min="0.5" max="2" value="0.85" step="0.05" id="perspectiveIntensity" title="0.85">
+                    <label for="perspectiveIntensity">perspective intensity</label>
+                </div>
             </div>
             <div class="outputbox">
                 <div class="outboxline">
@@ -58,7 +74,6 @@
     </body>
 
     <script src="scripts/libs/ola.min.js" defer></script>
-    <script src="scripts/libs/jszip.min.js" defer></script>
     <script src="scripts/main.js" defer></script>
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/input.js" defer></script>

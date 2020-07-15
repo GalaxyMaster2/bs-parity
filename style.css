@@ -449,6 +449,9 @@ body.light {
 .main .outputbox .outputwrapper #output .parent.error img {
   border: 0.125rem solid var(--error);
 }
+.main .outputbox .outputwrapper #output .parent.noHighlight img {
+  border: none;
+}
 .main .outputbox .outputwrapper #output .parent .text {
   flex: 1;
 }
