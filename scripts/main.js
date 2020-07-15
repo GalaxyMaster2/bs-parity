@@ -158,7 +158,7 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
-function outputUI(note, parity, message, messageType) {
+function outputUI(note, parity, message, messageType, debugCode = '') {
     let time, imgSrc, infoString, oneLine;
     if (note != false) { // if note passed in note function
         time = note._time + offset;
@@ -208,6 +208,9 @@ function outputUI(note, parity, message, messageType) {
 
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
+
+    if (debugCode != '') { element.dataset.debug = debugCode.toFixed(3); }
+
     output.appendChild(element);
 }
 
@@ -419,11 +422,11 @@ function checkClap(i) {
         if (intersection < 0) {} // do nothing - invalid output, no handclap
 
         else if (intersection <= 1) {
-            outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+            outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
             state[1] += 1;
         }
         else if (intersection <= 2) {
-            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', intersection);
             state[0] += 1;
         }
     }
@@ -472,11 +475,11 @@ function checkClap(i) {
                 let intersection = checkIntersection(red, blue, time);
                 if (intersection < 0) {} // do nothing - invalid output, no handclap
                 else if (intersection <= 1) {
-                    outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                    outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
                     state[1] += 1;
                 }
                 else if (intersection <= 2) {
-                    outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                    outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', intersection);
                     state[0] += 1;
                 }
             });
@@ -509,11 +512,11 @@ function checkClap(i) {
             intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
             if (intersection < 0) {}
             else if (intersection <= 1) {
-                outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
                 state[1] += 1;
             }
             else if (intersection <= 1.5) {
-                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly '+ intersection, 'warning');
+                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning', intersection);
                 state[0] += 1;
             }
         });
