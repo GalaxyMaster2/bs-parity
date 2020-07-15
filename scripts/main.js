@@ -513,7 +513,7 @@ function checkClap(i) {
                 state[1] += 1;
             }
             else if (intersection <= 1.5) {
-                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly '+ intersection, 'warning');
                 state[0] += 1;
             }
         });
@@ -564,5 +564,7 @@ function checkIntersection(a, b, time = 0) {
                                                      // which unlikely enough that it should not need to be handled
     }
 
+    if (topA / bottom == 0) { return topB / bottom; }
+    if (topB / bottom == 0) { return topA / bottom; }
     return (Math.abs(topA / bottom) + Math.abs(topB / bottom)) / 2;
 }
