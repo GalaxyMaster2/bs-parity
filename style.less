@@ -226,18 +226,8 @@ body {
             &.rotating {
                 cursor: all-scroll;
             }
-            
-            &.selected { // when clicked
-                background-color: var(--ebg);
-                color: var(--etext);
-                transform: translateX(0.5rem);
-            }
-            
-            img { // note direction/type indicator
-                height: 2.1rem;
-                position: relative;
-                cursor: pointer;
-                left: 0.5rem;
+            &.scrolling {
+                cursor: s-resize;
             }
 
             #grid-container {
@@ -250,17 +240,76 @@ body {
                 height: var(--height);
                 transform-style: preserve-3d;
 
-            .text {
-                width: 50%;
-                width: calc(100% - 5.5rem);
+                .marker {
+                    display: flex;
+                    align-items: center;
+                    position: absolute;
 
-                left: 1.5rem;
-                top: -0.28rem;
-            
-                display: inline-block;
-                position: relative;
-                cursor: pointer;
-            
+                    &.decimalTime .marker-number {
+                        opacity: 0;
+                        cursor: default;
+                    }
+                    &.translucent { opacity: 0.5; }
+                    .marker-line {
+                        background-color: var(--etext);
+                        transition: background-color 0.3s var(--trans);
+                    }
+
+                    .marker-number {
+                        color: var(--etext);
+                        margin-left: 0.3rem;
+                        font-size: 1.8rem;
+                        font-weight: bold;
+                        transition: color 0.3s var(--trans);
+                        cursor: pointer;
+                    }
+                }
+
+                .note {
+                    --size: 2.36rem; // fallback size
+                    width: var(--size);
+                    height: var(--size);
+                    position: absolute;
+                    transform-style: preserve-3d;
+                    cursor: pointer;
+
+                    .note-face {
+                        position: absolute;
+                        display: block;
+                        width: var(--size);
+                        height: var(--size);
+                        border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
+
+                        &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
+                        &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
+                        &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
+                        &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
+                        &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
+                        &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+
+                        &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
+                        &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
+                        &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
+                        &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
+                        &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
+                        &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
+
+                        &.translucent { opacity: 0.3; }
+
+                        &.bomb            {  background-image: url('assets/bomb.svg');            }
+                        &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
+                        &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
+                        &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
+                        &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
+                        &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
+                        &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
+                    }
+
+                    &.precedingError .note-face { border: 0.0625rem solid black; }
+                    &.precedingWarn  .note-face { border: 0.0625rem solid black; }
+                    &.error .note-face { border: 0.0625rem solid var(--error);   }
+                    &.warn  .note-face { border: 0.0625rem solid var(--warning); }
+                }
             }
         }
 
@@ -335,15 +384,11 @@ body {
             }
         }
 
-// main title styling
-h1 {
-    position: absolute;
-    top: -0.2rem;
-    left: 50%;
-    font-size: 1.5rem;
-    transform: translateX(-50%);
-    transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s, top var(--trans) 0.4s;
-}
+        // wrapper needed for scrolling to work
+        .outputwrapper {
+            position: relative;
+            width: 100%;
+            flex: 1;
 
             #output {
                 position: absolute;
@@ -433,22 +478,6 @@ h1 {
             }
         }
     }
-}
-
-select {
-    position: relative;
-    left: calc(50vw - 451px - 1.2em);
-    margin-bottom: 3px;
-    background-color: var(--ebg);
-    color: var(--etext);
-    border-radius: 5px;
-    border: 1px solid black;
-    padding: 0px 1px;
-}
-
-label {
-    cursor: pointer;
-    display: inline-block;
 
     // neither flexbox nor grid support the desired behaviour, so @media query it is
     @media screen and (max-width: calc(35rem + 40rem + 3 * 1rem)) {
@@ -508,55 +537,5 @@ label {
 
             &:after { left: 0.0625rem; }
         }
-    }
-    select {
-        left: 0px;
-    }
-}
-
-@media screen and (max-width: 932px) {
-    select {
-        left: 0rem;
-    }
-}
-
-@media screen and (max-width: 800px) {
-    h1 {
-        left: 1rem;
-        top: -0.7rem;
-        transform: none;
-    }
-    .intro .drag-file {
-        padding: 120px 20px;
-        max-width: 420px;
-    }
-}
-
-@media screen and (max-width: 632px) {
-    h1 {
-        font-size: 1em;
-        top: 0.1em;
-    }
-    .main #output {
-        max-height: calc(100vh - 20rem - 300px);
-    }
-}
-
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background-color: var(--dbg);
-    border-radius: 6px;
-    opacity: 0.5;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--ebg);
-    border-radius: 6px;
-
-    &:hover {
-        background-color: var(--text);
     }
 }

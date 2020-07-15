@@ -194,16 +194,8 @@ body.light {
 .main .renderbox #render-container.rotating {
   cursor: all-scroll;
 }
-.main .renderbox #render-container.selected {
-  background-color: var(--ebg);
-  color: var(--etext);
-  transform: translateX(0.5rem);
-}
-.main .renderbox #render-container img {
-  height: 2.1rem;
-  position: relative;
-  cursor: pointer;
-  left: 0.5rem;
+.main .renderbox #render-container.scrolling {
+  cursor: s-resize;
 }
 .main .renderbox #render-container #grid-container {
   position: absolute;
@@ -215,29 +207,131 @@ body.light {
   height: var(--height);
   transform-style: preserve-3d;
 }
-.main .renderbox #render-container #grid-container .text {
-  width: 50%;
-  width: calc(100% - 5.5rem);
-  left: 1.5rem;
-  top: -0.28rem;
-  display: inline-block;
-  position: relative;
+.main .renderbox #render-container #grid-container .marker {
+  display: flex;
+  align-items: center;
+  position: absolute;
+}
+.main .renderbox #render-container #grid-container .marker.decimalTime .marker-number {
+  opacity: 0;
+  cursor: default;
+}
+.main .renderbox #render-container #grid-container .marker.translucent {
+  opacity: 0.5;
+}
+.main .renderbox #render-container #grid-container .marker .marker-line {
+  background-color: var(--etext);
+  transition: background-color 0.3s var(--trans);
+}
+.main .renderbox #render-container #grid-container .marker .marker-number {
+  color: var(--etext);
+  margin-left: 0.3rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  transition: color 0.3s var(--trans);
   cursor: pointer;
 }
-.main .renderbox #render-container .slider input,
-.main .renderbox #render-container .slider label {
+.main .renderbox #render-container #grid-container .note {
+  --size: 2.36rem;
+  width: var(--size);
+  height: var(--size);
+  position: absolute;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+.main .renderbox #render-container #grid-container .note .note-face {
+  position: absolute;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 0.125rem;
+}
+.main .renderbox #render-container #grid-container .note .note-face.front {
+  transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.back {
+  transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.right {
+  transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.top {
+  transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.front {
+  transform: rotateY(0deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.back {
+  transform: rotateY(45deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.left {
+  transform: rotateY(90deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.right {
+  transform: rotateZ(135deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.top {
+  transform: rotateX(-45deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb.bottom {
+  transform: rotateX(45deg) translateZ(0);
+}
+.main .renderbox #render-container #grid-container .note .note-face.translucent {
+  opacity: 0.3;
+}
+.main .renderbox #render-container #grid-container .note .note-face.bomb {
+  background-image: url('assets/bomb.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.dot_front_blue {
+  background-image: url('assets/dot_front_blue.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.dot_front_red {
+  background-image: url('assets/dot_front_red.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.note_front_blue {
+  background-image: url('assets/note_front_blue.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.note_front_red {
+  background-image: url('assets/note_front_red.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.note_side_blue {
+  background-image: url('assets/note_side_blue.svg');
+}
+.main .renderbox #render-container #grid-container .note .note-face.note_side_red {
+  background-image: url('assets/note_side_red.svg');
+}
+.main .renderbox #render-container #grid-container .note.precedingError .note-face {
+  border: 0.0625rem solid black;
+}
+.main .renderbox #render-container #grid-container .note.precedingWarn .note-face {
+  border: 0.0625rem solid black;
+}
+.main .renderbox #render-container #grid-container .note.error .note-face {
+  border: 0.0625rem solid var(--error);
+}
+.main .renderbox #render-container #grid-container .note.warn .note-face {
+  border: 0.0625rem solid var(--warning);
+}
+.main .renderbox .slider input,
+.main .renderbox .slider label {
   vertical-align: middle;
 }
-.main .renderbox #render-container .slider input {
+.main .renderbox .slider input {
   width: 12rem;
 }
 @media screen and (min-width: 52rem) and (max-width: calc(35rem + 40rem + 3 * 1rem)) {
-  .main .renderbox #render-container .slider:nth-child(even) {
+  .main .renderbox .slider:nth-child(even) {
     position: absolute;
     left: 50%;
   }
 }
-.main .renderbox .outputbox {
+.main .outputbox {
   position: relative;
   width: 40rem;
   max-width: 60rem;
@@ -246,21 +340,21 @@ body.light {
   display: flex;
   flex-direction: column;
 }
-.main .renderbox .outputbox .outboxline {
+.main .outputbox .outboxline {
   line-height: 1.875rem;
 }
-.main .renderbox .outputbox .outboxline input,
-.main .renderbox .outputbox .outboxline label {
+.main .outputbox .outboxline input,
+.main .outputbox .outboxline label {
   vertical-align: middle;
   cursor: pointer;
 }
-.main .renderbox .outputbox .outboxline #errors {
+.main .outputbox .outboxline #errors {
   margin-right: 1rem;
 }
-.main .renderbox .outputbox .outboxline#summary {
+.main .outputbox .outboxline#summary {
   padding-bottom: 0.25rem;
 }
-.main .renderbox .outputbox .outboxline input[type=number] {
+.main .outputbox .outboxline input[type=number] {
   position: relative;
   cursor: auto;
   background-color: var(--ebg);
@@ -275,50 +369,47 @@ body.light {
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
   -moz-appearance: textfield;
 }
-.main .renderbox .outputbox .outboxline input[type=number]::-webkit-inner-spin-button,
-.main .renderbox .outputbox .outboxline input[type=number]::-webkit-outer-spin-button {
+.main .outputbox .outboxline input[type=number]::-webkit-inner-spin-button,
+.main .outputbox .outboxline input[type=number]::-webkit-outer-spin-button {
   display: none;
 }
-.main .renderbox .outputbox .outboxline input[type=number]:active,
-.main .renderbox .outputbox .outboxline input[type=number]:focus {
+.main .outputbox .outboxline input[type=number]:active,
+.main .outputbox .outboxline input[type=number]:focus {
   border: 0.0625rem solid var(--etext);
 }
-.main .renderbox .outputbox h1 {
-  position: absolute;
-  top: -0.2rem;
-  left: 50%;
-  font-size: 1.5rem;
-  transform: translateX(-50%);
-  transition: transform 0.3s var(--trans) 0s, font-size 0.3s var(--trans) 0.1s, left var(--trans) 0.4s, top var(--trans) 0.4s;
+.main .outputbox .outputwrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
 }
-.main .renderbox .outputbox #output {
+.main .outputbox .outputwrapper #output {
   position: absolute;
   width: 100%;
   height: 100%;
   overflow-y: auto;
 }
-.main .renderbox .outputbox #output::-webkit-scrollbar {
+.main .outputbox .outputwrapper #output::-webkit-scrollbar {
   width: 0.75rem;
 }
-.main .renderbox .outputbox #output::-webkit-scrollbar-track {
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-track {
   border-radius: 0.375rem;
   background-color: var(--dbg);
 }
-.main .renderbox .outputbox #output::-webkit-scrollbar-thumb {
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb {
   border-radius: 0.375rem;
   background-color: var(--ebg);
 }
-.main .renderbox .outputbox #output::-webkit-scrollbar-thumb:hover {
+.main .outputbox .outputwrapper #output::-webkit-scrollbar-thumb:hover {
   background-color: var(--text);
 }
 @supports ((scrollbar-width: thin) and (scrollbar-color: #000 #000)) {
-  .main .renderbox .outputbox #output {
+  .main .outputbox .outputwrapper #output {
     scrollbar-width: thin;
     scrollbar-color: var(--ebg) var(--dbg);
     transition: scrollbar-color 0.3s var(--trans);
   }
 }
-.main .renderbox .outputbox #output .parent {
+.main .outputbox .outputwrapper #output .parent {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -328,70 +419,56 @@ body.light {
   color: var(--text);
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
 }
-.main .renderbox .outputbox #output .parent.selected {
+.main .outputbox .outputwrapper #output .parent.selected {
   background-color: var(--ebg);
   color: var(--etext);
   margin: 0 1rem;
 }
-.main .renderbox .outputbox #output .parent.multiSelected {
+.main .outputbox .outputwrapper #output .parent.multiSelected {
   border-radius: 0rem;
 }
-.main .renderbox .outputbox #output .parent.multiSelected.firstSelected {
+.main .outputbox .outputwrapper #output .parent.multiSelected.firstSelected {
   border-radius: 1rem 1rem 0rem 0rem;
 }
-.main .renderbox .outputbox #output .parent.multiSelected.lastSelected {
+.main .outputbox .outputwrapper #output .parent.multiSelected.lastSelected {
   border-radius: 0rem 0rem 1rem 1rem;
 }
-.main .renderbox .outputbox #output .parent.info,
-.main .renderbox .outputbox #output .parent.warning,
-.main .renderbox .outputbox #output .parent.error {
+.main .outputbox .outputwrapper #output .parent.info,
+.main .outputbox .outputwrapper #output .parent.warning,
+.main .outputbox .outputwrapper #output .parent.error {
   display: none;
 }
-.main .renderbox .outputbox #output .parent img {
+.main .outputbox .outputwrapper #output .parent img {
   height: 2rem;
   margin: 0.7rem;
   border-radius: 23%;
 }
-.main .renderbox .outputbox #output .parent.warning img {
+.main .outputbox .outputwrapper #output .parent.warning img {
   border: 0.125rem solid var(--warning);
 }
-.main .renderbox .outputbox #output .parent.error img {
+.main .outputbox .outputwrapper #output .parent.error img {
   border: 0.125rem solid var(--error);
 }
-.main .renderbox .outputbox #output .parent .text {
+.main .outputbox .outputwrapper #output .parent .text {
   flex: 1;
 }
-.main .renderbox .outputbox #output.showInfo .info,
-.main .renderbox .outputbox #output.showWarnings .warning,
-.main .renderbox .outputbox #output.showErrors .error {
+.main .outputbox .outputwrapper #output.showInfo .info,
+.main .outputbox .outputwrapper #output.showWarnings .warning,
+.main .outputbox .outputwrapper #output.showErrors .error {
   display: flex;
 }
-select {
-  position: relative;
-  left: calc(50vw - 451px - 1.2em);
-  margin-bottom: 3px;
-  background-color: var(--ebg);
-  color: var(--etext);
-  border-radius: 5px;
-  border: 1px solid black;
-  padding: 0px 1px;
-}
-label {
-  cursor: pointer;
-  display: inline-block;
-}
 @media screen and (max-width: calc(35rem + 40rem + 3 * 1rem)) {
-  label {
+  .main {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
   }
-  label .renderbox {
+  .main .renderbox {
     flex: 0;
     width: 95vw;
     padding: 0 0 var(--gap) 0;
   }
-  label .outputbox {
+  .main .outputbox {
     flex: 1;
     width: 95vw;
     padding: 0;
@@ -434,47 +511,4 @@ label {
   input[type='checkbox']:focus:after {
     left: 0.0625rem;
   }
-  select {
-    left: 0px;
-  }
-}
-@media screen and (max-width: 932px) {
-  select {
-    left: 0rem;
-  }
-}
-@media screen and (max-width: 800px) {
-  h1 {
-    left: 1rem;
-    top: -0.7rem;
-    transform: none;
-  }
-  .intro .drag-file {
-    padding: 120px 20px;
-    max-width: 420px;
-  }
-}
-@media screen and (max-width: 632px) {
-  h1 {
-    font-size: 1em;
-    top: 0.1em;
-  }
-  .main #output {
-    max-height: calc(100vh - 20rem - 300px);
-  }
-}
-::-webkit-scrollbar {
-  width: 12px;
-}
-::-webkit-scrollbar-track {
-  background-color: var(--dbg);
-  border-radius: 6px;
-  opacity: 0.5;
-}
-::-webkit-scrollbar-thumb {
-  background-color: var(--ebg);
-  border-radius: 6px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text);
 }
