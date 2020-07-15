@@ -143,7 +143,7 @@ function render(notes = notesArray) {
     let iterator = notes.entries();
     for (let [index, note] of iterator) {
         if (presentNotes[index] !== undefined) {
-            let relTime = note._time - centerBeat;
+            let relTime = note._time + offset - centerBeat;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let noteAngle = cutAngles[note._cutDirection];
             let noteContainer = presentNotes[index];
@@ -172,7 +172,7 @@ function render(notes = notesArray) {
                 noteContainer.classList.add('precedingWarn');
             }
         } else {
-            let relTime = note._time - centerBeat;
+            let relTime = note._time + offset - centerBeat;
 
             let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);

@@ -13,6 +13,7 @@ const output = document.getElementById('output');
 
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
+const urlInput = document.getElementById('url');
 
 const dropArea = document.getElementById('drag-file');
 const introDiv = document.getElementById('intro');
@@ -29,6 +30,13 @@ const timeScaleSlider = document.getElementById('timeScale');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
+urlInput.addEventListener('focusout', readUrl);
+urlInput.addEventListener('keyup', function(event) {
+    console.log(event);
+    if (event.key == 'Enter') {
+        readUrl();
+    }
+});
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
@@ -88,6 +96,88 @@ function readFile(file) {
         olaPosition = Ola(0);
         render();
         checkParity();
+    });
+}
+
+async function readUrl() {
+    const validurl = new RegExp('^(https?:\\/\\/)?'+ // protocol
+                                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+                                '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+                                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+                                '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+                                '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    if (!validurl.test(urlInput.value)) return;
+
+    if (urlInput.value == '') return;
+    let url = 'https://cors-anywhere.herokuapp.com/'; // fixes cors headers on most urls
+    url += urlInput.value;
+    introDiv.classList.add('uploading');
+    console.log(url);
+    JSZipUtils.getBinaryContent(url, async function(err, data) { 
+        if (err) { throw err; }
+        else {
+            ready = false;
+            zipFile = true;
+            let zip = new JSZip();
+
+            zip.loadAsync(data).then(function (unzipped) {
+                for (filename in unzipped.files) {
+                    if (filename.substr(-3) == "dat") {
+                        if (filename == "info.dat" || filename == "Info.dat") {
+                            zip.file(filename).async("text")
+                            .then( function (content) {
+                                infoDat = JSON.parse(content);
+                                bpm = infoDat._beatsPerMinute;
+                            });
+                        }
+                        else {
+                            let name = filename; // async hates me but i think this works
+                            zip.file(filename).async("text")
+                            .then(function (content) {
+                                datFiles[name] = getNotes(JSON.parse(content));
+                            });
+                        }
+                    }
+                }
+            });
+
+            await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
+
+            introDiv.classList.remove('uploading');
+            introDiv.classList.add('done');
+            ready = true;
+
+            let fileSelector = document.getElementById("fileSelector");
+            fileSelector.removeChild(fileSelector.firstChild);
+
+            let select = document.createElement("select");
+
+            for (var key in datFiles) {
+                let item = document.createElement("option");
+                item.value = key;
+                item.append(key.slice(0, -4));
+                select.append(item);
+            };
+
+            select.lastChild.selected = true;
+
+            select.addEventListener('change', function() {
+                let select = document.getElementsByTagName("select")[0];
+                notesArray = datFiles[select.value];
+                getInfoDat(select.value);
+                render(notesArray);
+                checkParity();
+            });
+                
+            fileSelector.append(select);
+
+            notesArray = datFiles[key];
+            centerBeat = 0;
+            
+            getInfo(key);
+            checkParity();
+            render();
+        }
     });
 }
 

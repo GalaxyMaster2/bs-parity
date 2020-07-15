@@ -22,13 +22,14 @@
         </div>
         <div class="intro" id="intro">
             <div class="drag-file" id="drag-file">
-                <input type="file" name="file" id="file" class="inputfile" accept=".dat">
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat, .zip">
                 <label for="file">
-                    <strong>choose a difficulty.dat</strong> or drag it here
+                    <strong>choose a difficulty.dat / map.zip</strong> or drag it here
                 </label>
                 <span class="uploading-text">uploading&hellip;</span>
                 <span class="done-text">done!</span>
             </div>
+            <input type="text" name="url" id="url" class="url-file" class="inputurl" placeholder="or paste a link to a zip here">
         </div>
         <div class="main">
             <div class="renderbox">
@@ -54,6 +55,7 @@
                     <input type="range" min="0.5" max="2" value="0.85" step="0.05" id="perspectiveIntensity" title="0.85">
                     <label for="perspectiveIntensity">perspective intensity</label>
                 </div>
+                <span id="fileSelector"><br></span>
             </div>
             <div class="outputbox">
                 <div class="outboxline">
@@ -74,6 +76,7 @@
     </body>
 
     <script src="scripts/libs/ola.min.js" defer></script>
+    <script src="scripts/libs/jszip.min.js" defer></script>
     <script src="scripts/main.js" defer></script>
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/input.js" defer></script>
