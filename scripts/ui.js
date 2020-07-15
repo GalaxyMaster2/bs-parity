@@ -215,10 +215,14 @@ function highlightElements(time) {
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
-                if (i == 0) element.classList.add('firstSelected');
+                if (i == 0) {
+                    element.scrollIntoView({behavior: "smooth"});
+                    element.classList.add('firstSelected');
+                }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
+                element.scrollIntoView({behavior: "smooth"});
                 element.classList.add('selected');
             }
         }

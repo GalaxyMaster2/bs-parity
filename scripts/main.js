@@ -564,5 +564,5 @@ function checkIntersection(a, b, time = 0) {
                                                      // which unlikely enough that it should not need to be handled
     }
 
-    return Math.min(Math.abs(topA / bottom), Math.abs(topB / bottom));
+    return (Math.abs(topA / bottom) + Math.abs(topB / bottom)) / 2;
 }
