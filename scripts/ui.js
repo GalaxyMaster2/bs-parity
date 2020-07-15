@@ -184,8 +184,8 @@ async function extractZip(data) {
         let select = document.getElementsByTagName("select")[0];
         notesArray = datFiles[select.value];
         getInfo(select.value);
-        for (let i = 0; i < notesContainer.childNodes.length; i++) {
-            notesContainer.removeChild(notesContainer.childNodes[i]);
+        while (notesContainer.childNodes.length != 0) {
+            notesContainer.removeChild(notesContainer.childNodes[0]);
         } // clear to avoid errors with selective renderer
         render(notesArray);
         checkParity();
