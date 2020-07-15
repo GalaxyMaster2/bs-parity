@@ -32,7 +32,6 @@ fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 urlInput.addEventListener('focusout', readUrl);
 urlInput.addEventListener('keyup', function(event) {
-    console.log(event);
     if (event.key == 'Enter') {
         readUrl();
     }

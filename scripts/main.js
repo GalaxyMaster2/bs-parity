@@ -228,6 +228,7 @@ function findCol(jsonData, type, lastVal) {
     }
     return -1;
 }
+var lastNote = 0;
 
 function checkParity() {
     clearOutput();
@@ -239,7 +240,7 @@ function checkParity() {
     let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
-    let lastNote = 0;
+    lastNote = 0;
 
     let summary = document.getElementById('summary');
 
@@ -269,14 +270,14 @@ function checkParity() {
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
-        let hcErr = checkClap(i);
-        warnCount += hcErr[0];
-        warnCount += hcErr[1];
-
         note.error = false;
         note.warn = false;
         note.precedingError = false;
         note.precedingWarn = false;
+
+        let hcErr = checkClap(i);
+        warnCount += hcErr[0];
+        warnCount += hcErr[1];
 
         if (type === 'bomb') {
             // this is super ugly, I'm hoping to come up with a better way later
@@ -385,7 +386,6 @@ function checkParity() {
     }
 }
 
-var lastNote = 0;
 function checkClap(i) {
     let state = [0, 0];
     if (i < lastNote) return state;
@@ -423,10 +423,14 @@ function checkClap(i) {
 
         else if (intersection <= 1) {
             outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
+            notesArray[i].error = true;
+            notesArray[i + 1].error = true;
             state[1] += 1;
         }
         else if (intersection <= 2) {
             outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', intersection);
+            notesArray[i].warn = true;
+            notesArray[i + 1].warn = true;
             state[0] += 1;
         }
     }
