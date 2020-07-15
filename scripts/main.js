@@ -399,7 +399,7 @@ function checkClap(i) {
         sNoteTypes[surroundingNotes[j]._type].push(surroundingNotes[j]);
     }
 
-    if (sNoteTypes[0].length == 1 && sNoteTypes[1].length == 1) { // single note in blue and red, no need to regress to get hand movement direction
+    if (sNoteTypes[0].length == 1 && sNoteTypes[1].length == 1) { // single note in blue and red, basic line collision
         redLine = [
             sNoteTypes[0][0]._lineIndex, sNoteTypes[0][0]._lineLayer,
             cutVectors[sNoteTypes[0][0]._cutDirection][0],
@@ -414,58 +414,107 @@ function checkClap(i) {
 
         let intersection = checkIntersection(redLine, blueLine, time);
 
-        if (intersection == -1) {} // do nothing - invalid
+        if (intersection < 0) {} // do nothing - invalid output, no handclap
 
         else if (intersection <= 1) {
             outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
             state[1] += 1;
         }
         else if (intersection <= 2) {
-            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter misses some contextual clues, and thus may flag incorrectly', 'warning');
+            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
             state[0] += 1;
         }
     }
     
-    if (sNoteTypes[0].length <= 1 && sNoteTypes[1].length <= 1) { // up to one of each note in frame - hammer hit detection
-        let lines = [];
+    else { // multiple lines: filter, then check every combination of lines
+        let redLines = [], blueLines = [];
 
         sNoteTypes[0].forEach(element => { // add all notes to lines[] array
             let line = [element._lineIndex, element._lineLayer,
                         cutVectors[element._cutDirection][0],
                         cutVectors[element._cutDirection][1] ];
-            lines.push(line);
+            redLines.push(line);
         });
 
         sNoteTypes[1].forEach(element => {
             let line = [element._lineIndex, element._lineLayer,
                 cutVectors[element._cutDirection][0],
                 cutVectors[element._cutDirection][1] ];
-            lines.push(line);
+            blueLines.push(line);
         });
 
-        for (let j = 0; j < sNoteTypes[3].length; j++) { // for every bomb, check collision with every block
-            let bombX = sNoteTypes[3][j]._lineIndex;
-            let bombY = sNoteTypes[3][j]._lineLayer;
-            
-            lines.forEach(element => {
-                intersection = -1;
-                intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
-                console.log(intersection + '@' + note._time);
-                if (intersection == -1) {}
+        for (let i = 0; i < redLines.length; i++) {
+            for (let j = 0; j < redLines.length;) {
+                if (i == j) j++;
+                else {
+                    if (checkIntersection(redLines[i], redLines[j]) == -2) { // if the lines go in the same direction
+                        redLines.splice(j, 1); // remove j from the array
+                    } else { j++; }
+                }
+            }
+        }
+
+        for (let i = 0; i < blueLines.length; i++) {
+            for (let j = 0; j < blueLines.length;) {
+                if (i == j) j++;
+                else {
+                    if (checkIntersection(blueLines[i], blueLines[j]) == -2) { // if the lines go in the same direction
+                        blueLines.splice(j, 1); // remove j from the array
+                    } else { j++; }
+                }
+            }
+        }
+
+        blueLines.forEach(blue => { // add all notes to lines[] array
+            redLines.forEach(red => {
+                let intersection = checkIntersection(red, blue, time);
+                if (intersection < 0) {} // do nothing - invalid output, no handclap
                 else if (intersection <= 1) {
-                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                    outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
                     state[1] += 1;
                 }
-                else if (intersection < 2) {
-                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter misses some contextual clues, and thus may flag incorrectly', 'warning');
+                else if (intersection <= 2) {
+                    outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
                     state[0] += 1;
                 }
             });
-        }
+        });
     }
 
-    else {
+    // hammer hit detection
+    let hhLines = [];
 
+    sNoteTypes[0].forEach(element => { // add all notes to lines[] array
+        let line = [element._lineIndex, element._lineLayer,
+                    cutVectors[element._cutDirection][0],
+                    cutVectors[element._cutDirection][1] ];
+        hhLines.push(line);
+    });
+
+    sNoteTypes[1].forEach(element => {
+        let line = [element._lineIndex, element._lineLayer,
+            cutVectors[element._cutDirection][0],
+            cutVectors[element._cutDirection][1] ];
+        hhLines.push(line);
+    });
+
+    for (let j = 0; j < sNoteTypes[3].length; j++) { // for every bomb, check collision with every block
+        let bombX = sNoteTypes[3][j]._lineIndex;
+        let bombY = sNoteTypes[3][j]._lineLayer;
+        
+        hhLines.forEach(element => {
+            intersection = -1;
+            intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
+            if (intersection < 0) {}
+            else if (intersection <= 1) {
+                outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                state[1] += 1;
+            }
+            else if (intersection <= 1.5) {
+                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                state[0] += 1;
+            }
+        });
     }
 
     lastNote = i + surroundingNotes.length; // only show each frame once
@@ -474,21 +523,30 @@ function checkClap(i) {
 
 // based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
 function checkIntersection(a, b, time = 0) {
-    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { // one of the notes is a dot, test for intersection between line and point
+    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { // one of the notes is a dot, test for perpendicular distance between line and point
         let line = a, dot = b;
         if (a[2] == 0 && a[3] == 0) { // a is the dot
             dot = a;
             line = b;
         }
-        let dX = (line[0] - dot[0])/(line[2]); // d(A) is the distance between the line and the point divided by the line direction 
-        let dY = (line[1] - dot[1])/(line[3]);
 
-        if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; } // if d(A) is infinity, there is distance but no velocity in d(A) so no clap would be expected
-        if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX); // if d(A) is NaN, both distance and velocity in that direction are zero (eg deltaY in a |>| |<| handclap) so return the other
-        if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
-        return ((Math.abs(dX) +  Math.abs(dY)) / 2);
+        let perpDist = checkIntersection(line, [dot[0], dot[1], -line[3], line[2]]);
+        if (perpDist == 0) { // the dot lies on the line, calculate distance
+            let dX = (line[0] - dot[0])/(line[2]); // d(A) is the distance between the line and the point divided by the line direction 
+            let dY = (line[1] - dot[1])/(line[3]);
+
+            if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; } // if d(A) is infinity, there is distance but no velocity in d(A) so no clap would be expected
+            if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX); // if d(A) is NaN, both distance and velocity in that direction are zero (eg deltaY in a |>| |<| handclap) so return the other
+            if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
+            return ((Math.abs(dX) +  Math.abs(dY)) / 2);
+        } else {
+            return perpDist;
+        }
     } 
-    if (a[2] == b[2] && a[3] == b[3]) { return -1; } // cut dirs are parallel
+    if (a[2] == b[2] && a[3] == b[3]) { // lines in the same direction, hopefully no real handclap risk
+        if (checkIntersection(a, [b[0], b[1], -b[3], b[2]]) == 0) return -2; // they describe the same line
+        return -1; // they do not describe the same line
+    } // cut dirs are parallel, return -1 or -2 depending on if they are the same line
 
     let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0])); // calculating intersection point of lines
     let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
