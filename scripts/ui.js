@@ -94,13 +94,13 @@ function highlightElements(time) {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.scrollIntoView({behavior: "smooth"});
+                    element.scrollIntoView({behavior: "smooth", block: "center"});
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.scrollIntoView({behavior: "smooth"});
+                element.scrollIntoView({behavior: "smooth", block: "center"});
                 element.classList.add('selected');
             }
         }
