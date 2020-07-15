@@ -61,8 +61,18 @@ function render(notes = notesArray) {
         return;
     }
 
+    let firstViewableNote = -renderDistance;
+    if (angleX >= 270) { // vertically looking forwards
+        if (Math.min(angleY, 360 - angleY) <= 45) {
+            firstViewableNote = Math.max(-renderDistance, -1.5);
+        }
+        else if (Math.min(angleY, 360 - angleY) <= 90) {
+            firstViewableNote = Math.max(-renderDistance, -3);
+        }
+    }
+
     function renderNote(time) {
-        return (time >= centerBeat - renderDistance && time <= centerBeat + renderDistance);
+        return (time >= centerBeat + firstViewableNote && time <= centerBeat + renderDistance);
     }
 
     // filter notes outside of range
@@ -73,12 +83,8 @@ function render(notes = notesArray) {
     // generate all valid beats within the range
     let bmCountOld = gridContainer.querySelectorAll('.marker').length;
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(centerBeat - renderDistance - 1)); i <= Math.floor(centerBeat + renderDistance + 1); i++) {
-        if (i <= Math.floor(centerBeat + renderDistance + 1)) {
-            for (let j = 0; j < divisionValue; j++) {
-                beatMarkers.push(i + (j / divisionValue));
-            }
-        }
+    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
+            beatMarkers.push(i / divisionValue);
     }
     let deltaMarkers = beatMarkers.length - bmCountOld;
 
