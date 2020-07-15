@@ -342,6 +342,26 @@ body.light {
 .main .renderbox #render-container #grid-container .note.warn .note-face {
   border: 0.0625rem solid var(--warning);
 }
+.main .renderbox #fileSelector {
+  position: relative;
+  top: 0.5rem;
+  left: 0.5rem;
+}
+.main .renderbox #fileSelector select {
+  background-color: var(--bg);
+  color: var(--etext);
+  border-radius: 1rem;
+  border: none;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+}
+.main .renderbox #fileSelector select:focus,
+.main .renderbox #fileSelector select:active {
+  border: 0.0625rem solid var(--text);
+  outline: none;
+  position: relative;
+  top: -0.0625rem;
+  left: -0.0625rem;
+}
 .main .renderbox .slider input,
 .main .renderbox .slider label {
   vertical-align: middle;

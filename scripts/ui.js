@@ -107,116 +107,61 @@ async function readUrl() {
                                 '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
                                 '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
     if (!validurl.test(urlInput.value)) return;
-
     if (urlInput.value == '') return;
-    let url = 'https://cors-anywhere.herokuapp.com/'; // fixes cors headers on most urls
-    url += urlInput.value;
+
+    let url = 'https://cors-anywhere.herokuapp.com/' + urlInput.value; // fixes cors headers on most urls
+
     introDiv.classList.add('uploading');
-    console.log(url);
+
     JSZipUtils.getBinaryContent(url, async function(err, data) { 
         if (err) { throw err; }
         else {
-            ready = false;
-            zipFile = true;
-            let zip = new JSZip();
-
-            zip.loadAsync(data).then(function (unzipped) {
-                for (filename in unzipped.files) {
-                    if (filename.substr(-3) == "dat") {
-                        if (filename == "info.dat" || filename == "Info.dat") {
-                            zip.file(filename).async("text")
-                            .then( function (content) {
-                                infoDat = JSON.parse(content);
-                                bpm = infoDat._beatsPerMinute;
-                            });
-                        }
-                        else {
-                            let name = filename; // async hates me but i think this works
-                            zip.file(filename).async("text")
-                            .then(function (content) {
-                                datFiles[name] = getNotes(JSON.parse(content));
-                            });
-                        }
-                    }
-                }
-            });
-
-            await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
-
-            introDiv.classList.remove('uploading');
-            introDiv.classList.add('done');
-            ready = true;
-
-            let fileSelector = document.getElementById("fileSelector");
-            fileSelector.removeChild(fileSelector.firstChild);
-
-            let select = document.createElement("select");
-
-            for (var key in datFiles) {
-                let item = document.createElement("option");
-                item.value = key;
-                item.append(key.slice(0, -4));
-                select.append(item);
-            };
-
-            select.lastChild.selected = true;
-
-            select.addEventListener('change', function() {
-                let select = document.getElementsByTagName("select")[0];
-                notesArray = datFiles[select.value];
-                getInfoDat(select.value);
-                render(notesArray);
-                checkParity();
-            });
-                
-            fileSelector.append(select);
-
-            notesArray = datFiles[key];
-            centerBeat = 0;
-            
-            getInfo(key);
-            checkParity();
-            render();
+            extractZip(data);
         }
     });
 }
 
 async function readZip(file) {
-    ready = false;
-    zipFile = true;
     introDiv.classList.add('uploading');
-    let zip = new JSZip();
     const fr = new FileReader();
     fr.readAsArrayBuffer(file);
 
     fr.addEventListener('load', function () {
-        zip.loadAsync(fr.result) // there is no semicolon here intentionally
-        .then(function (unzipped) {
-            for (filename in unzipped.files) {
-                if (filename.substr(-3) == "dat") {
-                    if (filename == "info.dat" || filename == "Info.dat") {
-                        zip.file(filename).async("text")
-                        .then( function (content) {
-                            infoDat = JSON.parse(content);
-                            bpm = infoDat._beatsPerMinute;
-                        });
-                    }
-                    else {
-                        let name = filename; // async hates me but i think this works
-                        zip.file(filename).async("text")
-                        .then(function (content) {
-                            datFiles[name] = getNotes(JSON.parse(content));
-                        });
-                    }
+        extractZip(fr.result);
+    });
+}
+
+async function extractZip(data) {
+    ready = false;
+    zipFile = true;
+    let zip = new JSZip();
+
+    zip.loadAsync(data).then(function (unzipped) {
+        for (filename in unzipped.files) {
+            if (filename.substr(-3) == "dat") {
+                if (filename == "info.dat" || filename == "Info.dat") {
+                    zip.file(filename).async("text")
+                    .then( function (content) {
+                        infoDat = JSON.parse(content);
+                        bpm = infoDat._beatsPerMinute;
+                    });
+                }
+                else {
+                    let name = filename; // async hates me but i think this works
+                    zip.file(filename).async("text")
+                    .then(function (content) {
+                        datFiles[name] = getNotes(JSON.parse(content));
+                    });
                 }
             }
-        });
+        }
     });
 
     await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
 
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');
+
     ready = true;
 
     let fileSelector = document.getElementById("fileSelector");
@@ -224,7 +169,9 @@ async function readZip(file) {
 
     let select = document.createElement("select");
 
+    let count = 0;
     for (var key in datFiles) {
+        count++;
         let item = document.createElement("option");
         item.value = key;
         item.append(key.slice(0, -4));
@@ -236,12 +183,15 @@ async function readZip(file) {
     select.addEventListener('change', function() {
         let select = document.getElementsByTagName("select")[0];
         notesArray = datFiles[select.value];
-        getInfoDat(select.value);
+        getInfo(select.value);
+        for (let i = 0; i < notesContainer.childNodes.length; i++) {
+            notesContainer.removeChild(notesContainer.childNodes[i]);
+        } // clear to avoid errors with selective renderer
         render(notesArray);
         checkParity();
     });
         
-    fileSelector.append(select);
+    if (count > 1) fileSelector.append(select);
 
     notesArray = datFiles[key];
     centerBeat = 0;
