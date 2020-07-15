@@ -236,6 +236,8 @@ function checkParity() {
     let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
+    let lastNote = 0;
+    
     let summary = document.getElementById('summary');
 
     if (!zipFile) {
