@@ -206,7 +206,7 @@ function render(notes = notesArray) {
             noteContainer.style.setProperty('top', posY + 'px');
             noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-            noteContainer.addEventListener('click', function () { scrollTo(note._time); });
+        noteContainer.addEventListener('click', function () { scrollVal(note._time + offset); });
 
             if (note.error) {
                 noteContainer.classList.add('error');
