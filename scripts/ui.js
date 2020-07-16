@@ -30,7 +30,6 @@ const timeScaleSlider = document.getElementById('timeScale');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
-urlInput.addEventListener('focusout', readUrl);
 urlInput.addEventListener('keyup', function(event) {
     if (event.key == 'Enter') {
         readUrl();
@@ -63,7 +62,7 @@ var file = null;
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let file = dt.files[0];
-    if (files.name.substr(-3) == "dat") {
+    if (files.name.substr(-3) == 'dat') {
         readFile(file);
     } else {
         readZip(file);
@@ -72,7 +71,7 @@ function handleDrop(e) {
 
 function handleFileInput(e) {
     let file = this.files[0];
-    if (file.name.substr(-3) == "dat") {
+    if (file.name.substr(-3) == 'dat') {
         readFile(file);
     } else {
         readZip(file);
@@ -112,7 +111,7 @@ async function readUrl() {
 
     introDiv.classList.add('uploading');
 
-    JSZipUtils.getBinaryContent(url, async function(err, data) { 
+    JSZipUtils.getBinaryContent(url, function(err, data) { 
         if (err) { throw err; }
         else {
             extractZip(data);
@@ -120,15 +119,17 @@ async function readUrl() {
     });
 }
 
-async function readZip(file) {
+function readZip(file) {
     introDiv.classList.add('uploading');
     const fr = new FileReader();
-    fr.readAsArrayBuffer(file);
 
+    fr.readAsArrayBuffer(file);
     fr.addEventListener('load', function () {
         extractZip(fr.result);
     });
 }
+
+var audio;
 
 async function extractZip(data) {
     ready = false;
@@ -137,9 +138,9 @@ async function extractZip(data) {
 
     zip.loadAsync(data).then(function (unzipped) {
         for (filename in unzipped.files) {
-            if (filename.substr(-3) == "dat") {
-                if (filename == "info.dat" || filename == "Info.dat") {
-                    zip.file(filename).async("text")
+            if (filename.substr(-3) == 'dat') {
+                if (filename == 'info.dat' || filename == 'Info.dat') {
+                    zip.file(filename).async('text')
                     .then( function (content) {
                         infoDat = JSON.parse(content);
                         bpm = infoDat._beatsPerMinute;
@@ -147,12 +148,18 @@ async function extractZip(data) {
                 }
                 else {
                     let name = filename; // async hates me but i think this works
-                    zip.file(filename).async("text")
+                    zip.file(filename).async('text')
                     .then(function (content) {
                         datFiles[name] = getNotes(JSON.parse(content));
                     });
                 }
-            }
+            } else if (filename.substr(-3) == 'egg' || filename.substr(-3) == 'ogg') {
+                zip.file(filename).async('blob')
+                .then(function (content) {
+                    audio = new Audio(window.URL.createObjectURL(content));
+                    audio.preload = true
+                });
+            } 
         }
     });
 
@@ -161,17 +168,15 @@ async function extractZip(data) {
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');
 
-    ready = true;
-
-    let fileSelector = document.getElementById("fileSelector");
+    let fileSelector = document.getElementById('fileSelector');
     fileSelector.removeChild(fileSelector.firstChild);
 
-    let select = document.createElement("select");
+    let select = document.createElement('select');
 
     let count = 0;
     for (var key in datFiles) {
         count++;
-        let item = document.createElement("option");
+        let item = document.createElement('option');
         item.value = key;
         item.append(key.slice(0, -4));
         select.append(item);
@@ -180,7 +185,7 @@ async function extractZip(data) {
     select.lastChild.selected = true;
 
     select.addEventListener('change', function() {
-        let select = document.getElementsByTagName("select")[0];
+        let select = document.getElementsByTagName('select')[0];
         notesArray = datFiles[select.value];
         getInfo(select.value);
         while (notesContainer.childNodes.length != 0) {
@@ -189,11 +194,31 @@ async function extractZip(data) {
         render(notesArray);
         checkParity();
     });
-        
+
     if (count > 1) fileSelector.append(select);
+
+    let playback = document.createElement('span');
+    playback.append(' \u25B6');
+
+    playback.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.currentTime = centerBeat * 60 / bpm;
+            audio.play(); 
+            playback.setAttribute('style', 'color:#00ee55');
+            syncPlayback();
+        }
+        else { 
+            audio.pause(); 
+            playback.removeAttribute('style')
+        }
+    });
+
+    fileSelector.append(playback);
 
     notesArray = datFiles[key];
     centerBeat = 0;
+    
+    ready = true;
     
     getInfo(key);
     checkParity();
@@ -215,13 +240,13 @@ function highlightElements(time) {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.scrollIntoView({behavior: "smooth", block: "center"});
+                    element.scrollIntoView({behavior: 'smooth', block: 'center'});
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.scrollIntoView({behavior: "smooth", block: "center"});
+                element.scrollIntoView({behavior: 'smooth', block: 'center'});
                 element.classList.add('selected');
             }
         }

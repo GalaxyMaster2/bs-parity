@@ -33,6 +33,15 @@ function renderTransition(timestamp) {
     }
 }
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function syncPlayback() {
+    while (!audio.paused) {
+        centerBeat = (audio.currentTime + 0.01) * bpm / 60;
+        render();
+        await delay(1000/60);
+    }
+}
+
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);

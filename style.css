@@ -390,6 +390,12 @@ body.light {
   top: -0.0625rem;
   left: -0.0625rem;
 }
+.main .renderbox #fileSelector span {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
 .main .renderbox .slider input,
 .main .renderbox .slider label {
   vertical-align: middle;

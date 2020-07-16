@@ -126,7 +126,7 @@ function getMousePos(e) {
 function until(condition) {
     const poll = resolve => {
         if (condition()) resolve();
-        else setTimeout(_ => poll(resolve), 67);
+        else setTimeout(_ => poll(resolve), 100);
     }
 
     return new Promise(poll);
