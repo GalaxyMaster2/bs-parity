@@ -28,30 +28,45 @@ perspectiveSlider.addEventListener('input', function () {
     render();
 });
 
-warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); });
-errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); });
+warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
+errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('click', changeTheme);
 
+/**
+ * reads the value of the input sliderPrecision and sets the variable sliderPrecision
+ * to the inverse of its value, swapping infinity to zero
+ * @returns {void} - runs checkParity again
+ */
 function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
     sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
     checkParity();
 }
 
+/**
+ * swaps classes of dark and light theme, colour change logic lies in css
+ */
 function changeTheme() {
     let body = document.getElementsByTagName('body')[0];
     body.classList.toggle('dark');
     body.classList.toggle('light');
 }
 
-// fancy click handler based off of https://jsfiddle.net/KyleMit/1jr12rd3/
-// converted to pure js from jquery and added up/down handlers
+// fancy click handler
+// 
 var mouseHandle = false;
 var cursorX = -1;
 var cursorY = 0;
 
+/**
+ * detects middle and right click and assigns them to actions
+ * based off of https://jsfiddle.net/KyleMit/1jr12rd3/
+ * converted to pure js from jquery and added up/down handlers
+ * @param {Event} e - a mouseDown event
+ * @returns {void} - will probably lead to a render() call, but no output
+ */
 async function handleMouseDown(e) {
     if (mouseHandle == true) { return; }
     if (e.which == 3) {
@@ -101,6 +116,10 @@ async function handleMouseDown(e) {
     }
 }
 
+/**
+ * disables scrolling and/or rotating when the relevant buttons are lifted
+ * @param {Event} e - a mouseUp event
+ */
 function handleMouseUp(e) {
     preventDefaults(e);
 
@@ -118,20 +137,35 @@ function handleMouseUp(e) {
     }
 }
 
+/**
+ * sets the variables cursorX and cursorY to the position of the mouse inside the page
+ * @param {Event} e - a mouseMove event
+ */
 function getMousePos(e) {
     cursorX = e.clientX;
     cursorY = e.clientY;
 }
 
-function until(condition) {
+/**
+ * function for async stuff, repeatedly polls a boolean condition until met
+ * @param {boolean} condition - the boolean condition to be met
+ * @param {Number} interval - the time between polls
+ * @returns {Promise} - lets program continue
+ */
+function until(condition, interval = 1000/30) {
     const poll = resolve => {
         if (condition()) resolve();
-        else setTimeout(_ => poll(resolve), 67);
+        else setTimeout(_ => poll(resolve), interval);
     }
 
     return new Promise(poll);
 }
 
+/**
+ * keyboard rotation function
+ * @param {Event} event - a keyDown event 
+ * @returns {void} - will lead to render call if w/a/s/d pressed
+ */
 function handleKeyDown(event) {
     switch (event.key) {
         case 'w':
@@ -152,6 +186,11 @@ function handleKeyDown(event) {
     render();
 }
 
+/**
+ * mouse rotation function
+ * @param {Event} event - a mouseMove event 
+ * @returns {void} - will lead to render call if mouse has moved more than one ulp
+ */
 function mouseRotate(e) {
     angleX = mod(angleX - e.movementY * 0.5, 360);
     angleY = mod(angleY + e.movementX * 0.5, 360);
@@ -161,6 +200,12 @@ function mouseRotate(e) {
 let wheelScrolling = false;
 let oldTarget = 0;
 let lastScrollTime = Date.now();
+
+/**
+ * converts each scroll tick into an entire beat of movement, uses ola to keep speed of smooth scrolling roughly consistent
+ * @param {Event} event - a scroll event
+ * @returns {void} - will lead to render call if
+ */
 function scroll(event) {
     preventDefaults(event);
     delta = event.deltaY;

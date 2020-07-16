@@ -19,8 +19,13 @@ var angleY = 320;
 
 var animationFrameId;
 
-// assumes centerBeat is never updated on its own, aside from here
+/**
+ * enables use of requestAnimationFrame with Ola (?)
+ * @param {Number} timestamp - unused
+ * @returns {void} - leads to render call
+ */
 function renderTransition(timestamp) {
+    // assumes centerBeat is never updated on its own, aside from here
     // this could lead to a very unlikely edge case where we pass precisely over the target
     // in the middle of a transition instantly stopping the animation
     if (olaPosition._value.to === centerBeat) {
@@ -33,6 +38,12 @@ function renderTransition(timestamp) {
     }
 }
 
+/**
+ * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
+ * calculates animation time proportional to log of distance
+ * @param {Number} target - the beat to scroll to
+ * @returns {void} - leads to render call
+ */
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);
@@ -55,6 +66,12 @@ function scrollTo(target) {
     }
 }
 
+/**
+ * outputs notes and positions them within the render container around centerBeat
+ * does many fancy things
+ * @param {*} notes - the array of notes to render, defaults to notesArray
+ * @returns {void} - outputs to DOM, should not return a value
+ */
 function render(notes = notesArray) {
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');

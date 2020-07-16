@@ -91,6 +91,11 @@ var notesArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
+/**
+ * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
+ * @param {Array} obj - A beat saber JSON array of notes
+ * @returns {Array} - filtered, tagged & sorted notes
+ */
 function getNotes(obj) {
     let notes = obj._notes;
     notes.sort(function (a, b) {
@@ -111,8 +116,11 @@ function getNotes(obj) {
     return notes;
 }
 
-// used to detect the scroll line height in FireFox
-// graciously provided by StackOverflow: https://stackoverflow.com/a/57788612
+/**
+ * Detects scroll line height in Firefox, as it is calculated differently to other browsers
+ * based upon https://bit.ly/3fy5IEQ
+ * @returns {number} - line height in pixels
+ */
 function getScrollLineHeight() {
     const el = document.createElement('div');
     el.style.fontSize = 'initial';
@@ -123,16 +131,33 @@ function getScrollLineHeight() {
     return fontSize ? window.parseInt(fontSize) : 16;
 }
 
+/**
+ * prevents any event from causing it's default action
+ * @param {Event} e - any event that
+ */
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
 }
 
-// js modulo operator does not work well with negative values
+/**
+ * js' native modulo operator does not work well with negative values
+ * @param {Number} n - divident of modulo
+ * @param {Number} m - divisor of modulo
+ * @returns {Number} - n % m, with support for negatives
+ */
 function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
+/**
+ * prints a fancy error message to the screen, supports both notes and raw text
+ * @param {Array} note - the note responsible for the error (previewed in message). can be omitted
+ * @param {String | Number} parity - if in note mode, the type of parity broken, otherwise the time of the error
+ * @param {String} message - the caption/description of the error. can be broken into two lines with '|' in text mode
+ * @param {String} messageType - the severity of the error - will be added to output as a class
+ * @returns {void} - outputs to DOM, should not return a value
+ */
 function outputUI(note, parity, message, messageType) {
     let time, imgSrc, infoString, oneLine;
     if (note != false) { // if note passed in note function
@@ -186,12 +211,20 @@ function outputUI(note, parity, message, messageType) {
     output.appendChild(element);
 }
 
+/** clears all error messages from output box */
 function clearOutput() {
     while (output.lastChild) {
         output.removeChild(output.lastChild);
     }
 }
 
+/**
+ * finds the last note in the same colour (for preceding-error highlighting)
+ * @param {Array} jsonData - the notes array
+ * @param {Number} type - whether the note is a blue or red block
+ * @param {Number} lastVal - the position of the error note inside the array
+ * @returns {Number} - the index of the last note of the same colour in the array, or -1 if not found
+ */
 function findCol(jsonData, type, lastVal) {
     for (let i = lastVal; i >= 0; i--) {
         if (types[jsonData[i]._type] === type) {
@@ -201,7 +234,12 @@ function findCol(jsonData, type, lastVal) {
     return -1;
 }
 
-function checkParity() {
+/**
+ * checks for errors in parity within the notes
+ * @param notes - the array of notes to scan for errors
+ * @returns {void} - outputs error messages through outputUI
+ */
+function checkParity(notes = notesArray) {
     clearOutput();
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
@@ -214,10 +252,10 @@ function checkParity() {
     let summary = document.getElementById('summary');
 
     let parity = new Parity();
-    parity.init(notesArray);
+    parity.init(notes);
 
-    for (let i = 0; i < notesArray.length; i++) {
-        let note = notesArray[i];
+    for (let i = 0; i < notes.length; i++) {
+        let note = notes[i];
         let type = types[note._type];
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
@@ -240,7 +278,7 @@ function checkParity() {
                 blue: true
             };
             let offset = -1;
-            let offsetNote = notesArray[i + offset];
+            let offsetNote = notes[i + offset];
             while ((i + offset) >= 0 &&
                 (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
                 switch (types[offsetNote._type]) {
@@ -259,7 +297,7 @@ function checkParity() {
                         break;
                 }
                 offset--;
-                offsetNote = notesArray[i + offset];
+                offsetNote = notes[i + offset];
             }
 
             // invert parity if needed and log the bomb if so
@@ -279,7 +317,7 @@ function checkParity() {
                 note.warn = true;
 
                 try {
-                    let last = notesArray[findCol(notesArray, type, i - 1)];
+                    let last = notes[findCol(notes, type, i - 1)];
                     last.precedingWarn = true;
                 }
                 catch {
@@ -293,7 +331,7 @@ function checkParity() {
                 note.error = true;
                 let deltaTime = 0;
                 try {
-                    let last = notesArray[findCol(notesArray, type, i - 1)];
+                    let last = notes[findCol(notes, type, i - 1)];
                     deltaTime = (note._time - last._time).toFixed(3);
                     deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
                     last.precedingError = true;
@@ -308,15 +346,15 @@ function checkParity() {
 
             // invert parity again if there's a same-color note within sliderPrecision
             let offset = 1;
-            let offsetNote = notesArray[i + offset];
-            while ((i + offset) < notesArray.length &&
+            let offsetNote = notes[i + offset];
+            while ((i + offset) < notes.length &&
                 (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
                     parity.invert(type);
                     break;
                 }
                 offset++;
-                offsetNote = notesArray[i + offset];
+                offsetNote = notes[i + offset];
             }
         }
     }
