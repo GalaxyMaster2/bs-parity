@@ -305,10 +305,38 @@ body {
                         &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
                     }
 
-                    &.precedingError .note-face { border: 0.0625rem solid black; }
-                    &.precedingWarn  .note-face { border: 0.0625rem solid black; }
-                    &.error .note-face { border: 0.0625rem solid var(--error);   }
-                    &.warn  .note-face { border: 0.0625rem solid var(--warning); }
+                    &.precedingWarn  .note-face { 
+                        border: 0.0625rem solid black; 
+                        &.bomb {
+                            border-radius: 0.75rem;
+                            border: none;
+                            &.front { border: 0.0625rem solid black; }
+                        }
+                    }
+                    &.precedingError .note-face { 
+                        border: 0.0625rem solid black; 
+                        &.bomb {
+                            border-radius: 0.75rem;
+                            border: none;
+                            &.front { border: 0.0625rem solid black; }
+                        }
+                    }
+                    &.warn  .note-face { 
+                        border: 0.0625rem solid var(--warning); 
+                        &.bomb {
+                            border-radius: 0.75rem;
+                            border: none;
+                            &.front { border: 0.0625rem solid var(--warning); }
+                        }
+                    }
+                    &.error .note-face { 
+                        border: 0.0625rem solid var(--error);   
+                        &.bomb {
+                            border-radius: 0.75rem;
+                            border: none;
+                            &.front { border: 0.0625rem solid var(--error); }
+                        }
+                    }
                 }
             }
         }
