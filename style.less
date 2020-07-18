@@ -16,22 +16,17 @@ body {
     --warning: #ffca00;
     --error: #ee0000;
     --trans: cubic-bezier(.58,.11,.51,.97);
-    
+
     margin: 0;
     background-color: var(--bg);
     color: var(--text);
     font-family: sans-serif;
     transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
     height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    min-width: 38rem;
-    min-width: ~'min(38rem, 100vw)';
-
-    @media screen and (min-width: 42rem) { 
-        overflow-x: hidden;
-    }
 
     &.dark {
         --bg:   #222222;
@@ -56,7 +51,7 @@ body {
     z-index: 1;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 1rem;
 
@@ -91,28 +86,34 @@ body {
     }
 
     @media screen and (max-width: 42rem) {
-        div {
-            flex: none;
-        }
         h1 {
             font-size: 1.5rem;
             text-align: left;
         }
     }
     @media screen and (max-width: 34rem) {
-        h1 {font-size: 1.25rem;}
+        .left {
+            display: none;
+        }
+
+        .right {
+            flex: none;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            white-space: normal;
+        }
     }
 }
 
 // intro screen
 .intro {
-    visibility: visible;
     position: absolute;
     z-index: 0;
     width: 100%;
     height: 100%;
-    top: 0;
-    transition: transform 1s var(--trans), visibility 0s linear 1s, top 0s linear 1s;
+    transition: transform 1s var(--trans);
 
     display: flex;
     flex-direction: column;
@@ -179,8 +180,6 @@ body {
 
     &.done {
         transform: translateX(100%);
-        visibility: hidden;
-        top: -100vh;
 
         .done-text {
             display: inline;
@@ -188,7 +187,6 @@ body {
     }
 
     &.done + .main {
-        visibility: visible;
         transition: transform 1s var(--trans);
         transform: translateX(0%);
     }
@@ -196,7 +194,6 @@ body {
 
 // main
 .main {
-    visibility: hidden;
     position: relative;
     --gap: 1rem;
     flex: 1;
@@ -208,10 +205,8 @@ body {
 
     .renderbox {
         padding: 0 var(--gap) 0 0;
-        min-width: 38rem;
-        min-width: ~'min(35rem, 95vw)';
         max-width: 50rem;
-        flex: 1;
+        flex: 10; // to keep at max-width until constrained by outputbox min-width
 
         #render-container {
             position: relative;
@@ -341,29 +336,34 @@ body {
             }
         }
 
-        .slider {
-            input, label {
-                vertical-align: middle;
-            }
+        .sliders-container {
+            display: grid;
+            grid-template-columns: auto;
+            justify-content: start;
+            column-gap: 1rem;
 
-            input {
-                width: 12rem;
-            }
-        }
-        @media screen and (min-width: 52rem) and (max-width: calc(35rem + 40rem + 3 * 1rem)) {
-            .slider:nth-child(even) {
-                position: absolute;
-                left: 50%;
+            .slider {
+                input, label {
+                    vertical-align: middle;
+                }
+
+                input {
+                    width: 12rem;
+                    margin-left: 0;
+                }
+
+                label {
+                    white-space: nowrap;
+                }
             }
         }
     }
 
     .outputbox {
         position: relative;
-        width: 40rem;
-        max-width: 60rem;
-        min-height: 15rem;
-        flex: 1.18;
+        min-width: 30rem;
+        max-width: 45rem;
+        flex: 1;
 
         display: flex;
         flex-direction: column;
@@ -416,17 +416,23 @@ body {
         .outputwrapper {
             position: relative;
             width: 100%;
+            min-height: 10rem;
             flex: 1;
 
             #output {
                 position: absolute;
                 width: 100%;
                 height: 100%;
+                overflow-x: auto;
                 overflow-y: auto;
+                display: grid;
+                grid-template-columns: auto;
+                grid-auto-rows: min-content;
 
                 // doesn't work on firefox
                 &::-webkit-scrollbar {
                     width: 0.75rem;
+                    height: 0.75rem;
                 }
                 &::-webkit-scrollbar-track {
                     border-radius: 0.375rem;
@@ -440,6 +446,9 @@ body {
                         background-color: var(--text);
                     }
                 }
+                &::-webkit-scrollbar-corner {
+                    background-color: var(--bg);
+                }
 
                 // firefox alternative
                 @supports ((scrollbar-width: thin) and (scrollbar-color: #000 #000)) {
@@ -452,6 +461,7 @@ body {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
+                    margin-right: 1rem; // to prevent width from changing when selected
                     border-radius: 1rem;
                     cursor: pointer;
                     background-color: var(--bg);
@@ -462,7 +472,8 @@ body {
                     &.selected {
                         background-color: var(--ebg);
                         color: var(--etext);
-                        margin: 0 1rem;
+                        margin-right: 0.5rem;
+                        margin-left: 0.5rem;
                     }
 
                     &.multiSelected {
@@ -495,6 +506,7 @@ body {
 
                     .text {
                         flex: 1;
+                        white-space: nowrap;
                     }
                 }
 
@@ -508,20 +520,37 @@ body {
     }
 
     // neither flexbox nor grid support the desired behaviour, so @media query it is
-    @media screen and (max-width: calc(35rem + 40rem + 3 * 1rem)) {
+    @media screen and (max-width: 65rem) {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         justify-content: flex-start;
 
         .renderbox {
             flex: 0;
-            width: 95vw;
+            max-width: none;
             padding: 0 0 var(--gap) 0;
+
+            .sliders-container {
+                grid-template-columns: repeat(4, max-content);
+            }
+
+            @media (max-width: 87rem) {
+                .sliders-container {
+                    grid-template-columns: repeat(2, max-content);
+                }
+            }
+            @media (max-width: 48rem) {
+                .sliders-container {
+                    grid-template-columns: auto;
+                }
+            }
         }
 
         .outputbox {
             flex: 1;
-            width: 95vw;
+            min-width: auto;
+            max-width: none;
+            width: auto;
             padding: 0;
         }
     }
