@@ -103,7 +103,7 @@ function highlightElements(time) {
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
-    let selector = '.showWarnings > [data-time="' + timeInd + '"].warning, .showErrors > [data-time="' + timeInd + '"].error';
+    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error';
     let QScount = document.querySelectorAll(selector).length;
     let i = 0;
 
@@ -112,13 +112,13 @@ function highlightElements(time) {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.scrollIntoView({behavior: "smooth", block: "center"});
+                    element.scrollIntoView({ behavior: "smooth", block: "center" });
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.scrollIntoView({behavior: "smooth", block: "center"});
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
                 element.classList.add('selected');
             }
         }

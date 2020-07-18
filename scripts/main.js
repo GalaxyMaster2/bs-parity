@@ -191,6 +191,8 @@ function outputUI(note, parity, message, messageType) {
         }
     }
 
+    let wrapper = document.createElement('div');
+
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
     if (note == false) element.classList.add('noHighlight');
@@ -208,7 +210,8 @@ function outputUI(note, parity, message, messageType) {
 
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
-    output.appendChild(element);
+    wrapper.appendChild(element);
+    output.appendChild(wrapper);
 }
 
 /** clears all error messages from output box */
