@@ -196,23 +196,26 @@ body.light {
   height: var(--height);
   transform-style: preserve-3d;
 }
-.main .renderbox #render-container #grid-container .marker {
+.main .renderbox #render-container #grid-container #marker-container {
+  transform-style: preserve-3d;
+}
+.main .renderbox #render-container #grid-container #marker-container .marker {
   display: flex;
   align-items: center;
   position: absolute;
 }
-.main .renderbox #render-container #grid-container .marker.decimalTime .marker-number {
+.main .renderbox #render-container #grid-container #marker-container .marker.decimalTime .marker-number {
   opacity: 0;
   cursor: default;
 }
-.main .renderbox #render-container #grid-container .marker.translucent {
+.main .renderbox #render-container #grid-container #marker-container .marker.translucent {
   opacity: 0.5;
 }
-.main .renderbox #render-container #grid-container .marker .marker-line {
+.main .renderbox #render-container #grid-container #marker-container .marker .marker-line {
   background-color: var(--etext);
   transition: background-color 0.3s var(--trans);
 }
-.main .renderbox #render-container #grid-container .marker .marker-number {
+.main .renderbox #render-container #grid-container #marker-container .marker .marker-number {
   color: var(--etext);
   margin-left: 0.3rem;
   font-size: 1.8rem;
@@ -220,7 +223,10 @@ body.light {
   transition: color 0.3s var(--trans);
   cursor: pointer;
 }
-.main .renderbox #render-container #grid-container .note {
+.main .renderbox #render-container #grid-container #note-container {
+  transform-style: preserve-3d;
+}
+.main .renderbox #render-container #grid-container #note-container .note {
   --size: 2.36rem;
   width: var(--size);
   height: var(--size);
@@ -228,111 +234,111 @@ body.light {
   transform-style: preserve-3d;
   cursor: pointer;
 }
-.main .renderbox #render-container #grid-container .note .note-face {
+.main .renderbox #render-container #grid-container #note-container .note .note-face {
   position: absolute;
   display: block;
   width: var(--size);
   height: var(--size);
   border-radius: 0.125rem;
 }
-.main .renderbox #render-container #grid-container .note .note-face.front {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.front {
   transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.back {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.back {
   transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.left {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.left {
   transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.right {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.right {
   transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.top {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.top {
   transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.bottom {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.front {
   transform: rotateY(0deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.back {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.back {
   transform: rotateY(45deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.left {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.left {
   transform: rotateY(90deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.right {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.right {
   transform: rotateZ(135deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.top {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.top {
   transform: rotateX(-45deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb.bottom {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.bottom {
   transform: rotateX(45deg) translateZ(0);
 }
-.main .renderbox #render-container #grid-container .note .note-face.translucent {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.translucent {
   opacity: 0.3;
 }
-.main .renderbox #render-container #grid-container .note .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.dot_front_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.dot_front_blue {
   background-image: url('assets/dot_front_blue.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.dot_front_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.dot_front_red {
   background-image: url('assets/dot_front_red.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.note_front_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_front_blue {
   background-image: url('assets/note_front_blue.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.note_front_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_front_red {
   background-image: url('assets/note_front_red.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.note_side_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_side_blue {
   background-image: url('assets/note_side_blue.svg');
 }
-.main .renderbox #render-container #grid-container .note .note-face.note_side_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_side_red {
   background-image: url('assets/note_side_red.svg');
 }
-.main .renderbox #render-container #grid-container .note.precedingWarn .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face {
   border: 0.0625rem solid black;
 }
-.main .renderbox #render-container #grid-container .note.precedingWarn .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb {
   border-radius: 0.75rem;
   border: none;
 }
-.main .renderbox #render-container #grid-container .note.precedingWarn .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb.front {
   border: 0.0625rem solid black;
 }
-.main .renderbox #render-container #grid-container .note.precedingError .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face {
   border: 0.0625rem solid black;
 }
-.main .renderbox #render-container #grid-container .note.precedingError .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb {
   border-radius: 0.75rem;
   border: none;
 }
-.main .renderbox #render-container #grid-container .note.precedingError .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb.front {
   border: 0.0625rem solid black;
 }
-.main .renderbox #render-container #grid-container .note.warn .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face {
   border: 0.0625rem solid var(--warning);
 }
-.main .renderbox #render-container #grid-container .note.warn .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb {
   border-radius: 0.75rem;
   border: none;
 }
-.main .renderbox #render-container #grid-container .note.warn .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb.front {
   border: 0.0625rem solid var(--warning);
 }
-.main .renderbox #render-container #grid-container .note.error .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face {
   border: 0.0625rem solid var(--error);
 }
-.main .renderbox #render-container #grid-container .note.error .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb {
   border-radius: 0.75rem;
   border: none;
 }
-.main .renderbox #render-container #grid-container .note.error .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   border: 0.0625rem solid var(--error);
 }
 .main .renderbox .sliders-container {
