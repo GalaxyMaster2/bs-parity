@@ -360,7 +360,7 @@ body.light {
 }
 .main .outputbox {
   position: relative;
-  min-width: 30rem;
+  min-width: 37.5rem;
   max-width: 45rem;
   flex: 1;
   display: flex;
@@ -496,7 +496,7 @@ body.light {
 .main .outputbox .outputwrapper #output.showErrors .error {
   display: flex;
 }
-@media screen and (max-width: 65rem) {
+@media screen and (max-width: 75rem) {
   .main {
     flex-direction: column;
     align-items: stretch;
@@ -504,8 +504,11 @@ body.light {
   }
   .main .renderbox {
     flex: 0;
-    max-width: none;
+    max-width: 50rem;
     padding: 0 0 var(--gap) 0;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .main .renderbox .sliders-container {
     grid-template-columns: repeat(4, -webkit-max-content);
@@ -519,13 +522,13 @@ body.light {
     padding: 0;
   }
 }
-@media screen and (max-width: 65rem) and (max-width: 87rem) {
+@media screen and (max-width: 75rem) and (max-width: 87rem) {
   .main .renderbox .sliders-container {
     grid-template-columns: repeat(2, -webkit-max-content);
     grid-template-columns: repeat(2, max-content);
   }
 }
-@media screen and (max-width: 65rem) and (max-width: 48rem) {
+@media screen and (max-width: 75rem) and (max-width: 48rem) {
   .main .renderbox .sliders-container {
     grid-template-columns: auto;
   }
