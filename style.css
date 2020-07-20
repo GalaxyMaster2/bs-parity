@@ -99,7 +99,7 @@ body.light {
   justify-content: center;
   align-items: center;
 }
-.intro .drag-file {
+.intro .choose-file {
   width: 45vw;
   min-width: 38rem;
   min-width: min(38rem, 95vw);
@@ -114,33 +114,46 @@ body.light {
   text-align: center;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans), width 0.3s var(--trans);
 }
-.intro .drag-file.highlight {
+.intro .choose-file.highlight {
   background-color: var(--etext);
   width: 55vw;
 }
-.intro .drag-file input {
+.intro .choose-file input {
   display: none;
 }
-.intro .drag-file label {
+.intro .choose-file label {
   display: inline-block;
   width: 100%;
   height: 100%;
   text-align: center;
   cursor: pointer;
 }
-.intro .drag-file label:focus strong,
-.intro .drag-file label:hover strong {
+.intro .choose-file label:focus strong,
+.intro .choose-file label:hover strong {
   color: var(--blue);
 }
-.intro .drag-file .uploading-text,
-.intro .drag-file .done-text {
+.intro .choose-file .uploading-text,
+.intro .choose-file .done-text {
   display: none;
+}
+.intro #drop-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: var(--etext);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--trans);
 }
 .intro + .main {
   transform: translateX(-100%);
 }
 .intro.uploading label,
 .intro.done label {
+  display: none;
+}
+.intro.uploading #drop-overlay,
+.intro.done #drop-overlay {
   display: none;
 }
 .intro.uploading .uploading-text {

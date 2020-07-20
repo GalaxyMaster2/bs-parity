@@ -14,7 +14,7 @@ const output = document.getElementById('output');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
 
-const dropArea = document.getElementById('drag-file');
+const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
 const themeToggle = document.getElementById('theme');
 
@@ -30,20 +30,20 @@ const timeScaleSlider = document.getElementById('timeScale');
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 
+document.addEventListener('dragenter', function () {
+    dropArea.style.setProperty('pointer-events', 'auto');
+    dropArea.style.setProperty('opacity', '0.3');
+});
+
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 });
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, function () {
-        dropArea.classList.add('highlight');
-    }, false);
-});
 ['dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, function () {
-        dropArea.classList.remove('highlight');
+        dropArea.style.setProperty('pointer-events', 'none');
+        dropArea.style.setProperty('opacity', '0');
     }, false);
 });
-
 
 /**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file

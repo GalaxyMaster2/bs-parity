@@ -120,7 +120,7 @@ body {
     justify-content: center;
     align-items: center;
 
-    .drag-file {
+    .choose-file {
         width: 45vw;
         min-width: 38rem;
         min-width: ~'min(38rem, 95vw)'; // LESS does not support min yet, so this is escaped
@@ -162,12 +162,26 @@ body {
         }
     }
 
+    #drop-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: var(--etext);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s var(--trans);
+    }
+
     & + .main {
         transform: translateX(-100%);
     }
 
     &.uploading, &.done {
         label {
+            display: none;
+        }
+
+        #drop-overlay {
             display: none;
         }
     }
