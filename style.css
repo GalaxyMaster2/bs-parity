@@ -522,11 +522,10 @@ body.light {
   }
   .main .renderbox {
     flex: 0;
+    width: 100%;
     max-width: 50rem;
     padding: 0 0 var(--gap) 0;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    align-self: center;
   }
   .main .renderbox .sliders-container {
     grid-template-columns: repeat(4, -webkit-max-content);
@@ -558,7 +557,7 @@ body.light {
             appearance: none;
     height: 1.25rem;
     width: 2.5rem;
-    border-radius: 0.5625rem;
+    border-radius: 0.625rem;
     outline: none;
     position: relative;
     margin: 0;
@@ -580,7 +579,7 @@ body.light {
   }
   input[type='checkbox']:checked {
     background: var(--blue);
-    --x: 1.2rem;
+    --x: 1.25rem;
   }
   input[type='checkbox']:focus {
     border: 0.0625rem solid var(--etext);
