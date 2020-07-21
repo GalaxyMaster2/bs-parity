@@ -139,6 +139,9 @@ body.light {
 .intro .choose-file label:hover strong {
   color: var(--blue);
 }
+.intro .choose-file label strong {
+  transition: color 0.3s var(--trans);
+}
 .intro .choose-file .uploading-text,
 .intro .choose-file .done-text {
   display: none;
@@ -474,20 +477,20 @@ body.light {
   cursor: pointer;
   background-color: var(--bg);
   color: var(--text);
-  --bg-trans-time: 0.3s;
-  transition: background-color var(--bg-trans-time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+  --time: 0.3s;
+  transition: background-color var(--time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
 }
 .main .outputbox .outputwrapper #output .parent:hover,
 .main .outputbox .outputwrapper #output .parent:focus {
   background-color: var(--mbg);
-  --bg-trans-time: 0.001s;
+  --time: 0.001s;
 }
 .main .outputbox .outputwrapper #output .parent.selected {
   background-color: var(--ebg);
   color: var(--etext);
   margin-right: 0.5rem;
   margin-left: 0.5rem;
-  --bg-trans-time: 0.3s;
+  --time: 0.3s;
 }
 .main .outputbox .outputwrapper #output .parent.multiSelected {
   border-radius: 0rem;
@@ -597,3 +600,4 @@ body.light {
     left: 0.0625rem;
   }
 }
+/*# sourceMappingURL=./style.css.map */

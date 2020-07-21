@@ -163,6 +163,10 @@ body {
             &:hover strong {
                 color: var(--blue);
             }
+
+            strong { 
+                transition: color 0.3s var(--trans); 
+            }
         }
 
         .uploading-text, .done-text {
@@ -496,13 +500,13 @@ body {
                     cursor: pointer;
                     background-color: var(--bg);
                     color: var(--text);
-                    --bg-trans-time: 0.3s;
-                    transition: background-color var(--bg-trans-time) var(--trans), color 0.3s var(--trans),
+                    --time: 0.3s;
+                    transition: background-color var(--time) var(--trans), color 0.3s var(--trans),
                                 margin 0.3s var(--trans), border-radius 0.3s var(--trans);
 
                     &:hover, &:focus {
                         background-color: var(--mbg);
-                        --bg-trans-time: 0.001s; // not 0s to avoid issue with re-selecting
+                        --time: 0.001s; // not 0s to avoid issue with re-selecting
                     }
 
                     &.selected {
@@ -510,7 +514,7 @@ body {
                         color: var(--etext);
                         margin-right: 0.5rem;
                         margin-left: 0.5rem;
-                        --bg-trans-time: 0.3s;
+                        --time: 0.3s;
                     }
 
                     &.multiSelected {
