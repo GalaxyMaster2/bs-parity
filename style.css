@@ -14,6 +14,8 @@ body {
   color: var(--text);
   font-family: sans-serif;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+  position: absolute;
+  width: 100vw;
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
