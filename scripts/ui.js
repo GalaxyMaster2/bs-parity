@@ -82,6 +82,12 @@ function readFile(files) {
         introDiv.classList.add('done');
         console.log('successful read!');
 
+        // disable the intro screen after animation
+        // unfortunately this doesn't seem to be possible in pure CSS
+        setTimeout(function () {
+            introDiv.style.setProperty('display', 'none');
+        }, 1000);
+
         ready = true;
         centerBeat = 0;
         olaPosition = Ola(0);
