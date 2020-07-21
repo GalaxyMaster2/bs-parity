@@ -163,7 +163,7 @@ async function extractZip(data) {
         }
     });
 
-    await until(_ => Object.keys(datFiles).length != 0); // ie9 doesn't like this but does it really like anything?
+    await until(_ => Object.keys(datFiles).length != 0, 250); // ie9 doesn't like this but does it really like anything?
 
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');

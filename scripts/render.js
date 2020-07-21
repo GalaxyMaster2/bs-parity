@@ -33,12 +33,15 @@ function renderTransition(timestamp) {
     }
 }
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function syncPlayback() {
-    while (!audio.paused) {
-        centerBeat = (audio.currentTime + 0.01) * bpm / 60;
-        render();
-        await delay(1000/60);
+var deltaTime = 0;
+function syncPlayback(timeoffset = 0.01) {
+    centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
+    render();
+
+    if (!audio.paused) {
+        requestAnimationFrame(function() {
+            syncPlayback();
+        });
     }
 }
 
@@ -86,7 +89,7 @@ function render(notes = notesArray) {
 
     // filter notes outside of range
     notes = notes.filter(function (note) {
-        return renderNote(note._time);
+        return renderNote(note._time + offset);
     });
 
     // generate all valid beats within the range

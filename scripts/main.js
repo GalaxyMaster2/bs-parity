@@ -123,7 +123,8 @@ function getInfo(fName) {
     try {
         localOffset = songInfo._customData._editorOffset
     } catch {}
-    offset = - (localOffset * 0.001 + globalOffset) * bpm / 60;
+    offset = -0.001 * (localOffset + globalOffset) * bpm / 60;
+    if (Math.abs(notesArray[0] + offset) < comparisonTolerance) { offset = notesArray[0] } // support for people who offset first note to 0 mark
 }
 
 function findInfo(fname, json) {
