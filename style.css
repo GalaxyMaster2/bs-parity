@@ -141,9 +141,6 @@ body.light {
 .intro .choose-file label:hover strong {
   color: var(--blue);
 }
-.intro .choose-file label strong {
-  transition: color 0.3s var(--trans);
-}
 .intro .choose-file .uploading-text,
 .intro .choose-file .done-text {
   display: none;
