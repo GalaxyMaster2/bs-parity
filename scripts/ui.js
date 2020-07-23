@@ -5,6 +5,8 @@
 
 console.log('ui js loaded');
 
+const pageTitle = document.getElementById('title');
+
 const renderContainer = document.getElementById('render-container');
 const markerContainer = document.getElementById('marker-container');
 const notesContainer = document.getElementById('note-container');
@@ -129,4 +131,29 @@ function highlightElements(time) {
             }
         }
     );
+}
+
+pageTitle.addEventListener('click', randomizeTitle);
+
+const easterEggTitles = [
+    'adequately accurate atrocity auditor',
+    'oopsie finder',
+    'mildly mediocre map monitor',
+    'ParityMaster',
+    'somewhat successful slip-up scrutinizer',
+    'uh-oh goner',
+    'map de-crapifier',
+    'just dont map mistakes smh my head',
+    'software intended to detect and display blocks that are in positions which may be considered uncomfortable',
+    'bad-bloq-buster',
+    'practical parity parser',
+    'cube contemplator',
+    'cyan is a furry',
+    'william gay',
+    'GalaxyMaster\'s Error Blaster',
+    'big-brain blunder buster'
+];
+
+function randomizeTitle() {
+    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
 }

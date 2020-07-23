@@ -52,8 +52,9 @@ body.light {
   justify-content: space-between;
   padding: 1rem;
 }
-.topbar h1 {
+.topbar #title {
   margin: 0;
+  cursor: pointer;
 }
 .topbar div {
   padding-left: 1rem;
@@ -66,7 +67,7 @@ body.light {
   line-height: 2rem;
 }
 @media screen and (max-width: 75rem) {
-  .topbar h1 {
+  .topbar #title {
     font-size: 1.5rem;
   }
   .topbar label,
@@ -75,7 +76,7 @@ body.light {
   }
 }
 @media screen and (max-width: 30rem) {
-  .topbar h1 {
+  .topbar #title {
     font-size: 1.25rem;
   }
   .topbar label,
