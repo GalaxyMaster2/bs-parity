@@ -71,7 +71,7 @@ body.light {
   }
   .topbar label,
   .topbar input {
-    line-height: 1.5rem;
+    line-height: 1.5rem !important;
   }
 }
 @media screen and (max-width: 30rem) {
@@ -80,7 +80,7 @@ body.light {
   }
   .topbar label,
   .topbar input {
-    line-height: 1.25rem;
+    line-height: 1.25rem !important;
   }
 }
 .intro {
