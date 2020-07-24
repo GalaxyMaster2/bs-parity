@@ -63,15 +63,24 @@ body.light {
   white-space: nowrap;
   vertical-align: middle;
   cursor: pointer;
+  line-height: 1.5rem;
 }
 @media screen and (max-width: 75rem) {
   .topbar h1 {
     font-size: 1.5rem;
   }
+  .topbar label,
+  .topbar input {
+    line-height: 1.5rem;
+  }
 }
 @media screen and (max-width: 30rem) {
   .topbar h1 {
     font-size: 1.25rem;
+  }
+  .topbar label,
+  .topbar input {
+    line-height: 1.25rem;
   }
 }
 .intro {
@@ -581,4 +590,3 @@ body.light {
     left: 0.0625rem;
   }
 }
-/*# sourceMappingURL=./style.css.map */
