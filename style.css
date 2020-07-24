@@ -63,7 +63,7 @@ body.light {
   white-space: nowrap;
   vertical-align: middle;
   cursor: pointer;
-  line-height: 1.5rem;
+  line-height: 2rem;
 }
 @media screen and (max-width: 75rem) {
   .topbar h1 {
@@ -590,3 +590,4 @@ body.light {
     left: 0.0625rem;
   }
 }
+/*# sourceMappingURL=./style.css.map */
