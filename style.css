@@ -43,53 +43,35 @@ body.light {
 .topbar {
   position: relative;
   z-index: 1;
+  align-self: flex-end;
+  width: 100%;
+  max-width: calc(50vw + 96rem / 2 + 1rem);
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
+  justify-content: space-between;
   padding: 1rem;
 }
+.topbar h1 {
+  margin: 0;
+}
 .topbar div {
-  flex: 1;
-  white-space: nowrap;
-}
-.topbar div.left {
-  padding-right: 1rem;
-}
-.topbar div.right {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
   padding-left: 1rem;
 }
-.topbar div.right div {
-  flex: 0;
-}
-.topbar div.right div label,
-.topbar div.right div input {
+.topbar div label,
+.topbar div input {
+  white-space: nowrap;
   vertical-align: middle;
   cursor: pointer;
 }
-.topbar div h1 {
-  margin: 0;
-  text-align: center;
-}
-@media screen and (max-width: 42rem) {
+@media screen and (max-width: 75rem) {
   .topbar h1 {
     font-size: 1.5rem;
-    text-align: left;
   }
 }
-@media screen and (max-width: 34rem) {
-  .topbar .left {
-    display: none;
-  }
-  .topbar .right {
-    flex: none;
-  }
+@media screen and (max-width: 30rem) {
   .topbar h1 {
     font-size: 1.25rem;
-    white-space: normal;
   }
 }
 .intro {

@@ -53,60 +53,38 @@ body {
 .topbar {
     position: relative;
     z-index: 1;
+    align-self: flex-end;
+    width: 100%;
+    max-width: calc(50vw + 96rem / 2 + 1rem);
+    box-sizing: border-box;
+
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
+    justify-content: space-between;
     padding: 1rem;
 
+    h1 {
+        margin: 0;
+    }
+
     div {
-        flex: 1;
-        white-space: nowrap;
+        padding-left: 1rem;
 
-        &.left {
-            padding-right: 1rem;
-        }
-
-        &.right {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-            padding-left: 1rem;
-
-            div {
-                flex: 0;
-
-                label, input {
-                    vertical-align: middle;
-                    cursor: pointer;
-                }
-            }
-        }
-
-        h1 {
-            margin: 0;
-            text-align: center;
+        label, input {
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
         }
     }
 
-    @media screen and (max-width: 42rem) {
+    @media screen and (max-width: 75rem) {
         h1 {
             font-size: 1.5rem;
-            text-align: left;
         }
     }
-    @media screen and (max-width: 34rem) {
-        .left {
-            display: none;
-        }
-
-        .right {
-            flex: none;
-        }
-
+    @media screen and (max-width: 30rem) {
         h1 {
             font-size: 1.25rem;
-            white-space: normal;
         }
     }
 }
