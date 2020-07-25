@@ -88,6 +88,7 @@ body.light {
   z-index: 0;
   width: 100%;
   height: 100%;
+  left: 0;
   transition: transform 1s var(--trans);
   display: flex;
   flex-direction: row;
@@ -144,6 +145,11 @@ body.light {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s var(--trans);
+}
+.intro .madeby {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
 }
 .intro + .main {
   transform: translateX(-100%);
