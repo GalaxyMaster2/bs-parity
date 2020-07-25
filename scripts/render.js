@@ -81,10 +81,10 @@ function render(notes = notesArray) {
     let firstViewableNote = -renderDistance;
     if (angleX >= 270) { // vertically looking forwards
         if (Math.min(angleY, 360 - angleY) <= 45) {
-            firstViewableNote = Math.max(-renderDistance, -1.5);
+            firstViewableNote = Math.max(-renderDistance, -1.875/timeScale);
         }
         else if (Math.min(angleY, 360 - angleY) <= 90) {
-            firstViewableNote = Math.max(-renderDistance, -3);
+            firstViewableNote = Math.max(-renderDistance, -3.75/timeScale);
         }
     }
 
