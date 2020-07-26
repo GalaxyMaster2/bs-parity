@@ -1,0 +1,633 @@
+/*
+    style.css is now a compiled less file - make sure you are editing style.less 
+     instead or your changes might be erased by compilation of the less file!
+*/
+
+// style.less
+// autoprefixer settings: 
+//   > 3%, last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, not ie 6-9
+
+// colour themes and other styling
+
+html,
+body {
+    --blue: #3f96e6;
+    --red: #f03e2d;
+    --warning: #ffca00;
+    --error: #ee0000;
+    --trans: cubic-bezier(.58,.11,.51,.97);
+
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: sans-serif;
+    transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+    position: absolute; // prevents overflow on some mobile browsers
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    &.dark {
+        --dbg:  #1a1a1a;
+        --bg:   #222222;
+        --mbg:  #333333;
+        --ebg:  #555555;
+        --text: #dddddd;
+        --etext:#ffffff;
+    }
+
+    &.light {
+        --dbg:  #e0e0e0;
+        --bg:   #eeeeee;
+        --mbg:  #f6f6f6;
+        --ebg:  #ffffff;
+        --text: #111111;
+        --etext:#000000;
+    }
+}
+
+// bar at top with title and theme switcher
+.topbar {
+    position: relative;
+    z-index: 1;
+    align-self: flex-end;
+    width: 100%;
+    max-width: calc(50vw + 96rem / 2 + 1rem);
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem;
+
+    h1 {
+        margin: 0;
+    }
+
+    div {
+        padding-left: 1rem;
+
+        label, input {
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            line-height: 2rem;
+        }
+    }
+
+    @media screen and (max-width: 75rem) {
+        h1 {
+            font-size: 1.5rem;
+        }
+        label, input {
+            line-height: 1.5rem !important;
+        }
+    }
+    @media screen and (max-width: 30rem) {
+        h1 {
+            font-size: 1.25rem;
+        }
+        label, input {
+            line-height: 1.25rem !important;
+        }
+    }
+}
+
+// intro screen
+.intro {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    transition: transform 1s var(--trans);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1rem;
+    box-sizing: border-box;
+
+    .choose-file {
+        flex: 1;
+        max-width: 50rem;
+        height: 100%;
+        max-height: 20rem;
+        background-color: var(--text);
+        border-radius: 0.375rem;
+        outline: 0.125rem dashed var(--bg);
+        outline-offset: -1rem;
+        color: var(--bg);
+        font-size: 1.25rem;
+        text-align: center;
+        transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        input {
+            display: none;
+        }
+
+        label {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+            text-align: center;
+            cursor: pointer;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:focus strong,
+            &:hover strong {
+                color: var(--blue);
+            }
+        }
+
+        .uploading-text, .done-text {
+            display: none;
+        }
+    }
+
+    #drop-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: var(--etext);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s var(--trans);
+    }
+
+    .madeby {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    & + .main {
+        transform: translateX(-100%);
+    }
+
+    &.uploading, &.done {
+        label {
+            display: none;
+        }
+
+        #drop-overlay {
+            display: none;
+        }
+    }
+
+    &.uploading {
+        .uploading-text {
+            display: inline;
+        }
+    }
+
+    &.done {
+        transform: translateX(100%);
+
+        .done-text {
+            display: inline;
+        }
+    }
+
+    &.done + .main {
+        transition: transform 1s var(--trans);
+        transform: translateX(0%);
+    }
+}
+
+// main
+.main {
+    position: relative;
+    --gap: 1rem;
+    flex: 1;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 var(--gap) var(--gap) var(--gap);
+
+    .renderbox {
+        padding: 0 var(--gap) 0 0;
+        max-width: 50rem;
+        flex: 10; // to keep at max-width until constrained by outputbox min-width
+
+        #render-container {
+            position: relative;
+            width: 100%;
+            height: 20rem;
+            margin-bottom: var(--gap);
+            border-radius: 1rem;
+            background-color: var(--ebg);
+            transition: background-color 0.3s var(--trans);
+            overflow: hidden;
+
+            &.rotating {
+                cursor: all-scroll;
+            }
+            &.scrolling {
+                cursor: s-resize;
+            }
+
+            #grid-container {
+                position: absolute;
+                --width: calc(10rem * 4 / 3);
+                --height: 10rem;
+                left: calc(50% - (var(--width) / 2));
+                top: calc(50% - (var(--height) / 2));
+                width: var(--width);
+                height: var(--height);
+                transform-style: preserve-3d;
+
+                #marker-container {
+                    transform-style: preserve-3d;
+
+                    .marker {
+                        display: flex;
+                        align-items: center;
+                        position: absolute;
+
+                        &.decimalTime .marker-number {
+                            opacity: 0;
+                            cursor: default;
+                        }
+                        &.translucent { opacity: 0.5; }
+                        .marker-line {
+                            background-color: var(--etext);
+                            transition: background-color 0.3s var(--trans);
+                        }
+
+                        .marker-number {
+                            color: var(--etext);
+                            margin-left: 0.3rem;
+                            font-size: 1.8rem;
+                            font-weight: bold;
+                            transition: color 0.3s var(--trans);
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                #note-container {
+                    transform-style: preserve-3d;
+
+                    .note {
+                        --size: 2.36rem; // fallback size
+                        width: var(--size);
+                        height: var(--size);
+                        position: absolute;
+                        transform-style: preserve-3d;
+                        cursor: pointer;
+
+                        .note-face {
+                            --border-size: 0.125rem;
+                            position: absolute;
+                            display: block;
+                            width: var(--size);
+                            height: var(--size);
+                            border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
+                            outline-offset: calc(var(--border-size) * -1);
+
+                            &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
+                            &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
+                            &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
+                            &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
+                            &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
+                            &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+
+                            &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
+                            &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
+                            &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
+                            &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
+                            &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
+                            &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
+
+                            &.translucent { opacity: 0.3; }
+
+                            &.bomb            {  background-image: url('assets/bomb.svg');            }
+                            &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
+                            &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
+                            &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
+                            &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
+                            &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
+                            &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
+                        }
+
+                        &.precedingWarn  .note-face {
+                            outline: black solid var(--border-size);
+                            &.bomb {
+                                border-radius: 0.75rem;
+                                outline: none;
+                                &.front { outline: black solid var(--border-size); }
+                            }
+                        }
+                        &.precedingError .note-face {
+                            outline: black solid var(--border-size);
+                            &.bomb {
+                                border-radius: 0.75rem;
+                                outline: none;
+                                &.front { outline: black solid var(--border-size); }
+                            }
+                        }
+                        &.warn  .note-face {
+                            outline: var(--warning) solid var(--border-size);
+                            &.bomb {
+                                border-radius: 0.75rem;
+                                outline: none;
+                                &.front { outline: var(--warning) solid var(--border-size); }
+                            }
+                        }
+                        &.error .note-face {
+                            outline: var(--error) solid var(--border-size);
+                            &.bomb {
+                                border-radius: 0.75rem;
+                                outline: none;
+                                &.front { outline: var(--error) solid var(--border-size); }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .sliders-container {
+            display: grid;
+            grid-template-columns: auto;
+            justify-content: start;
+            column-gap: 1rem;
+
+            .slider {
+                input, label {
+                    vertical-align: middle;
+                }
+
+                input {
+                    width: 12rem;
+                    margin-left: 0;
+                }
+
+                label {
+                    white-space: nowrap;
+                }
+            }
+        }
+    }
+
+    .outputbox {
+        position: relative;
+        min-width: 37.5rem;
+        max-width: 45rem;
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        .outboxline {
+            line-height: 1.875rem;
+
+            input, label {
+                vertical-align: middle;
+                cursor: pointer;
+            }
+    
+            #errors {
+                margin-right: 1rem;
+            }
+
+            &#summary {
+                padding-bottom: 0.25rem;
+            }
+    
+            input[type=number] {
+                position: relative;
+                cursor: auto;
+                background-color: var(--ebg);
+                color: var(--text);
+                border: 0.0625rem solid transparent;
+                outline: none;
+                border-radius: 0.375rem;
+                padding: 0.3rem;
+                bottom: 0.0625rem;
+                width: 2ch;
+                text-align: center;
+                transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+
+                // remove arrows for webkit
+                &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+                    display: none;
+                }
+
+                // same for firefox
+                -moz-appearance: textfield;
+
+                &:active, &:focus {
+                    border: 0.0625rem solid var(--etext);
+                }
+            }
+        }
+
+        // wrapper needed for scrolling to work
+        .outputwrapper {
+            position: relative;
+            width: 100%;
+            min-height: 10rem;
+            flex: 1;
+
+            #output {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                overflow-x: auto;
+                overflow-y: auto;
+                display: grid;
+                grid-template-columns: auto;
+                grid-auto-rows: min-content;
+
+                // doesn't work on firefox
+                &::-webkit-scrollbar {
+                    width: 0.75rem;
+                    height: 0.75rem;
+                }
+                &::-webkit-scrollbar-track {
+                    border-radius: 0.375rem;
+                    background-color: var(--dbg);
+                }
+                &::-webkit-scrollbar-thumb {
+                    border-radius: 0.375rem;
+                    background-color: var(--ebg);
+
+                    &:hover {
+                        background-color: var(--text);
+                    }
+                }
+                &::-webkit-scrollbar-corner {
+                    background-color: var(--bg);
+                }
+
+                // firefox alternative
+                @supports ((scrollbar-width: thin) and (scrollbar-color: #000 #000)) {
+                    scrollbar-width: thin;
+                    scrollbar-color: var(--ebg) var(--dbg);
+                    transition: scrollbar-color 0.3s var(--trans);
+                }
+
+                .parent {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    margin-right: 1rem; // to prevent width from changing when selected
+                    border-radius: 1rem;
+                    cursor: pointer;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    --time: 0.3s;
+                    transition: background-color var(--time) var(--trans), color 0.3s var(--trans),
+                                margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+
+                    &:hover, &:focus {
+                        background-color: var(--mbg);
+                        --time: 0.001s; // not 0s to avoid issue with re-selecting
+                    }
+
+                    &.selected {
+                        background-color: var(--ebg);
+                        color: var(--etext);
+                        margin-right: 0.5rem;
+                        margin-left: 0.5rem;
+                        --time: 0.3s;
+                    }
+
+                    &.multiSelected {
+                        border-radius: 0rem; 
+
+                        &.firstSelected {
+                            border-radius: 1rem 1rem 0rem 0rem;
+                        }
+                        &.lastSelected {
+                            border-radius: 0rem 0rem 1rem 1rem;
+                        }
+                    }
+
+                    &.info, &.warning, &.error {
+                        display: none;
+                    }
+
+                    img {
+                        height: 2rem;
+                        margin: 0.7rem;
+                        border-radius: 23%;
+                    }
+
+                    &.warning img {
+                        box-shadow: 0 0 0 0.125rem var(--warning);
+                    }
+                    &.error img {
+                        box-shadow: 0 0 0 0.125rem var(--error);
+                    }
+
+                    .text {
+                        flex: 1;
+                        white-space: nowrap;
+                    }
+                }
+
+                &.showInfo .info,
+                &.showWarnings .warning,
+                &.showErrors .error {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    // neither flexbox nor grid support the desired behaviour, so @media query it is
+    @media screen and (max-width: 75rem) {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+
+        .renderbox {
+            flex: 0;
+            width: 100%;
+            max-width: 50rem;
+            padding: 0 0 var(--gap) 0;
+            align-self: center;
+
+            .sliders-container {
+                grid-template-columns: repeat(4, max-content);
+            }
+
+            @media (max-width: 87rem) {
+                .sliders-container {
+                    grid-template-columns: repeat(2, max-content);
+                }
+            }
+            @media (max-width: 48rem) {
+                .sliders-container {
+                    grid-template-columns: auto;
+                }
+            }
+        }
+
+        .outputbox {
+            flex: 1;
+            min-width: auto;
+            max-width: none;
+            width: auto;
+            padding: 0;
+        }
+    }
+}
+
+
+// fancy checkboxes
+@supports(appearance: none) {
+    input[type='checkbox'] {
+        appearance: none;
+        height: 1.25rem;
+        width: 2.5rem;
+        border-radius: 0.625rem;
+        outline: none;
+        position: relative;
+        margin: 0;
+        background: var(--red);
+        transition: background 0.3s var(--trans);
+        --x: 0rem;
+
+        &:after {
+            content: '';
+            position: absolute;
+            transition: transform 0.3s var(--trans);
+            border-radius: 50%;
+            width: 1rem;
+            height: 1rem;
+            top: 50%;
+            left: 0.125rem;
+            transform: translateX(var(--x)) translateY(-50%);
+            background: #eeeeee;
+        }
+
+        &:checked { 
+            background: var(--blue);
+            --x: 1.25rem;
+        }
+
+        &:focus {
+            border: 0.0625rem solid var(--etext);
+
+            &:after { left: 0.0625rem; }
+        }
+    }
+}

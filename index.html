@@ -5,21 +5,79 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
-        <title>Beat Saber Parity Checker</title>
+        <link rel="icon" href="favicon.ico">
+        <link rel="icon" href="favicon-192.png" sizes="192x192">
+        <title>beat saber map inspector</title>
     </head>
 
-    <body>
-        See below for output<br>
-        <label for="file-input">Choose Difficulty.dat (e.g. ExpertPlusStandard.dat)</label>
-        <input type="file" name="file-input" id="file-input" accept=".dat"><br>
-        <label for="slider-precision">Lowest slider precision present (default assumes no sliders): 1/</label>
-        <input type="number" name="slider-precision" id="slider-precision"><br>
-        <input type="submit" id="submit" value="Check parity">
-        <div id="output"></div>
-        <div id="render-container">
-            <div id="grid-container"></div>
+    <body class="dark">
+        <div class="topbar">
+            <h1>beat saber map inspector</h1>
+            <div>
+                <label for="theme">night mode&nbsp;</label><input type="checkbox" id="theme" checked>
+            </div>
         </div>
-        <script src="main.js"></script>
+        <div class="intro" id="intro">
+            <div class="choose-file">
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat">
+                <label for="file">
+                    <span><strong>choose a difficulty.dat</strong> or drag it here</span>
+                </label>
+                <span class="uploading-text">uploading&hellip;</span>
+                <span class="done-text">done!</span>
+            </div>
+            <span class="madeby">made by galaxymaster and infinityio</span>
+            <div id="drop-overlay"></div>
+        </div>
+        <div class="main">
+            <div class="renderbox">
+                <div id="render-container">
+                    <div id="grid-container">
+                        <div id="marker-container"></div>
+                        <div id="note-container"></div>
+                    </div>
+                </div>
+                <div class="sliders-container">
+                    <div class="slider">
+                        <input type="range" min="1" max="8" value="4" step="0.05" id="renderDistance" title="4.00 beats">
+                        <label for="renderDistance">render distance</label>
+                    </div>
+                    <div class="slider">
+                        <input type="range" min="0.5" max="2.25" value="1.25" step="0.05" id="timeScale" title="1.25x">
+                        <label for="timeScale">time scaling</label>
+                    </div>
+                    <div class="slider">
+                        <input type="range" min="1" max="8" value="4" step="1" id="divisionValue" title="1/4">
+                        <label for="divisionValue">beat marker subdivision</label>
+                    </div>
+                    <div class="slider">
+                        <input type="range" min="0.5" max="2" value="0.85" step="0.05" id="perspectiveIntensity" title="0.85">
+                        <label for="perspectiveIntensity">perspective intensity</label>
+                    </div>
+                </div>
+            </div>
+            <div class="outputbox">
+                <div class="outboxline">
+                    <label for="slider-precision">slider precision: 1/</label>
+                    <input type="number" id="slider-precision" min="0" value="8">
+                    (blank / zero assumes no sliders)
+                </div>
+                <div class="outboxline">
+                    <label for="errors">errors&nbsp;</label><input type="checkbox" id="errors" checked>
+                    <label for="warnings">warnings&nbsp;</label><input type="checkbox" id="warnings" checked>
+                </div>
+                <div class="outboxline" id="summary">found no errors and no warnings</div>
+                <div class="outputwrapper">
+                    <div id="output" class="showErrors showWarnings"></div>
+                </div>
+            </div>
+        </div>
     </body>
+
+    <script src="scripts/libs/ola.min.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/ui.js" defer></script>
+    <script src="scripts/input.js" defer></script>
+    <script src="scripts/render.js" defer></script>
 
 </html>
