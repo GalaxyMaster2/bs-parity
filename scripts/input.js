@@ -43,6 +43,7 @@ function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
     sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
     checkParity();
+    render();
 }
 
 /**
@@ -152,7 +153,7 @@ function getMousePos(e) {
  * @param {Number} interval - the time between polls
  * @returns {Promise} - lets program continue
  */
-function until(condition, interval = 1000/30) {
+function until(condition, interval = 1000 / 30) {
     const poll = resolve => {
         if (condition()) resolve();
         else setTimeout(_ => poll(resolve), interval);
