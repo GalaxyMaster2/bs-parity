@@ -297,6 +297,7 @@ body {
                             width: var(--size);
                             height: var(--size);
                             border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
+                            outline-offset: -0.0625rem;
 
                             &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
                             &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }

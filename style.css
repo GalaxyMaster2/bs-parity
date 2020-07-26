@@ -259,6 +259,7 @@ body.light {
   width: var(--size);
   height: var(--size);
   border-radius: 0.125rem;
+  outline-offset: -0.0625rem;
 }
 .main .renderbox #render-container #grid-container #note-container .note .note-face.front {
   transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
