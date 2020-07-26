@@ -159,7 +159,11 @@ function mod(n, m) {
  * @returns {void} - outputs to DOM, should not return a value
  */
 function outputUI(note, parity, message, messageType) {
-    let time, imgSrc, infoString, oneLine;
+    let wrapper = document.createElement('div');
+    let element = document.createElement('div');
+    element.classList.add('parent', messageType);
+
+    let time, imgSrc, infoString;
     if (note != false) { // if note passed in note function
         time = note._time;
         let type = types[note._type];
@@ -178,6 +182,9 @@ function outputUI(note, parity, message, messageType) {
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
         }
         imgSrc += '.svg';
+
+        element.dataset.time = time.toFixed(3);
+        element.addEventListener('click', function () { scrollTo(time); });
     } else { // message output mode
         time = parity;
         imgSrc = 'assets/' + messageType + '.svg';
@@ -187,23 +194,14 @@ function outputUI(note, parity, message, messageType) {
         } else {
             infoString = message;
             message = '';
-            oneLine = true;
         }
     }
 
-    let wrapper = document.createElement('div');
-
-    let element = document.createElement('div');
-    element.classList.add('parent', messageType);
-    if (note == false) element.classList.add('noHighlight');
-    if (oneLine) element.classList.add('oneLine');
-
-    element.dataset.time = time.toFixed(3);
-    element.addEventListener('click', function () { scrollTo(time); });
-
     let img = document.createElement('img');
     img.src = imgSrc;
-    if (note != false) img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
+    if (note != false) {
+        img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
+    }
 
     let text = document.createElement('div');
     text.classList.add('text');
