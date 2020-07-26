@@ -18,16 +18,27 @@
             </div>
         </div>
         <div class="intro" id="intro">
+<<<<<<< HEAD
             <div class="choose-file">
                 <input type="file" name="file" id="file" class="inputfile" accept=".dat">
                 <label for="file">
                     <span><strong>choose a difficulty.dat</strong> or drag it here</span>
+=======
+            <div class="drag-file" id="drag-file">
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat, .zip">
+                <label for="file">
+                    <strong>choose a difficulty.dat / map.zip</strong> or drag it here
+>>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
                 </label>
                 <span class="uploading-text">uploading&hellip;</span>
                 <span class="done-text">done!</span>
             </div>
+<<<<<<< HEAD
             <span class="madeby">made by galaxymaster and infinityio</span>
             <div id="drop-overlay"></div>
+=======
+            <input type="text" name="url" id="url" class="url-file inputurl" placeholder="or paste a link to a zip here and press enter">
+>>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
         </div>
         <div class="main">
             <div class="renderbox">
@@ -36,6 +47,7 @@
                         <div id="marker-container"></div>
                         <div id="note-container"></div>
                     </div>
+                    <span id="fileSelector"><br></span>
                 </div>
                 <div class="sliders-container">
                     <div class="slider">
@@ -55,6 +67,7 @@
                         <label for="perspectiveIntensity">perspective intensity</label>
                     </div>
                 </div>
+                
             </div>
             <div class="outputbox">
                 <div class="outboxline">
@@ -75,6 +88,7 @@
     </body>
 
     <script src="scripts/libs/ola.min.js" defer></script>
+    <script src="scripts/libs/jszip.min.js" defer></script>
     <script src="scripts/main.js" defer></script>
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/input.js" defer></script>

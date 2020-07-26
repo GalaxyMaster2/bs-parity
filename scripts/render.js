@@ -38,12 +38,27 @@ function renderTransition(timestamp) {
     }
 }
 
+<<<<<<< HEAD
 /**
  * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
  * calculates animation time proportional to log of distance
  * @param {Number} target - the beat to scroll to
  * @returns {void} - leads to render call
  */
+=======
+var deltaTime = 0;
+function syncPlayback(timeoffset = 0.01) {
+    centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
+    render();
+
+    if (!audio.paused) {
+        requestAnimationFrame(function() {
+            syncPlayback();
+        });
+    }
+}
+
+>>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);
@@ -94,7 +109,7 @@ function render(notes = notesArray) {
 
     // filter notes outside of range
     notes = notes.filter(function (note) {
-        return renderNote(note._time);
+        return renderNote(note._time + offset);
     });
 
     // generate all valid beats within the range
@@ -160,7 +175,7 @@ function render(notes = notesArray) {
     let iterator = notes.entries();
     for (let [index, note] of iterator) {
         if (presentNotes[index] !== undefined) {
-            let relTime = note._time - centerBeat;
+            let relTime = note._time + offset - centerBeat;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let noteAngle = cutAngles[note._cutDirection];
             let noteContainer = presentNotes[index];
@@ -189,7 +204,7 @@ function render(notes = notesArray) {
                 noteContainer.classList.add('precedingWarn');
             }
         } else {
-            let relTime = note._time - centerBeat;
+            let relTime = note._time + offset - centerBeat;
 
             let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
@@ -223,7 +238,7 @@ function render(notes = notesArray) {
             noteContainer.style.setProperty('top', posY + 'px');
             noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
-            noteContainer.addEventListener('click', function () { scrollTo(note._time); });
+            noteContainer.addEventListener('click', function () { scrollTo(note._time + offset); });
 
             if (note.error) {
                 noteContainer.classList.add('error');
