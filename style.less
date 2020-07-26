@@ -292,12 +292,13 @@ body {
                         cursor: pointer;
 
                         .note-face {
+                            --border-size: 0.125rem;
                             position: absolute;
                             display: block;
                             width: var(--size);
                             height: var(--size);
                             border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
-                            outline-offset: -0.0625rem;
+                            outline-offset: calc(var(--border-size) * -1);
 
                             &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
                             &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
@@ -325,35 +326,35 @@ body {
                         }
 
                         &.precedingWarn  .note-face {
-                            outline: black solid 0.0625rem;
+                            outline: black solid var(--border-size);
                             &.bomb {
                                 border-radius: 0.75rem;
                                 outline: none;
-                                &.front { outline: black solid 0.0625rem; }
+                                &.front { outline: black solid var(--border-size); }
                             }
                         }
                         &.precedingError .note-face {
-                            outline: black solid 0.0625rem;
+                            outline: black solid var(--border-size);
                             &.bomb {
                                 border-radius: 0.75rem;
                                 outline: none;
-                                &.front { outline: black solid 0.0625rem; }
+                                &.front { outline: black solid var(--border-size); }
                             }
                         }
                         &.warn  .note-face {
-                            outline: var(--warning) solid 0.0625rem;
+                            outline: var(--warning) solid var(--border-size);
                             &.bomb {
                                 border-radius: 0.75rem;
                                 outline: none;
-                                &.front { outline: var(--warning) solid 0.0625rem; }
+                                &.front { outline: var(--warning) solid var(--border-size); }
                             }
                         }
                         &.error .note-face {
-                            outline: var(--error) solid 0.0625rem;
+                            outline: var(--error) solid var(--border-size);
                             &.bomb {
                                 border-radius: 0.75rem;
                                 outline: none;
-                                &.front { outline: var(--error) solid 0.0625rem; }
+                                &.front { outline: var(--error) solid var(--border-size); }
                             }
                         }
                     }

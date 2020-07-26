@@ -254,12 +254,13 @@ body.light {
   cursor: pointer;
 }
 .main .renderbox #render-container #grid-container #note-container .note .note-face {
+  --border-size: 0.125rem;
   position: absolute;
   display: block;
   width: var(--size);
   height: var(--size);
   border-radius: 0.125rem;
-  outline-offset: -0.0625rem;
+  outline-offset: calc(var(--border-size) * -1);
 }
 .main .renderbox #render-container #grid-container #note-container .note .note-face.front {
   transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
@@ -322,44 +323,44 @@ body.light {
   background-image: url('assets/note_side_red.svg');
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face {
-  outline: black solid 0.0625rem;
+  outline: black solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb.front {
-  outline: black solid 0.0625rem;
+  outline: black solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face {
-  outline: black solid 0.0625rem;
+  outline: black solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
 .main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb.front {
-  outline: black solid 0.0625rem;
+  outline: black solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.warn .note-face {
-  outline: var(--warning) solid 0.0625rem;
+  outline: var(--warning) solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
 .main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb.front {
-  outline: var(--warning) solid 0.0625rem;
+  outline: var(--warning) solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.error .note-face {
-  outline: var(--error) solid 0.0625rem;
+  outline: var(--error) solid var(--border-size);
 }
 .main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
 .main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb.front {
-  outline: var(--error) solid 0.0625rem;
+  outline: var(--error) solid var(--border-size);
 }
 .main .renderbox .sliders-container {
   display: grid;
