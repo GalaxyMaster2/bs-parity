@@ -301,60 +301,48 @@ body {
                                 width: var(--size);
                                 height: var(--size);
                                 background-color: rgba(221, 48, 48, 0.8);
-                                outline: 1px solid rgba(255, 255, 255, 0.75);
-                                outline-offset: -1px;
-                            
+                                outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
+                                outline-offset: -0.0625rem;
+                                
                                 &.transl { background-color: rgba(221, 48, 48, 0.6); }
-                                &.front { 
-                                    transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); 
+                                &.front {
                                     height: calc(var(--size) * 3 * var(--height));;
                                     width: calc(var(--size) * var(--width));
                                 }
-                                &.back { 
-                                    transform: rotateY(180deg) translateZ(calc(var(--depth) - var(--size)/2)); 
+                                &.back {
+                                    transform: rotateY(180deg) translateZ(var(--depth)); 
                                     height: calc(var(--size) * 3 * var(--height));
                                     width: calc(var(--size) * var(--width));
                                 }
-                                &.left { 
-                                    transform: rotateY(-90deg) 
-                                        translate3d(
-                                            calc(-0.5 * (var(--depth) - var(--size))),
-                                            0px,
-                                            calc(0.5 * var(--depth))
-                                        ); 
+                                &.left {
+                                    transform: rotateY(-90deg)
+                                        translate3d(calc(var(--depth) / -2),
+                                                    0,
+                                                    calc(var(--depth) / 2));
                                     height: calc(var(--size) * 3 * var(--height));
                                     width: var(--depth);
                                 }
                                 &.right { 
-                                    transform: 
-                                        rotateY(90deg)
-                                        translate3D(
-                                            calc(0.5 * (var(--depth) - var(--size))), 
-                                            0px,
-                                            calc((var(--size) * var(--width) - 0.5 * var(--depth)))
-                                        ); 
+                                    transform: rotateY(90deg)
+                                        translate3d(calc(var(--depth) / 2),
+                                                    0,
+                                                    calc(var(--depth) / -2 + var(--size) * var(--width)));
                                     height: calc(var(--size) * 3 * var(--height));
                                     width: var(--depth);
                                 }
                                 &.top {
-                                    transform: 
-                                        rotateX(90deg) 
-                                        translate3D(
-                                            0px,
-                                            calc(-0.5 * (var(--depth) - var(--size))),
-                                            calc(var(--depth) / 2)
-                                        );
+                                    transform: rotateX(90deg)
+                                        translate3d(0,
+                                                    calc(var(--depth) / -2),
+                                                    calc(var(--depth) / 2));
                                     width: calc(var(--size) * var(--width));
                                     height: var(--depth);
                                 }
                                 &.bottom { 
-                                    transform: 
-                                        rotateX(-90deg) 
-                                        translate3D(
-                                            0px,
-                                            calc(0.5 * (var(--depth) - var(--size))),
-                                            calc((var(--size) * 3 * var(--height)) - (var(--depth) / 2))
-                                        );
+                                    transform: rotateX(-90deg)
+                                        translate3d(0,
+                                                    calc(var(--depth) / 2),
+                                                    calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
                                     width: calc(var(--size) * var(--width));
                                     height: var(--depth);
                                 }
