@@ -225,137 +225,141 @@ body {
         max-width: 50rem;
         flex: 10; // to keep at max-width until constrained by outputbox min-width
 
-        #render-container {
-            position: relative;
-            width: 100%;
-            height: 20rem;
-            margin-bottom: var(--gap);
-            border-radius: 1rem;
-            background-color: var(--ebg);
-            transition: background-color 0.3s var(--trans);
+        // wrapper needed to work around firefox rendering bug
+        #render-wrapper {
             overflow: hidden;
+            margin-bottom: var(--gap);
 
-            &.rotating {
-                cursor: all-scroll;
-            }
-            &.scrolling {
-                cursor: s-resize;
-            }
+            #render-container {
+                position: relative;
+                width: 100%;
+                height: 20rem;
+                border-radius: 1rem;
+                background-color: var(--ebg);
+                transition: background-color 0.3s var(--trans);
 
-            #grid-container {
-                position: absolute;
-                --width: calc(10rem * 4 / 3);
-                --height: 10rem;
-                left: calc(50% - (var(--width) / 2));
-                top: calc(50% - (var(--height) / 2));
-                width: var(--width);
-                height: var(--height);
-                transform-style: preserve-3d;
-
-                #marker-container {
-                    transform-style: preserve-3d;
-
-                    .marker {
-                        display: flex;
-                        align-items: center;
-                        position: absolute;
-
-                        &.decimalTime .marker-number {
-                            opacity: 0;
-                            cursor: default;
-                        }
-                        &.translucent { opacity: 0.5; }
-                        .marker-line {
-                            background-color: var(--etext);
-                            transition: background-color 0.3s var(--trans);
-                        }
-
-                        .marker-number {
-                            color: var(--etext);
-                            margin-left: 0.3rem;
-                            font-size: 1.8rem;
-                            font-weight: bold;
-                            transition: color 0.3s var(--trans);
-                            cursor: pointer;
-                        }
-                    }
+                &.rotating {
+                    cursor: all-scroll;
+                }
+                &.scrolling {
+                    cursor: s-resize;
                 }
 
-                #note-container {
+                #grid-container {
+                    position: absolute;
+                    --width: calc(10rem * 4 / 3);
+                    --height: 10rem;
+                    left: calc(50% - (var(--width) / 2));
+                    top: calc(50% - (var(--height) / 2));
+                    width: var(--width);
+                    height: var(--height);
                     transform-style: preserve-3d;
 
-                    .note {
-                        --size: 2.36rem; // fallback size
-                        width: var(--size);
-                        height: var(--size);
-                        position: absolute;
+                    #marker-container {
                         transform-style: preserve-3d;
-                        cursor: pointer;
 
-                        .note-face {
-                            --border-size: 0.125rem;
+                        .marker {
+                            display: flex;
+                            align-items: center;
                             position: absolute;
-                            display: block;
+
+                            &.decimalTime .marker-number {
+                                opacity: 0;
+                                cursor: default;
+                            }
+                            &.translucent { opacity: 0.5; }
+                            .marker-line {
+                                background-color: var(--etext);
+                                transition: background-color 0.3s var(--trans);
+                            }
+
+                            .marker-number {
+                                color: var(--etext);
+                                margin-left: 0.3rem;
+                                font-size: 1.8rem;
+                                font-weight: bold;
+                                transition: color 0.3s var(--trans);
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    #note-container {
+                        transform-style: preserve-3d;
+
+                        .note {
+                            --size: 2.36rem; // fallback size
                             width: var(--size);
                             height: var(--size);
-                            border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
-                            outline-offset: calc(var(--border-size) * -1);
+                            position: absolute;
+                            transform-style: preserve-3d;
+                            cursor: pointer;
 
-                            &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
-                            &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
-                            &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
-                            &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
-                            &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
-                            &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+                            .note-face {
+                                --border-size: 0.125rem;
+                                position: absolute;
+                                display: block;
+                                width: var(--size);
+                                height: var(--size);
+                                border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
+                                outline-offset: calc(var(--border-size) * -1);
 
-                            &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
-                            &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
-                            &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
-                            &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
-                            &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
-                            &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
+                                &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
+                                &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
+                                &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
+                                &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
+                                &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
+                                &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
 
-                            &.translucent { opacity: 0.3; }
+                                &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
+                                &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
+                                &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
+                                &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
+                                &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
+                                &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
 
-                            &.bomb            {  background-image: url('assets/bomb.svg');            }
-                            &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
-                            &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
-                            &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
-                            &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
-                            &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
-                            &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
-                        }
+                                &.translucent { opacity: 0.3; }
 
-                        &.precedingWarn  .note-face {
-                            outline: black solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: black solid var(--border-size); }
+                                &.bomb            {  background-image: url('assets/bomb.svg');            }
+                                &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
+                                &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
+                                &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
+                                &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
+                                &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
+                                &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
                             }
-                        }
-                        &.precedingError .note-face {
-                            outline: black solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: black solid var(--border-size); }
+
+                            &.precedingWarn  .note-face {
+                                outline: black solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: black solid var(--border-size); }
+                                }
                             }
-                        }
-                        &.warn  .note-face {
-                            outline: var(--warning) solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: var(--warning) solid var(--border-size); }
+                            &.precedingError .note-face {
+                                outline: black solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: black solid var(--border-size); }
+                                }
                             }
-                        }
-                        &.error .note-face {
-                            outline: var(--error) solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: var(--error) solid var(--border-size); }
+                            &.warn  .note-face {
+                                outline: var(--warning) solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: var(--warning) solid var(--border-size); }
+                                }
+                            }
+                            &.error .note-face {
+                                outline: var(--error) solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: var(--error) solid var(--border-size); }
+                                }
                             }
                         }
                     }
