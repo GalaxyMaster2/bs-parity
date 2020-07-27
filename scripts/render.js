@@ -281,16 +281,12 @@ function render(notes = notesArray, walls = wallsArray) {
             let relEnd = relTime + wall._duration;
 
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-            let posX = (gridHeight / 3) * (0.5 + wall._lineIndex) - (wallSize / 2);
-            let posY = (gridHeight / 3) * (0.5) - (wallSize / 2);
 
             let depth = Math.min(wall._duration, centerBeat + renderDistance + 0.5 - wall._time);
             depth = depth * timeScale * (gridHeight * 4 / 3);
 
             wallContainer.style.setProperty('--depth', depth + 'px');
             wallContainer.style.setProperty('--size', wallSize + 'px');
-            wallContainer.style.setProperty('left', posX + 'px');
-            wallContainer.style.setProperty('top', posY + 'px');
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
             if (relEnd < -2 * comparisonTolerance) {
