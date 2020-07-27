@@ -290,9 +290,9 @@ function render(notes = notesArray, walls = wallsArray) {
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
             if (relEnd < -2 * comparisonTolerance) {
-                wallContainer.classList.add('transl');
+                wallContainer.classList.add('translucent');
             } else {
-                wallContainer.classList.remove('transl');
+                wallContainer.classList.remove('translucent');
             }
         } else {
             let relTime = wall._time - centerBeat;
@@ -324,9 +324,9 @@ function render(notes = notesArray, walls = wallsArray) {
             }
 
             if (relEnd < -2 * comparisonTolerance) {
-                wallContainer.classList.add('transl');
+                wallContainer.classList.add('translucent');
             } else {
-                wallContainer.classList.remove('transl');
+                wallContainer.classList.remove('translucent');
             }
 
             wallContainer.style.setProperty('left', posX + 'px');
