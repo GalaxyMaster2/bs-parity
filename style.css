@@ -266,9 +266,6 @@ body.light {
   outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
   outline-offset: -0.0625rem;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.transl {
-  background-color: rgba(221, 48, 48, 0.6);
-}
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.front {
   height: calc(var(--size) * 3 * var(--height));
   width: calc(var(--size) * var(--width));
@@ -297,6 +294,9 @@ body.light {
   transform: rotateX(-90deg) translate3d(0, calc(var(--depth) / 2), calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
   width: calc(var(--size) * var(--width));
   height: var(--depth);
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.transl .wall-face {
+  background-color: rgba(221, 48, 48, 0.6);
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container {
   transform-style: preserve-3d;

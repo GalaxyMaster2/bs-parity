@@ -143,7 +143,7 @@ function render(notes = notesArray, walls = wallsArray) {
         if (id === undefined || !renderWall(wallsArray[id])) {
             wallsContainer.removeChild(child);
         } else {
-            let index = notes.findIndex(function (wall) {
+            let index = walls.findIndex(function (wall) {
                 return wall.id == id;
             });
             presentWalls[index] = child;
@@ -276,7 +276,9 @@ function render(notes = notesArray, walls = wallsArray) {
     let iterator2 = walls.entries();
     for (let [index, wall] of iterator2) {
         if (presentWalls[index] !== undefined) {
-            let wallContainer = presentNotes[index];
+            let wallContainer = presentWalls[index];
+            let relTime = wall._time - centerBeat;
+            let relEnd = relTime + wall._duration;
 
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let posX = (gridHeight / 3) * (0.5 + wall._lineIndex) - (wallSize / 2);
@@ -291,6 +293,8 @@ function render(notes = notesArray, walls = wallsArray) {
             wallContainer.style.setProperty('top', posY + 'px');
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
+            if (relEnd < 0) wallContainer.classList.add('transl');
+            else wallContainer.classList.remove('transl');
         } else {
             let relTime = wall._time - centerBeat;
             let relEnd = relTime + wall._duration;
@@ -317,13 +321,17 @@ function render(notes = notesArray, walls = wallsArray) {
             for (let face of faces) {
                 let wallFace = document.createElement('div');
                 wallFace.classList.add('wall-face', face);
-                if (relEnd < 0) wallFace.classList.add('transl');
                 wallContainer.appendChild(wallFace);
             }
+
+            if (relEnd < 0) wallContainer.classList.add('transl');
+            else wallContainer.classList.remove('transl');
 
             wallContainer.style.setProperty('left', posX + 'px');
             wallContainer.style.setProperty('top', posY + 'px');
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+            wallContainer.dataset.wall_id = wall.id;
 
             wallsContainer.appendChild(wallContainer);
         }
