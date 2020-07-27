@@ -121,13 +121,6 @@ function getNotes(obj) {
     return notes;
 }
 
-<<<<<<< HEAD
-/**
- * Detects scroll line height in Firefox, as it is calculated differently to other browsers
- * based upon https://bit.ly/3fy5IEQ
- * @returns {number} - line height in pixels
- */
-=======
 function getInfo(fName) {
     let songInfo = findInfo(fName, infoDat._difficultyBeatmapSets);
     let localOffset = 0;
@@ -151,10 +144,8 @@ function findInfo(fname, json) {
 
 // used to detect the scroll line height in FireFox
 // graciously provided by StackOverflow: https://stackoverflow.com/a/57788612
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
 function getScrollLineHeight() {
     const el = document.createElement('div');
-    el.style.fontSize = 'initial';
     el.style.display = 'none';
     document.body.appendChild(el);
     const fontSize = window.getComputedStyle(el).fontSize;
@@ -181,7 +172,6 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
-<<<<<<< HEAD
 /**
  * prints a fancy error message to the screen, supports both notes and raw text
  * @param {Array} note - the note responsible for the error (previewed in message). can be omitted
@@ -191,9 +181,6 @@ function mod(n, m) {
  * @returns {void} - outputs to DOM, should not return a value
  */
 function outputUI(note, parity, message, messageType) {
-=======
-function outputUI(note, parity, message, messageType, debugCode = '') {
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
     let time, imgSrc, infoString, oneLine;
     if (note != false) { // if note passed in note function
         time = note._time + offset;
@@ -245,15 +232,9 @@ function outputUI(note, parity, message, messageType, debugCode = '') {
 
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
-<<<<<<< HEAD
+    
     wrapper.appendChild(element);
     output.appendChild(wrapper);
-=======
-
-    if (debugCode != '') { element.dataset.debug = debugCode.toFixed(3); }
-
-    output.appendChild(element);
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
 }
 
 /** clears all error messages from output box */
@@ -306,31 +287,26 @@ function checkParity(notes = notesArray) {
     let parity = new Parity();
     parity.init(notes);
 
-<<<<<<< HEAD
-    for (let i = 0; i < notes.length; i++) {
-        let note = notes[i];
-=======
-    if (((notesArray[0]._time + offset) * 60 / bpm) < 1.5) {
+    if (((notes[0]._time + offset) * 60 / bpm) < 1.5) {
         if (!zipFile) { 
-            let plural = (notesArray[0]._time + offset == 1) ? ' beat ' : ' beats ';
-            outputUI(false, notesArray[0]._time + offset, 'Potential hot start - first note is ' + notesArray[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning'); 
+            let plural = (notes[0]._time + offset == 1) ? ' beat ' : ' beats ';
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + notes[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning'); 
         }
         else {
-            let plural = (((notesArray[0]._time + offset) * 60 / bpm) == 1) ? ' second ' : ' seconds ';
-            outputUI(false, notesArray[0]._time + offset, 'Potential hot start - first note is ' + ((notesArray[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning');
+            let plural = (((notes[0]._time + offset) * 60 / bpm) == 1) ? ' second ' : ' seconds ';
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + ((notes[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning');
         }
         warnCount++;
     }
 
-    for (let i = 0; i < notesArray.length; i++) {
-        let note = notesArray[i];
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
+    for (let i = 0; i < notes.length; i++) {
+        let note = notes[i];
         let type = types[note._type];
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
-        let hcErr = checkClap(i);
+        let hcErr = checkClap(notes, i);
         warnCount += hcErr[0];
         warnCount += hcErr[1];
 
@@ -399,12 +375,7 @@ function checkParity(notes = notesArray) {
                 note.error = true;
                 let deltaTime = 0;
                 try {
-<<<<<<< HEAD
                     let last = notes[findCol(notes, type, i - 1)];
-                    deltaTime = (note._time - last._time).toFixed(3);
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
-=======
-                    let last = notesArray[findCol(notesArray, type, i - 1)];
                     if (zipFile) {
                         deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
                         deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
@@ -413,7 +384,6 @@ function checkParity(notes = notesArray) {
                         deltaTime = (note._time - last._time).toFixed(3);
                         deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
                     }
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
                     last.precedingError = true;
                 }
                 catch {
@@ -447,13 +417,13 @@ function checkParity(notes = notesArray) {
     }
 }
 
-function checkClap(i) {
+function checkClap(notes = notesArray, i) {
     let state = [0, 0];
     if (i < lastNote) return state;
-    let note = notesArray[i];
+    let note = notes[i];
     let time = note._time;
 
-    let surroundingNotes = notesArray.filter(function (note) {
+    let surroundingNotes = notes.filter(function (note) {
         return (Math.abs(note._time - time) <= 4 * comparisonTolerance);
     }); // get notes in same effective 2d frame - this could be expanded to a 3d slice in the future if i am feeling masochistic
 
@@ -484,14 +454,14 @@ function checkClap(i) {
 
         else if (intersection <= 1) {
             outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
-            notesArray[i].error = true;
-            notesArray[i + 1].error = true;
+            notes[i].error = true;
+            notes[i + 1].error = true;
             state[1] += 1;
         }
         else if (intersection <= 2) {
             outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', intersection);
-            notesArray[i].warn = true;
-            notesArray[i + 1].warn = true;
+            notes[i].warn = true;
+            notes[i + 1].warn = true;
             state[0] += 1;
         }
     }

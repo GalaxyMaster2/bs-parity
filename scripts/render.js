@@ -38,15 +38,11 @@ function renderTransition(timestamp) {
     }
 }
 
-<<<<<<< HEAD
-/**
- * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
- * calculates animation time proportional to log of distance
- * @param {Number} target - the beat to scroll to
- * @returns {void} - leads to render call
- */
-=======
 var deltaTime = 0;
+/**
+ * when music is playing, attempt to keep preview in line with song
+ * @param {Number} timeoffset 
+ */
 function syncPlayback(timeoffset = 0.01) {
     centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
     render();
@@ -58,7 +54,12 @@ function syncPlayback(timeoffset = 0.01) {
     }
 }
 
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
+/**
+ * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
+ * calculates animation time proportional to log of distance
+ * @param {Number} target - the beat to scroll to
+ * @returns {void} - leads to render call
+ */
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);
