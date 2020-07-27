@@ -82,10 +82,10 @@ function render(notes = notesArray, walls = wallsArray) {
     let firstViewableNote = -renderDistance;
     if (angleX >= 270) { // vertically looking forwards
         if (Math.min(angleY, 360 - angleY) <= 45) {
-            firstViewableNote = Math.max(-renderDistance, -1.875/timeScale);
+            firstViewableNote = Math.max(-renderDistance, -1.875 / timeScale);
         }
         else if (Math.min(angleY, 360 - angleY) <= 90) {
-            firstViewableNote = Math.max(-renderDistance, -3.75/timeScale);
+            firstViewableNote = Math.max(-renderDistance, -3.75 / timeScale);
         }
     }
 
@@ -114,13 +114,13 @@ function render(notes = notesArray, walls = wallsArray) {
     let bmCountOld = gridContainer.querySelectorAll('.marker').length;
     let beatMarkers = [];
     for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
-            beatMarkers.push(i / divisionValue);
+        beatMarkers.push(i / divisionValue);
     }
     let deltaMarkers = beatMarkers.length - bmCountOld;
 
     // remove notes not to be rendered and store the remaining ones in presentNotes
     let presentNotes = [], presentWalls = [];
-    
+
     for (let i = 0; i < notesContainer.childNodes.length;) {
         let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
@@ -178,7 +178,6 @@ function render(notes = notesArray, walls = wallsArray) {
     //        this could be done with a listener, but it would kill resizing performance
     //        if we didn't delay / debounce (?) it to a reasonable degree
     let containerHeight = renderContainer.offsetHeight;
-    let containerWidth = renderContainer.offsetWidth;
 
 
     // TODO: set grid-container CSS dimensions here
@@ -279,14 +278,14 @@ function render(notes = notesArray, walls = wallsArray) {
         if (presentWalls[index] !== undefined) {
             let wallContainer = presentNotes[index];
 
-            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let posX = (gridHeight / 3) * (0.5 + wall._lineIndex) - (wallSize / 2);
             let posY = (gridHeight / 3) * (0.5) - (wallSize / 2);
 
             let depth = Math.min(wall._duration, centerBeat + renderDistance + 0.5 - wall._time);
-            depth = depth * timeScale * containerWidth / 4;
+            depth = depth * timeScale * (gridHeight * 4 / 3);
 
-            wallContainer.style.setProperty('--depth',  depth + 'px');
+            wallContainer.style.setProperty('--depth', depth + 'px');
             wallContainer.style.setProperty('--size', wallSize + 'px');
             wallContainer.style.setProperty('left', posX + 'px');
             wallContainer.style.setProperty('top', posY + 'px');
@@ -298,19 +297,19 @@ function render(notes = notesArray, walls = wallsArray) {
 
             let posX = (gridHeight / 3) * (0.5 + wall._lineIndex) - (wallSize / 2);
             let posY = (gridHeight / 3) * (0.5) - (wallSize / 2);
-            let posZ = relTime * timeScale * (containerWidth / 4) * -1;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let width = wall._width;
             let depth = Math.min(wall._duration, centerBeat + renderDistance - wall._time);
             let height = (wall._type == 0) ? 1 : 0.5
 
-            depth = depth * timeScale * containerWidth / 4;
+            depth = depth * timeScale * (gridHeight * 4 / 3);
 
             let wallContainer = document.createElement('div');
 
             wallContainer.classList.add('wall');
-            wallContainer.style.setProperty('--size',   wallSize + 'px');
-            wallContainer.style.setProperty('--width',  width);
-            wallContainer.style.setProperty('--depth',  depth + 'px');
+            wallContainer.style.setProperty('--size', wallSize + 'px');
+            wallContainer.style.setProperty('--width', width);
+            wallContainer.style.setProperty('--depth', depth + 'px');
             wallContainer.style.setProperty('--height', height);
 
 
@@ -355,7 +354,7 @@ function render(notes = notesArray, walls = wallsArray) {
 
 
         if (!decimalTime) {
-            number.onclick = function() {scrollTo(beat);}; // addEventListener can run multiple times - as an alternative, onClick works just as well
+            number.onclick = function () { scrollTo(beat); }; // addEventListener can run multiple times - as an alternative, onClick works just as well
         };
 
         marker.style.setProperty('left', posX + 'px');
