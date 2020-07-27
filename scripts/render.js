@@ -295,7 +295,7 @@ function render(notes = notesArray, walls = wallsArray) {
 
             if (relEnd < -2 * comparisonTolerance) {
                 wallContainer.classList.add('transl');
-            } else { wallContainer.classList.remove('transl');
+            } else { wallContainer.classList.remove('transl'); }
         } else {
             let relTime = wall._time - centerBeat;
             let relEnd = relTime + wall._duration;
