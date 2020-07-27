@@ -254,6 +254,7 @@ body.light {
   height: calc(var(--size) * 3);
   position: absolute;
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face {
   -webkit-backface-visibility: hidden;
