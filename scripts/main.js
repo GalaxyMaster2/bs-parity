@@ -116,6 +116,26 @@ function getNotes(obj) {
     return notes;
 }
 
+function getWalls(obj) {
+    let walls = obj._obstacles;
+    walls.sort(function (a, b) {
+        return a._time - b._time;
+    })
+
+    // filter out invalid/fake wall types
+    walls = walls.filter(function (wall) {
+        return (wall._width >= 1 && wall._duration >= 0)
+    });
+
+    // assign an id to each wall
+    // for use in more efficient rendering
+    walls.forEach(function (wall, index) {
+        wall.id = index;
+    });
+
+    return walls;
+}
+
 /**
  * Detects scroll line height in Firefox, as it is calculated differently to other browsers
  * based upon https://bit.ly/3fy5IEQ
