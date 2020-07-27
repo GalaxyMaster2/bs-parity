@@ -179,7 +179,6 @@ function render(notes = notesArray, walls = wallsArray) {
     //        if we didn't delay / debounce (?) it to a reasonable degree
     let containerHeight = renderContainer.offsetHeight;
 
-
     // TODO: set grid-container CSS dimensions here
     let gridHeight = containerHeight / 2;
 
@@ -298,8 +297,7 @@ function render(notes = notesArray, walls = wallsArray) {
             let relTime = wall._time - centerBeat;
             let relEnd = relTime + wall._duration;
 
-            let posX = (gridHeight / 3) * (0.5 + wall._lineIndex) - (wallSize / 2);
-            let posY = (gridHeight / 3) * (0.5) - (wallSize / 2);
+            let posX = (gridHeight / 3) * wall._lineIndex;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let width = wall._width;
             let depth = Math.min(wall._duration, centerBeat + renderDistance - wall._time);
@@ -315,7 +313,6 @@ function render(notes = notesArray, walls = wallsArray) {
             wallContainer.style.setProperty('--depth', depth + 'px');
             wallContainer.style.setProperty('--height', height);
 
-
             let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
             for (let face of faces) {
                 let wallFace = document.createElement('div');
@@ -330,7 +327,6 @@ function render(notes = notesArray, walls = wallsArray) {
             }
 
             wallContainer.style.setProperty('left', posX + 'px');
-            wallContainer.style.setProperty('top', posY + 'px');
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
             wallContainer.dataset.wall_id = wall.id;
