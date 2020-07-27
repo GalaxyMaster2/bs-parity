@@ -293,8 +293,9 @@ function render(notes = notesArray, walls = wallsArray) {
             wallContainer.style.setProperty('top', posY + 'px');
             wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
-            if (relEnd < 0) wallContainer.classList.add('transl');
-            else wallContainer.classList.remove('transl');
+            if (relEnd < -2 * comparisonTolerance) {
+                wallContainer.classList.add('transl');
+            } else { wallContainer.classList.remove('transl');
         } else {
             let relTime = wall._time - centerBeat;
             let relEnd = relTime + wall._duration;
