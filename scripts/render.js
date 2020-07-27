@@ -291,7 +291,9 @@ function render(notes = notesArray, walls = wallsArray) {
 
             if (relEnd < -2 * comparisonTolerance) {
                 wallContainer.classList.add('transl');
-            } else { wallContainer.classList.remove('transl'); }
+            } else {
+                wallContainer.classList.remove('transl');
+            }
         } else {
             let relTime = wall._time - centerBeat;
             let relEnd = relTime + wall._duration;
@@ -321,8 +323,11 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer.appendChild(wallFace);
             }
 
-            if (relEnd < 0) wallContainer.classList.add('transl');
-            else wallContainer.classList.remove('transl');
+            if (relEnd < -2 * comparisonTolerance) {
+                wallContainer.classList.add('transl');
+            } else {
+                wallContainer.classList.remove('transl');
+            }
 
             wallContainer.style.setProperty('left', posX + 'px');
             wallContainer.style.setProperty('top', posY + 'px');
