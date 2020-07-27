@@ -146,7 +146,6 @@ function getMousePos(e) {
     cursorY = e.clientY;
 }
 
-<<<<<<< HEAD
 /**
  * function for async stuff, repeatedly polls a boolean condition until met
  * @param {boolean} condition - the boolean condition to be met
@@ -157,12 +156,6 @@ function until(condition, interval = 1000/30) {
     const poll = resolve => {
         if (condition()) resolve();
         else setTimeout(_ => poll(resolve), interval);
-=======
-function until(condition, pollRate = 100) {
-    const poll = resolve => {
-        if (condition()) resolve();
-        else setTimeout(_ => poll(resolve), 250);
->>>>>>> d330f363c044e8b7bb8c9972d1540788733c7cae
     }
 
     return new Promise(poll);
