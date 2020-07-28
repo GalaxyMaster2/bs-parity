@@ -251,8 +251,6 @@ body.light {
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
   --size: 2.36rem;
-  width: calc(var(--size) * var(--width));
-  height: calc(var(--size) * 3);
   position: absolute;
   transform-style: preserve-3d;
   pointer-events: none;
@@ -263,30 +261,28 @@ body.light {
           backface-visibility: hidden;
   position: absolute;
   display: block;
-  width: var(--size);
-  height: var(--size);
   background-color: rgba(221, 48, 48, 0.8);
   outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
   outline-offset: -0.0625rem;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.front {
-  height: calc(var(--size) * 3 * var(--height));
   width: calc(var(--size) * var(--width));
+  height: calc(var(--size) * 3 * var(--height));
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.back {
   transform: rotateY(180deg) translateZ(var(--depth));
-  height: calc(var(--size) * 3 * var(--height));
   width: calc(var(--size) * var(--width));
+  height: calc(var(--size) * 3 * var(--height));
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.left {
   transform: rotateY(-90deg) translate3d(calc(var(--depth) / -2), 0, calc(var(--depth) / 2));
-  height: calc(var(--size) * 3 * var(--height));
   width: var(--depth);
+  height: calc(var(--size) * 3 * var(--height));
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.right {
   transform: rotateY(90deg) translate3d(calc(var(--depth) / 2), 0, calc(var(--depth) / -2 + var(--size) * var(--width)));
-  height: calc(var(--size) * 3 * var(--height));
   width: var(--depth);
+  height: calc(var(--size) * 3 * var(--height));
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.top {
   transform: rotateX(90deg) translate3d(0, calc(var(--depth) / -2), calc(var(--depth) / 2));

@@ -98,8 +98,8 @@ function render(notes = notesArray, walls = wallsArray) {
         let end = wall._time + wall._duration;
         let rStart = centerBeat + firstViewableNote;
         let rEnd = centerBeat + renderDistance + 0.5;
-        return (start <= rEnd && end >= rStart)
-    };
+        return (start <= rEnd && end >= rStart);
+    }
 
     // filter notes outside of range
     notes = notes.filter(function (note) {
@@ -281,7 +281,7 @@ function render(notes = notesArray, walls = wallsArray) {
 
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
 
-            let depth = Math.min(wall._duration, centerBeat + renderDistance + 0.5 - wall._time);
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
             depth = depth * timeScale * (gridHeight * 4 / 3);
 
             wallContainer.style.setProperty('--depth', depth + 'px');
@@ -300,7 +300,7 @@ function render(notes = notesArray, walls = wallsArray) {
             let posX = (gridHeight / 3) * wall._lineIndex;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let width = wall._width;
-            let depth = Math.min(wall._duration, centerBeat + renderDistance - wall._time);
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
             let height = (wall._type == 0) ? 1 : 0.5
 
             depth = depth * timeScale * (gridHeight * 4 / 3);
@@ -322,8 +322,6 @@ function render(notes = notesArray, walls = wallsArray) {
 
             if (relEnd < -2 * comparisonTolerance) {
                 wallContainer.classList.add('translucent');
-            } else {
-                wallContainer.classList.remove('translucent');
             }
 
             wallContainer.style.setProperty('left', posX + 'px');
