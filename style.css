@@ -245,6 +245,58 @@ body.light {
   transition: color 0.3s var(--trans);
   cursor: pointer;
 }
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container {
+  display: none;
+  transform-style: preserve-3d;
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
+  --size: 2.36rem;
+  position: absolute;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  top: 0;
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face {
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  position: absolute;
+  display: block;
+  background-color: rgba(221, 48, 48, 0.8);
+  outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
+  outline-offset: -0.0625rem;
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.front {
+  width: calc(var(--size) * var(--width));
+  height: calc(var(--size) * 3 * var(--height));
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.back {
+  transform: rotateY(180deg) translateZ(var(--depth));
+  width: calc(var(--size) * var(--width));
+  height: calc(var(--size) * 3 * var(--height));
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.left {
+  transform: rotateY(-90deg) translate3d(calc(var(--depth) / -2), 0, calc(var(--depth) / 2));
+  width: var(--depth);
+  height: calc(var(--size) * 3 * var(--height));
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.right {
+  transform: rotateY(90deg) translate3d(calc(var(--depth) / 2), 0, calc(var(--depth) / -2 + var(--size) * var(--width)));
+  width: var(--depth);
+  height: calc(var(--size) * 3 * var(--height));
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.top {
+  transform: rotateX(90deg) translate3d(0, calc(var(--depth) / -2), calc(var(--depth) / 2));
+  width: calc(var(--size) * var(--width));
+  height: var(--depth);
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.bottom {
+  transform: rotateX(-90deg) translate3d(0, calc(var(--depth) / 2), calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
+  width: calc(var(--size) * var(--width));
+  height: var(--depth);
+}
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.translucent .wall-face {
+  background-color: rgba(221, 48, 48, 0.6);
+}
 .main .renderbox #render-wrapper #render-container #grid-container #note-container {
   transform-style: preserve-3d;
 }
@@ -365,6 +417,9 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   outline: var(--error) solid var(--border-size);
 }
+.main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
+  display: block;
+}
 .main .renderbox .sliders-container {
   display: grid;
   grid-template-columns: auto;
@@ -381,6 +436,14 @@ body.light {
 }
 .main .renderbox .sliders-container .slider label {
   white-space: nowrap;
+}
+.main .renderbox .renderbox-toggle {
+  margin-top: 0.5rem;
+}
+.main .renderbox .renderbox-toggle input,
+.main .renderbox .renderbox-toggle label {
+  vertical-align: middle;
+  cursor: pointer;
 }
 .main .outputbox {
   position: relative;

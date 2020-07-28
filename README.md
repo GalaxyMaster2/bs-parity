@@ -35,6 +35,7 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Bomb reset detection
 - [x] Better ui
 - [x] Map visualizer
+- [x] Rendering walls in map visualizer
 
 # Planned for future
 - [ ] Map zip support
@@ -42,7 +43,6 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [ ] Arm rotation support in parity algorithm
 - [ ] Vision block detection
 - [ ] Help page
-- [ ] Rendering walls in map visualizer
 
 # Under consideration
 - [ ] Detection of improper stacks/windows/sliders etc.
@@ -57,3 +57,6 @@ The end goal of this project is to provide a tool to easily check a map for comm
 # Currently not planned
 - Detection of other cursed patterns such as arm tangles and hitbox abuse
 - Any map editing capabilities
+
+# Known issues
+Due to a bug in Chromium (used in Chrome, Edge, Opera, etc.) walls can render incorrectly for some camera angles, especially with higher perspective intensity settings. Due to this, wall rendering is disabled by default.

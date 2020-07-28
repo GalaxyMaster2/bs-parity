@@ -87,7 +87,7 @@ class Parity {
 
 const scrollLineHeight = getScrollLineHeight();
 
-var notesArray;
+var notesArray, wallsArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
@@ -114,6 +114,26 @@ function getNotes(obj) {
     });
 
     return notes;
+}
+
+function getWalls(obj) {
+    let walls = obj._obstacles;
+    walls.sort(function (a, b) {
+        return a._time - b._time;
+    });
+
+    // filter out invalid/fake wall types
+    walls = walls.filter(function (wall) {
+        return (wall._width >= 1 && wall._duration >= 0);
+    });
+
+    // assign an id to each wall
+    // for use in more efficient rendering
+    walls.forEach(function (wall, index) {
+        wall.id = index;
+    });
+
+    return walls;
 }
 
 /**

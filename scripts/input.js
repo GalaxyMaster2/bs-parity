@@ -28,6 +28,8 @@ perspectiveSlider.addEventListener('input', function () {
     render();
 });
 
+wallsToggle.addEventListener('change', function () { gridContainer.classList.toggle('showWalls'); });
+
 warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
 errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 

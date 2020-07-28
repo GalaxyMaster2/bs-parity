@@ -69,10 +69,11 @@ function scrollTo(target) {
 /**
  * outputs notes and positions them within the render container around centerBeat
  * does many fancy things
- * @param {*} notes - the array of notes to render, defaults to notesArray
+ * @param {Array} notes - the array of notes to render, defaults to notesArray
+ * @param {Array} walls - the array of walls to render, defaults to wallsArray
  * @returns {void} - outputs to DOM, should not return a value
  */
-function render(notes = notesArray) {
+function render(notes = notesArray, walls = wallsArray) {
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
         return;
@@ -81,10 +82,10 @@ function render(notes = notesArray) {
     let firstViewableNote = -renderDistance;
     if (angleX >= 270) { // vertically looking forwards
         if (Math.min(angleY, 360 - angleY) <= 45) {
-            firstViewableNote = Math.max(-renderDistance, -1.875/timeScale);
+            firstViewableNote = Math.max(-renderDistance, -1.875 / timeScale);
         }
         else if (Math.min(angleY, 360 - angleY) <= 90) {
-            firstViewableNote = Math.max(-renderDistance, -3.75/timeScale);
+            firstViewableNote = Math.max(-renderDistance, -3.75 / timeScale);
         }
     }
 
@@ -92,22 +93,34 @@ function render(notes = notesArray) {
         return (time >= centerBeat + firstViewableNote && time <= centerBeat + renderDistance);
     }
 
+    function renderWall(wall) {
+        let start = wall._time;
+        let end = wall._time + wall._duration;
+        let rStart = centerBeat + firstViewableNote;
+        let rEnd = centerBeat + renderDistance + 0.5;
+        return (start <= rEnd && end >= rStart);
+    }
+
     // filter notes outside of range
     notes = notes.filter(function (note) {
         return renderNote(note._time);
+    });
+
+    walls = walls.filter(function (wall) {
+        return renderWall(wall);
     });
 
     // generate all valid beats within the range
     let bmCountOld = gridContainer.querySelectorAll('.marker').length;
     let beatMarkers = [];
     for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
-            beatMarkers.push(i / divisionValue);
+        beatMarkers.push(i / divisionValue);
     }
     let deltaMarkers = beatMarkers.length - bmCountOld;
 
     // remove notes not to be rendered and store the remaining ones in presentNotes
-    let presentNotes = [];
-    
+    let presentNotes = [], presentWalls = [];
+
     for (let i = 0; i < notesContainer.childNodes.length;) {
         let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
@@ -119,6 +132,21 @@ function render(notes = notesArray) {
                 return note.id == id;
             });
             presentNotes[index] = child;
+            i++;
+        }
+    }
+
+    for (let i = 0; i < wallsContainer.childNodes.length;) {
+        let child = wallsContainer.childNodes[i];
+        let id = child.dataset.wall_id;
+
+        if (id === undefined || !renderWall(wallsArray[id])) {
+            wallsContainer.removeChild(child);
+        } else {
+            let index = walls.findIndex(function (wall) {
+                return wall.id == id;
+            });
+            presentWalls[index] = child;
             i++;
         }
     }
@@ -155,6 +183,7 @@ function render(notes = notesArray) {
     let gridHeight = containerHeight / 2;
 
     let noteSize = gridHeight / 3 / Math.SQRT2;
+    let wallSize = gridHeight / 3;
 
     // calculate note position, make note element and add to the container
     let iterator = notes.entries();
@@ -243,6 +272,67 @@ function render(notes = notesArray) {
         }
     }
 
+    let iterator2 = walls.entries();
+    for (let [index, wall] of iterator2) {
+        if (presentWalls[index] !== undefined) {
+            let wallContainer = presentWalls[index];
+            let relTime = wall._time - centerBeat;
+            let relEnd = relTime + wall._duration;
+
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
+            depth = depth * timeScale * (gridHeight * 4 / 3);
+
+            wallContainer.style.setProperty('--depth', depth + 'px');
+            wallContainer.style.setProperty('--size', wallSize + 'px');
+            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+            if (relEnd < -2 * comparisonTolerance) {
+                wallContainer.classList.add('translucent');
+            } else {
+                wallContainer.classList.remove('translucent');
+            }
+        } else {
+            let relTime = wall._time - centerBeat;
+            let relEnd = relTime + wall._duration;
+
+            let posX = (gridHeight / 3) * wall._lineIndex;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+            let width = wall._width;
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
+            let height = (wall._type == 0) ? 1 : 0.5
+
+            depth = depth * timeScale * (gridHeight * 4 / 3);
+
+            let wallContainer = document.createElement('div');
+
+            wallContainer.classList.add('wall');
+            wallContainer.style.setProperty('--size', wallSize + 'px');
+            wallContainer.style.setProperty('--width', width);
+            wallContainer.style.setProperty('--depth', depth + 'px');
+            wallContainer.style.setProperty('--height', height);
+
+            let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+            for (let face of faces) {
+                let wallFace = document.createElement('div');
+                wallFace.classList.add('wall-face', face);
+                wallContainer.appendChild(wallFace);
+            }
+
+            if (relEnd < -2 * comparisonTolerance) {
+                wallContainer.classList.add('translucent');
+            }
+
+            wallContainer.style.setProperty('left', posX + 'px');
+            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+            wallContainer.dataset.wall_id = wall.id;
+
+            wallsContainer.appendChild(wallContainer);
+        }
+    }
+
     let i = 0;
     for (let beat of beatMarkers) {
         let marker = markerContainer.childNodes[i];
@@ -268,7 +358,7 @@ function render(notes = notesArray) {
 
 
         if (!decimalTime) {
-            number.onclick = function() {scrollTo(beat);}; // addEventListener can run multiple times - as an alternative, onClick works just as well
+            number.onclick = function () { scrollTo(beat); }; // addEventListener can run multiple times - as an alternative, onClick works just as well
         };
 
         marker.style.setProperty('left', posX + 'px');

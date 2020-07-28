@@ -10,6 +10,7 @@ const pageTitle = document.getElementById('title');
 const renderContainer = document.getElementById('render-container');
 const markerContainer = document.getElementById('marker-container');
 const notesContainer = document.getElementById('note-container');
+const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
@@ -28,6 +29,8 @@ const perspectiveSlider = document.getElementById('perspectiveIntensity');
 const renderDistanceSlider = document.getElementById('renderDistance');
 const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
+
+const wallsToggle = document.getElementById('toggleWalls');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
@@ -79,7 +82,10 @@ function readFile(files) {
     const fr = new FileReader();
     fr.readAsText(files[0]);
     fr.addEventListener('load', function () {
-        notesArray = getNotes(JSON.parse(fr.result));
+        let parsed = JSON.parse(fr.result);
+        notesArray = getNotes(parsed);
+        wallsArray = getWalls(parsed);
+
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
         console.log('successful read!');
