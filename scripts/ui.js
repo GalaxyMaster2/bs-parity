@@ -30,6 +30,8 @@ const renderDistanceSlider = document.getElementById('renderDistance');
 const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
 
+const wallsToggle = document.getElementById('toggleWalls');
+
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 
@@ -83,7 +85,7 @@ function readFile(files) {
         let parsed = JSON.parse(fr.result);
         notesArray = getNotes(parsed);
         wallsArray = getWalls(parsed);
-        
+
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
         console.log('successful read!');

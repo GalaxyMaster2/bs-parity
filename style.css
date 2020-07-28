@@ -246,6 +246,7 @@ body.light {
   cursor: pointer;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container {
+  display: none;
   transform-style: preserve-3d;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
@@ -420,6 +421,9 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   outline: var(--error) solid var(--border-size);
 }
+.main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
+  display: block;
+}
 .main .renderbox .sliders-container {
   display: grid;
   grid-template-columns: auto;
@@ -436,6 +440,14 @@ body.light {
 }
 .main .renderbox .sliders-container .slider label {
   white-space: nowrap;
+}
+.main .renderbox .renderbox-toggle {
+  margin-top: 0.5rem;
+}
+.main .renderbox .renderbox-toggle input,
+.main .renderbox .renderbox-toggle label {
+  vertical-align: middle;
+  cursor: pointer;
 }
 .main .outputbox {
   position: relative;

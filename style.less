@@ -285,6 +285,7 @@ body {
                     }
 
                     #wall-container {
+                        display: none;
                         transform-style: preserve-3d;
 
                         .wall {
@@ -431,6 +432,10 @@ body {
                             }
                         }
                     }
+
+                    &.showWalls #wall-container {
+                        display: block;
+                    }
                 }
             }
         }
@@ -454,6 +459,15 @@ body {
                 label {
                     white-space: nowrap;
                 }
+            }
+        }
+
+        .renderbox-toggle {
+            margin-top: 0.5rem;
+
+            input, label {
+                vertical-align: middle;
+                cursor: pointer;
             }
         }
     }
