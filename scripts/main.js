@@ -450,19 +450,33 @@ function checkClap(notes = notesArray, i) {
 
         let intersection = checkIntersection(redLine, blueLine, time);
 
-        if (intersection < 0) {} // do nothing - invalid output, no handclap
-
-        else if (intersection <= 1) {
-            outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', intersection);
-            notes[i].error = true;
-            notes[i + 1].error = true;
-            state[1] += 1;
-        }
-        else if (intersection <= 2) {
-            outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', intersection);
-            notes[i].warn = true;
-            notes[i + 1].warn = true;
-            state[0] += 1;
+        if (typeof(intersection) != "number") {}
+        else if (intersection >= 0) {
+            if (Math.abs(intersection) <= 1) {
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3)+'|'+intersection, 'error');
+                notes[i].error = true;
+                notes[i + 1].error = true;
+                state[1] += 1;
+            }
+            else if (Math.abs(intersection) <= 2) {
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly' + ' ' +intersection, 'warning');
+                notes[i].warn = true;
+                notes[i + 1].warn = true;
+                state[0] += 1;
+            }
+        } else {
+            if (Math.abs(intersection) <= 0.71) {
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3)+'|'+intersection, 'error');
+                notes[i].error = true;
+                notes[i + 1].error = true;
+                state[1] += 1;
+            }
+            else if (Math.abs(intersection) <= 1.5) {
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly' + ' ' +intersection, 'warning');
+                notes[i].warn = true;
+                notes[i + 1].warn = true;
+                state[0] += 1;
+            }
         }
     }
     
@@ -487,7 +501,7 @@ function checkClap(notes = notesArray, i) {
             for (let j = 0; j < redLines.length;) {
                 if (i == j) j++;
                 else {
-                    if (checkIntersection(redLines[i], redLines[j]) == -2) { // if the lines go in the same direction
+                    if (checkIntersection(redLines[i], redLines[j]) == 'same') { // if the lines go in the same direction
                         redLines.splice(j, 1); // remove j from the array
                     } else { j++; }
                 }
@@ -508,14 +522,25 @@ function checkClap(notes = notesArray, i) {
         blueLines.forEach(blue => { // add all notes to lines[] array
             redLines.forEach(red => {
                 let intersection = checkIntersection(red, blue, time);
-                if (intersection < 0) {} // do nothing - invalid output, no handclap
-                else if (intersection <= 1) {
-                    outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
-                    state[1] += 1;
-                }
-                else if (intersection <= 2) {
-                    outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
-                    state[0] += 1;
+                if (typeof(intersection) != "number") {}
+                else if (intersection >= 0) {
+                    if (Math.abs(intersection) <= 1) {
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3)+'|'+intersection, 'error');
+                        state[1] += 1;
+                    }
+                    else if (Math.abs(intersection) <= 2) {
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly'+' '+intersection, 'warning');
+                        state[0] += 1;
+                    }
+                } else {
+                    if (Math.abs(intersection) <= 0.71) {
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3)+'|'+intersection, 'error');
+                        state[1] += 1;
+                    }
+                    else if (Math.abs(intersection) <= 1.5) {
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly'+' '+intersection, 'warning');
+                        state[0] += 1;
+                    }
                 }
             });
         });
@@ -543,17 +568,29 @@ function checkClap(notes = notesArray, i) {
         let bombY = sNoteTypes[3][j]._lineLayer;
         
         hhLines.forEach(element => {
-            intersection = -1;
-            intersection = checkIntersection(element, [bombX, bombY, 0, 0]);
-            if (intersection < 0) {}
-            else if (intersection <= 1) {
-                outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
-                state[1] += 1;
+            intersection = 'none'
+            intersection = checkIntersection(element, [bombX, bombY, 0, 0], time);
+            if (typeof(intersection) != "number") {}
+            else if (intersection >= 0) {
+                if (Math.abs(intersection) <= 1) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3) +'|'+intersection, 'error');
+                    state[1] += 1;
+                }
+                else if (Math.abs(intersection) <= 1.5) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly '+ intersection, 'warning');
+                    state[0] += 1;
+                }
+            } else {
+                if (Math.abs(intersection) <= 0.71) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3) +'|'+intersection, 'error');
+                    state[1] += 1;
+                }
+                else if (Math.abs(intersection) <= 1) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly '+ intersection, 'warning');
+                    state[0] += 1;
+                }
             }
-            else if (intersection <= 1.5) {
-                outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly '+ intersection, 'warning');
-                state[0] += 1;
-            }
+            
         });
     }
 
@@ -563,49 +600,62 @@ function checkClap(notes = notesArray, i) {
 
 // based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
 function checkIntersection(a, b, time = 0) {
-    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { // one of the notes is a dot, test for perpendicular distance between line and point
+    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { // at least one of the notes is a dot, test for perpendicular distance between line and point
+        // todo: how does this handle two dots?
+        console.log(a, b, time);
         let line = a, dot = b;
-        if (a[2] == 0 && a[3] == 0) { // a is the dot
+        if (a[2] == 0 && a[3] == 0) { // swap so a is the dot
             dot = a;
             line = b;
         }
 
-        let perpDist = checkIntersection(line, [dot[0], dot[1], -line[3], line[2]]);
-        if (perpDist == 0) { // the dot lies on the line, calculate distance
-            let dX = (line[0] - dot[0])/(line[2]); // d(A) is the distance between the line and the point divided by the line direction 
-            let dY = (line[1] - dot[1])/(line[3]);
+        let perpDist = checkColinear(line, [dot[0], dot[1]]);
 
-            if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; } // if d(A) is infinity, there is distance but no velocity in d(A) so no clap would be expected
-            if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX); // if d(A) is NaN, both distance and velocity in that direction are zero (eg deltaY in a |>| |<| handclap) so return the other
-            if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
-            return ((Math.abs(dX) +  Math.abs(dY)) / 2);
+        if (perpDist[0]) { // the dot lies on the line, calculate distance from line's point to dot
+            return perpDist[1];
         } else {
-            return perpDist;
+            return 'notOnLine'; 
+            
+            // this may be a little harsh - assumes no hanclap possible if not immediately in a line, but i don't want to implement it properly right now
+            // it pretty much holds true though, so should be fine
         }
+    }
+
+    if (a[2] == b[2] && a[3] == b[3]) { // cut dirs are parallel, return same or notSame depending on if describe the same line
+        if (typeof(checkIntersection(a, [b[0], b[1], 0, 0])) == "number") return 'same'; // b lies on a, they describe the same line
+        return 'notSame'; // b does not lie on a, they do not describe the same line
+
+        // hopefully no hanclaps but there could be some abuse with regards to notes next to each other so you cannot get a full swing for both
+        // maybe something to look into in the future?
     } 
-    if (a[2] == b[2] && a[3] == b[3]) { // lines in the same direction, hopefully no real handclap risk
-        if (checkIntersection(a, [b[0], b[1], -b[3], b[2]]) == 0) return -2; // they describe the same line
-        return -1; // they do not describe the same line
-    } // cut dirs are parallel, return -1 or -2 depending on if they are the same line
 
-    let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0])); // calculating intersection point of lines
-    let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
-    let bottom = (b[3] * a[2]) - (b[2] * a[3]);
+    else { // both notes have different & non-zero directions
+        let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0])); // calculating intersection point of lines using maths ugh
+        let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
+        let bottom = (b[3] * a[2]) - (b[2] * a[3]);
 
-    if (bottom == 0) { // they are the same line but flipped, find the vertical and horizontal distances and compare to cut dirs to see if claps can occur
-        let dX = (a[0] - b[0])/(2 * a[2]); // d(A) is the distance in the (A) direction divided by twice the (A) direction of one line
-        let dY = (a[1] - b[1])/(2 * a[3]); 
-        if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return -1; } // if d(A) is infinity, there is distance but no direction in d(A) so no clap would be expected
-        if (isNaN(dY) && !isNaN(dX)) return Math.abs(dX); // if d(A) is NaN, both distance and direction are zero (eg deltaY in a |>| |<| handclap) so return the other value
-        if (isNaN(dX) && !isNaN(dY)) return Math.abs(dY);
-        return ((Math.abs(dX) +  Math.abs(dY)) / 2); // if distance in A is zero but velocity is >0, the notes are potentially in the same block
-                                                     // which unlikely enough that it should not need to be handled
+        if (bottom == 0) { // same line but flipped (eg > < or < >): find the vertical and horizontal distances and compare to cut dirs to see if claps could occur
+            return checkColinear(a, [b[0], b[1]])[1];      
+        }
+
+        if (Math.sign(topA/bottom) == -1 || Math.sign(topB/bottom) == -1) { // the intersection happens in the pre-swing to both: i want to make these collisions less sensitive
+            return -1 * Math.max(Math.abs(topA / bottom), Math.abs(topB / bottom));
+        }
+        return Math.max(Math.abs(topA / bottom), Math.abs(topB / bottom));
     }
+}
 
-    if (topA / bottom == 0) { return topB / bottom; }
-    if (topB / bottom == 0) { return topA / bottom; }
-    if (Math.sign(topA/bottom) == Math.sign(topB/bottom) == -1) { // harsher tolerances for pre-claps
-        return (Math.abs(topA / bottom) + Math.abs(topB / bottom));
+function checkColinear(line, dot) { // checks whether a dot lies on a line, and returns the mean squared distance if that is the case
+    let dX = (dot[0] - line[0])/(2 * line[2]); // dX is the horizontal distance between the notes divided by twice the horizontal cut component of the swing
+    let dY = (dot[1] - line[1])/(2 * line[3]); // the square of x/y direction components sums to one, so this just normalises the 45deg stuff for less swinging in each dir for full points
+    
+    if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return [false, 'no']; } // if d(A) is infinity, there is distance but no direction in d(A) so no clap would be expected
+
+    if (isNaN(dY) && !isNaN(dX)) return [true, Math.abs(dX)]; // if d(A) is NaN, both distance and direction are zero (eg deltaY in a |>| |<| handclap) so return the other value
+    if (isNaN(dX) && !isNaN(dY)) return [true, Math.abs(dY)]; // if both are NaN, the notes are both dots and also overlap which i am not handling here
+    
+    if (Math.sign(dX) == -1 || Math.sign(dX) == -1) { // the intersection happens in the pre-swing to both: i want to make these collisions less sensitive
+        return [true, -Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
     }
-    return (Math.abs(topA / bottom) + Math.abs(topB / bottom)) / 2;
+    return [true, Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
 }

@@ -87,15 +87,15 @@ function handleFileInput(e) {
 
 /**
  * parses json files and extracts notes from them
- * @param {Object} files - uploaded files (is it an object?)
+ * @param {Object} file - uploaded file (is it an object?)
  * @returns {void} - will lead to parity/render calls
  */
-function readFile(files) {
+function readFile(file) {
     ready = false;
     introDiv.classList.add('uploading');
     const fr = new FileReader();
     fr.readAsText(file);
-    fr.addEventListener('load', function () {
+    fr.addEventListener('loadend', function () {
         notesArray = getNotes(JSON.parse(fr.result));
         introDiv.classList.remove('uploading');
         introDiv.classList.add('done');
@@ -142,7 +142,7 @@ function readZip(file) {
     const fr = new FileReader();
 
     fr.readAsArrayBuffer(file);
-    fr.addEventListener('load', function () {
+    fr.addEventListener('loadend', function () {
         extractZip(fr.result);
     });
 }
