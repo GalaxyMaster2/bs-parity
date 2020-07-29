@@ -93,10 +93,23 @@ function render(notes = notesArray, walls = wallsArray) {
         return (time >= centerBeat + firstViewableNote && time <= centerBeat + renderDistance);
     }
 
-    // filter notes outside of range
-    notes = notes.filter(function (note) {
-        return renderNote(note._time);
-    });
+    // assumes notesArray is sorted by time
+    let firstRenderedNote, lastRenderedNote;
+    for (let i = 0; i < notes.length; i++) {
+        if (renderNote(notes[i]._time)) {
+            firstRenderedNote = i;
+            break;
+        }
+    }
+    // no need to find last note if no notes are rendered
+    if (firstRenderedNote !== undefined) {
+        for (let i = notes.length - 1; i >= 0; i--) {
+            if (renderNote(notes[i]._time)) {
+                lastRenderedNote = i;
+                break;
+            }
+        }
+    }
 
     // remove notes not to be rendered and store the remaining ones in presentNotes
     let presentNotes = [];
@@ -104,13 +117,10 @@ function render(notes = notesArray, walls = wallsArray) {
         let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
 
-        if (id === undefined || !renderNote(notesArray[id]._time)) {
+        if (!renderNote(notes[id]._time)) {
             notesContainer.removeChild(child);
         } else {
-            let index = notes.findIndex(function (note) {
-                return note.id == id;
-            });
-            presentNotes[index] = child;
+            presentNotes[id] = child;
             i++;
         }
     }
@@ -128,13 +138,14 @@ function render(notes = notesArray, walls = wallsArray) {
     let wallSize = gridHeight / 3;
 
     // calculate note position, make note element and add to the container
-    let iterator = notes.entries();
-    for (let [index, note] of iterator) {
-        if (presentNotes[index] !== undefined) {
+    // firstRenderedNote == undefined is handled because undefined <= undefined evaluates to false
+    for (let i = firstRenderedNote; i <= lastRenderedNote; i++) {
+        let note = notes[i];
+        if (presentNotes[i] !== undefined) {
             let relTime = note._time - centerBeat;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let noteAngle = cutAngles[note._cutDirection];
-            let noteContainer = presentNotes[index];
+            let noteContainer = presentNotes[i];
 
             noteContainer.style.setProperty('--size', noteSize + 'px');
             noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
@@ -208,7 +219,7 @@ function render(notes = notesArray, walls = wallsArray) {
                 noteContainer.classList.add('precedingWarn');
             }
 
-            noteContainer.dataset.note_id = note.id;
+            noteContainer.dataset.note_id = i;
 
             notesContainer.appendChild(noteContainer);
         }
@@ -223,30 +234,39 @@ function render(notes = notesArray, walls = wallsArray) {
             return (start <= rEnd && end >= rStart);
         }
 
-        walls = walls.filter(function (wall) {
-            return renderWall(wall);
-        });
+        let firstRenderedWall, lastRenderedWall;
+        for (let i = 0; i < walls.length; i++) {
+            if (renderWall(walls[i])) {
+                firstRenderedWall = i;
+                break;
+            }
+        }
+        if (firstRenderedWall !== undefined) {
+            for (let i = walls.length - 1; i >= 0; i--) {
+                if (renderWall(walls[i])) {
+                    lastRenderedWall = i;
+                    break;
+                }
+            }
+        }
 
         let presentWalls = [];
         for (let i = 0; i < wallsContainer.childNodes.length;) {
             let child = wallsContainer.childNodes[i];
             let id = child.dataset.wall_id;
 
-            if (id === undefined || !renderWall(wallsArray[id])) {
+            if (!renderWall(walls[id])) {
                 wallsContainer.removeChild(child);
             } else {
-                let index = walls.findIndex(function (wall) {
-                    return wall.id == id;
-                });
-                presentWalls[index] = child;
+                presentWalls[id] = child;
                 i++;
             }
         }
 
-        let iterator2 = walls.entries();
-        for (let [index, wall] of iterator2) {
-            if (presentWalls[index] !== undefined) {
-                let wallContainer = presentWalls[index];
+        for (let i = firstRenderedWall; i <= lastRenderedWall; i++) {
+            let wall = walls[i];
+            if (presentWalls[i] !== undefined) {
+                let wallContainer = presentWalls[i];
                 let relTime = wall._time - centerBeat;
                 let relEnd = relTime + wall._duration;
 
@@ -298,7 +318,7 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer.style.setProperty('left', posX + 'px');
                 wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
-                wallContainer.dataset.wall_id = wall.id;
+                wallContainer.dataset.wall_id = i;
 
                 wallsContainer.appendChild(wallContainer);
             }
