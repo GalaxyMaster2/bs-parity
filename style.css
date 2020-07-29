@@ -417,6 +417,10 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   outline: var(--error) solid var(--border-size);
 }
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.recycled {
+  opacity: 0;
+  pointer-events: none;
+}
 .main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
   display: block;
 }

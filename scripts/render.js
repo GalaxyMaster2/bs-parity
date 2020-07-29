@@ -66,6 +66,7 @@ function scrollTo(target) {
     }
 }
 
+let recycledNotes = [];
 /**
  * outputs notes and positions them within the render container around centerBeat
  * does many fancy things
@@ -113,16 +114,25 @@ function render(notes = notesArray, walls = wallsArray) {
 
     // remove notes not to be rendered and store the remaining ones in presentNotes
     let presentNotes = [];
-    for (let i = 0; i < notesContainer.childNodes.length;) {
+    for (let i = 0; i < notesContainer.childNodes.length; i++) {
         let child = notesContainer.childNodes[i];
-        let id = child.dataset.note_id;
+        if (!recycledNotes.includes(child)) {
+            let id = child.dataset.note_id;
 
-        if (!renderNote(notes[id]._time)) {
-            notesContainer.removeChild(child);
-        } else {
-            presentNotes[id] = child;
-            i++;
+            if (renderNote(notes[id]._time)) {
+                presentNotes[id] = child;
+            } else {
+                child.classList.add('recycled');
+                recycledNotes.push(child);
+            }
         }
+    }
+
+    // limit number of recycled notes
+    // TODO: tweak value for best performance?
+    while (recycledNotes.length > 20) {
+        recycledNotes[0].remove();
+        recycledNotes.shift();
     }
 
     // container size in pixels
@@ -171,57 +181,115 @@ function render(notes = notesArray, walls = wallsArray) {
                 noteContainer.classList.add('precedingWarn');
             }
         } else {
-            let relTime = note._time - centerBeat;
-
-            let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
-            let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-
-            let noteAngle = cutAngles[note._cutDirection];
-            let dot = (cutDirections[note._cutDirection] === 'dot');
-
-            let noteContainer = document.createElement('div');
-            noteContainer.classList.add('note');
-            noteContainer.style.setProperty('--size', noteSize + 'px');
-
-            let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-            for (let face of faces) {
-                let noteFace = document.createElement('div');
-                let imgClass;
-                if (types[note._type] === 'bomb') {
-                    imgClass = 'bomb';
-                } else {
-                    imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                        (face === 'front' ? 'front_' : 'side_') + types[note._type];
+            // only recycle notes of same type to avoid repaints with changing texture
+            let recyclableNote;
+            for (let [index, recycledNote] of recycledNotes.entries()) {
+                if (notes[recycledNote.dataset.note_id]._type === note._type) {
+                    recyclableNote = index;
+                    break;
                 }
-                noteFace.classList.add('note-face', face, imgClass);
-                if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
-                    noteFace.classList.add('translucent');
+            }
+            if (recyclableNote !== undefined) {
+                let noteContainer = recycledNotes.splice(recyclableNote, 1)[0];
+
+                noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn', 'recycled');
+
+                let relTime = note._time - centerBeat;
+
+                let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
+                let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
+                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+
+                let noteAngle = cutAngles[note._cutDirection];
+
+                // only causes a repaint when the class actually changes (at least in Chromium)
+                let dot = (cutDirections[note._cutDirection] === 'dot');
+                let front = noteContainer.childNodes[0];
+                let type = types[note._type];
+                front.classList.remove('note_front_' + type, 'dot_front_' + type);
+                front.classList.add((dot ? 'dot_' : 'note_') + 'front_' + type);
+
+                for (let face of noteContainer.childNodes) {
+                    if (relTime < -2 * comparisonTolerance) {
+                        face.classList.add('translucent');
+                    } else {
+                        face.classList.remove('translucent');
+                    }
                 }
-                noteContainer.appendChild(noteFace);
+
+                noteContainer.style.setProperty('--size', noteSize + 'px');
+                noteContainer.style.setProperty('left', posX + 'px');
+                noteContainer.style.setProperty('top', posY + 'px');
+                noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+                noteContainer.onclick = function () { scrollTo(note._time); };
+
+                if (note.error) {
+                    noteContainer.classList.add('error');
+                } else if (note.precedingError) {
+                    noteContainer.classList.add('precedingError');
+                }
+
+                if (note.warn) {
+                    noteContainer.classList.add('warn');
+                } else if (note.precedingWarn) {
+                    noteContainer.classList.add('precedingWarn');
+                }
+
+                noteContainer.dataset.note_id = i;
+            } else {
+                let relTime = note._time - centerBeat;
+
+                let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
+                let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
+                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+
+                let noteAngle = cutAngles[note._cutDirection];
+                let dot = (cutDirections[note._cutDirection] === 'dot');
+
+                let noteContainer = document.createElement('div');
+                noteContainer.classList.add('note');
+                noteContainer.style.setProperty('--size', noteSize + 'px');
+
+                let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+                for (let face of faces) {
+                    let noteFace = document.createElement('div');
+                    let imgClass;
+                    if (types[note._type] === 'bomb') {
+                        imgClass = 'bomb';
+                    } else {
+                        imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
+                            (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                    }
+                    noteFace.classList.add('note-face', face, imgClass);
+                    if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
+                        noteFace.classList.add('translucent');
+                    }
+                    noteContainer.appendChild(noteFace);
+                }
+
+                noteContainer.style.setProperty('left', posX + 'px');
+                noteContainer.style.setProperty('top', posY + 'px');
+                noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+                noteContainer.onclick = function () { scrollTo(note._time); };
+
+                if (note.error) {
+                    noteContainer.classList.add('error');
+                } else if (note.precedingError) {
+                    noteContainer.classList.add('precedingError');
+                }
+
+                if (note.warn) {
+                    noteContainer.classList.add('warn');
+                } else if (note.precedingWarn) {
+                    noteContainer.classList.add('precedingWarn');
+                }
+
+                noteContainer.dataset.note_id = i;
+
+                notesContainer.appendChild(noteContainer);
             }
-
-            noteContainer.style.setProperty('left', posX + 'px');
-            noteContainer.style.setProperty('top', posY + 'px');
-            noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
-
-            noteContainer.addEventListener('click', function () { scrollTo(note._time); });
-
-            if (note.error) {
-                noteContainer.classList.add('error');
-            } else if (note.precedingError) {
-                noteContainer.classList.add('precedingError');
-            }
-
-            if (note.warn) {
-                noteContainer.classList.add('warn');
-            } else if (note.precedingWarn) {
-                noteContainer.classList.add('precedingWarn');
-            }
-
-            noteContainer.dataset.note_id = i;
-
-            notesContainer.appendChild(noteContainer);
         }
     }
 
