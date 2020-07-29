@@ -107,12 +107,6 @@ function getNotes(obj) {
         return types[note._type] !== undefined;
     });
 
-    // assign an id to each note
-    // for use in more efficient rendering
-    notes.forEach(function (note, index) {
-        note.id = index;
-    });
-
     return notes;
 }
 
@@ -125,12 +119,6 @@ function getWalls(obj) {
     // filter out invalid/fake wall types
     walls = walls.filter(function (wall) {
         return (wall._width >= 1 && wall._duration >= 0);
-    });
-
-    // assign an id to each wall
-    // for use in more efficient rendering
-    walls.forEach(function (wall, index) {
-        wall.id = index;
     });
 
     return walls;
