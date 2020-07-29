@@ -93,34 +93,13 @@ function render(notes = notesArray, walls = wallsArray) {
         return (time >= centerBeat + firstViewableNote && time <= centerBeat + renderDistance);
     }
 
-    function renderWall(wall) {
-        let start = wall._time;
-        let end = wall._time + wall._duration;
-        let rStart = centerBeat + firstViewableNote;
-        let rEnd = centerBeat + renderDistance + 0.5;
-        return (start <= rEnd && end >= rStart);
-    }
-
     // filter notes outside of range
     notes = notes.filter(function (note) {
         return renderNote(note._time);
     });
 
-    walls = walls.filter(function (wall) {
-        return renderWall(wall);
-    });
-
-    // generate all valid beats within the range
-    let bmCountOld = gridContainer.querySelectorAll('.marker').length;
-    let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
-        beatMarkers.push(i / divisionValue);
-    }
-    let deltaMarkers = beatMarkers.length - bmCountOld;
-
     // remove notes not to be rendered and store the remaining ones in presentNotes
-    let presentNotes = [], presentWalls = [];
-
+    let presentNotes = [];
     for (let i = 0; i < notesContainer.childNodes.length;) {
         let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
@@ -133,43 +112,6 @@ function render(notes = notesArray, walls = wallsArray) {
             });
             presentNotes[index] = child;
             i++;
-        }
-    }
-
-    for (let i = 0; i < wallsContainer.childNodes.length;) {
-        let child = wallsContainer.childNodes[i];
-        let id = child.dataset.wall_id;
-
-        if (id === undefined || !renderWall(wallsArray[id])) {
-            wallsContainer.removeChild(child);
-        } else {
-            let index = walls.findIndex(function (wall) {
-                return wall.id == id;
-            });
-            presentWalls[index] = child;
-            i++;
-        }
-    }
-
-    if (deltaMarkers != 0) {
-        while (deltaMarkers < 0) {
-            markerContainer.childNodes[0].remove();
-            deltaMarkers++;
-        }
-        while (deltaMarkers > 0) {
-            let marker = document.createElement('div');
-            let number = document.createElement('div');
-            let line = document.createElement('div');
-
-            marker.classList.add('marker');
-            number.classList.add('marker-number');
-            line.classList.add('marker-line');
-
-            marker.appendChild(line);
-            marker.appendChild(number);
-            markerContainer.appendChild(marker);
-
-            deltaMarkers--;
         }
     }
 
@@ -272,64 +214,124 @@ function render(notes = notesArray, walls = wallsArray) {
         }
     }
 
-    let iterator2 = walls.entries();
-    for (let [index, wall] of iterator2) {
-        if (presentWalls[index] !== undefined) {
-            let wallContainer = presentWalls[index];
-            let relTime = wall._time - centerBeat;
-            let relEnd = relTime + wall._duration;
+    if (gridContainer.classList.contains('showWalls')) {
+        function renderWall(wall) {
+            let start = wall._time;
+            let end = wall._time + wall._duration;
+            let rStart = centerBeat + firstViewableNote;
+            let rEnd = centerBeat + renderDistance + 0.5;
+            return (start <= rEnd && end >= rStart);
+        }
 
-            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+        walls = walls.filter(function (wall) {
+            return renderWall(wall);
+        });
 
-            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
-            depth = depth * timeScale * (gridHeight * 4 / 3);
+        let presentWalls = [];
+        for (let i = 0; i < wallsContainer.childNodes.length;) {
+            let child = wallsContainer.childNodes[i];
+            let id = child.dataset.wall_id;
 
-            wallContainer.style.setProperty('--depth', depth + 'px');
-            wallContainer.style.setProperty('--size', wallSize + 'px');
-            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
-
-            if (relEnd < -2 * comparisonTolerance) {
-                wallContainer.classList.add('translucent');
+            if (id === undefined || !renderWall(wallsArray[id])) {
+                wallsContainer.removeChild(child);
             } else {
-                wallContainer.classList.remove('translucent');
+                let index = walls.findIndex(function (wall) {
+                    return wall.id == id;
+                });
+                presentWalls[index] = child;
+                i++;
             }
-        } else {
-            let relTime = wall._time - centerBeat;
-            let relEnd = relTime + wall._duration;
+        }
 
-            let posX = (gridHeight / 3) * wall._lineIndex;
-            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-            let width = wall._width;
-            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
-            let height = (wall._type == 0) ? 1 : 0.5
+        let iterator2 = walls.entries();
+        for (let [index, wall] of iterator2) {
+            if (presentWalls[index] !== undefined) {
+                let wallContainer = presentWalls[index];
+                let relTime = wall._time - centerBeat;
+                let relEnd = relTime + wall._duration;
 
-            depth = depth * timeScale * (gridHeight * 4 / 3);
+                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
 
-            let wallContainer = document.createElement('div');
+                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
+                depth = depth * timeScale * (gridHeight * 4 / 3);
 
-            wallContainer.classList.add('wall');
-            wallContainer.style.setProperty('--size', wallSize + 'px');
-            wallContainer.style.setProperty('--width', width);
-            wallContainer.style.setProperty('--depth', depth + 'px');
-            wallContainer.style.setProperty('--height', height);
+                wallContainer.style.setProperty('--depth', depth + 'px');
+                wallContainer.style.setProperty('--size', wallSize + 'px');
+                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
-            let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-            for (let face of faces) {
-                let wallFace = document.createElement('div');
-                wallFace.classList.add('wall-face', face);
-                wallContainer.appendChild(wallFace);
+                if (relEnd < -2 * comparisonTolerance) {
+                    wallContainer.classList.add('translucent');
+                } else {
+                    wallContainer.classList.remove('translucent');
+                }
+            } else {
+                let relTime = wall._time - centerBeat;
+                let relEnd = relTime + wall._duration;
+
+                let posX = (gridHeight / 3) * wall._lineIndex;
+                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+                let width = wall._width;
+                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
+                let height = (wall._type == 0) ? 1 : 0.5
+
+                depth = depth * timeScale * (gridHeight * 4 / 3);
+
+                let wallContainer = document.createElement('div');
+
+                wallContainer.classList.add('wall');
+                wallContainer.style.setProperty('--size', wallSize + 'px');
+                wallContainer.style.setProperty('--width', width);
+                wallContainer.style.setProperty('--depth', depth + 'px');
+                wallContainer.style.setProperty('--height', height);
+
+                let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+                for (let face of faces) {
+                    let wallFace = document.createElement('div');
+                    wallFace.classList.add('wall-face', face);
+                    wallContainer.appendChild(wallFace);
+                }
+
+                if (relEnd < -2 * comparisonTolerance) {
+                    wallContainer.classList.add('translucent');
+                }
+
+                wallContainer.style.setProperty('left', posX + 'px');
+                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+                wallContainer.dataset.wall_id = wall.id;
+
+                wallsContainer.appendChild(wallContainer);
             }
+        }
+    }
 
-            if (relEnd < -2 * comparisonTolerance) {
-                wallContainer.classList.add('translucent');
-            }
+    // generate all valid beats within the range
+    let bmCountOld = gridContainer.querySelectorAll('.marker').length;
+    let beatMarkers = [];
+    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
+        beatMarkers.push(i / divisionValue);
+    }
+    let deltaMarkers = beatMarkers.length - bmCountOld;
 
-            wallContainer.style.setProperty('left', posX + 'px');
-            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+    if (deltaMarkers != 0) {
+        while (deltaMarkers < 0) {
+            markerContainer.childNodes[0].remove();
+            deltaMarkers++;
+        }
+        while (deltaMarkers > 0) {
+            let marker = document.createElement('div');
+            let number = document.createElement('div');
+            let line = document.createElement('div');
 
-            wallContainer.dataset.wall_id = wall.id;
+            marker.classList.add('marker');
+            number.classList.add('marker-number');
+            line.classList.add('marker-line');
 
-            wallsContainer.appendChild(wallContainer);
+            marker.appendChild(line);
+            marker.appendChild(number);
+            markerContainer.appendChild(marker);
+
+            deltaMarkers--;
         }
     }
 
@@ -355,7 +357,6 @@ function render(notes = notesArray, walls = wallsArray) {
 
         line.style.setProperty('width', lineWidth + 'px');
         line.style.setProperty('height', (lineWidth / (decimalTime ? 60 : 30)) + 'px');
-
 
         if (!decimalTime) {
             number.onclick = function () { scrollTo(beat); }; // addEventListener can run multiple times - as an alternative, onClick works just as well
