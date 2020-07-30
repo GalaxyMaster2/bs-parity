@@ -68,7 +68,7 @@ function scrollTo(target) {
     }
 }
 
-let recycledNotes = [];
+let recycledNotes = [], recycledWalls = [];
 /**
  * outputs notes and positions them within the render container around centerBeat
  * does many fancy things
@@ -265,74 +265,72 @@ function render(notes = notesArray, walls = wallsArray) {
         }
 
         let presentWalls = [];
-        for (let i = 0; i < wallsContainer.childNodes.length;) {
+        for (let i = 0; i < wallsContainer.childNodes.length; i++) {
             let child = wallsContainer.childNodes[i];
-            let id = child.dataset.wall_id;
+            if (!recycledWalls.includes(child)) {
+                let id = child.dataset.wall_id;
 
-            if (!renderWall(walls[id])) {
-                wallsContainer.removeChild(child);
-            } else {
-                presentWalls[id] = child;
-                i++;
+                if (renderWall(walls[id])) {
+                    presentWalls[id] = child;
+                } else {
+                    child.classList.add('recycled');
+                    recycledWalls.push(child);
+                }
             }
+        }
+
+        while (recycledWalls.length > 10) {
+            recycledWalls[0].remove();
+            recycledWalls.shift();
         }
 
         for (let i = firstRenderedWall; i <= lastRenderedWall; i++) {
             let wall = walls[i];
+            let wallContainer;
+
+            let relTime = wall._time - centerBeat;
+            let relEnd = relTime + wall._duration;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime) * timeScale * (gridHeight * 4 / 3);
+            let translucent = relEnd < -2 * comparisonTolerance;
+
             if (presentWalls[i] !== undefined) {
-                let wallContainer = presentWalls[i];
-                let relTime = wall._time - centerBeat;
-                let relEnd = relTime + wall._duration;
-
-                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-
-                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
-                depth = depth * timeScale * (gridHeight * 4 / 3);
-
-                wallContainer.style.setProperty('--depth', depth + 'px');
-                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
-
-                if (relEnd < -2 * comparisonTolerance) {
-                    wallContainer.classList.add('translucent');
-                } else {
-                    wallContainer.classList.remove('translucent');
-                }
+                wallContainer = presentWalls[i];
             } else {
-                let relTime = wall._time - centerBeat;
-                let relEnd = relTime + wall._duration;
-
                 let posX = (gridHeight / 3) * wall._lineIndex;
-                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
                 let width = wall._width;
-                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
                 let height = (wall._type == 0) ? 1 : 0.5
 
-                depth = depth * timeScale * (gridHeight * 4 / 3);
+                if (recycledWalls.length > 0) {
+                    wallContainer = recycledWalls.shift();
+                    wallContainer.classList.remove('recycled');
+                } else {
+                    wallContainer = document.createElement('div');
+                    wallContainer.classList.add('wall');
 
-                let wallContainer = document.createElement('div');
+                    let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+                    for (let face of faces) {
+                        let wallFace = document.createElement('div');
+                        wallFace.classList.add('wall-face', face);
+                        wallContainer.appendChild(wallFace);
+                    }
 
-                wallContainer.classList.add('wall');
+                    wallsContainer.appendChild(wallContainer);
+                }
+
                 wallContainer.style.setProperty('--width', width);
-                wallContainer.style.setProperty('--depth', depth + 'px');
                 wallContainer.style.setProperty('--height', height);
-
-                let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-                for (let face of faces) {
-                    let wallFace = document.createElement('div');
-                    wallFace.classList.add('wall-face', face);
-                    wallContainer.appendChild(wallFace);
-                }
-
-                if (relEnd < -2 * comparisonTolerance) {
-                    wallContainer.classList.add('translucent');
-                }
-
                 wallContainer.style.setProperty('left', posX + 'px');
-                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
-
                 wallContainer.dataset.wall_id = i;
+            }
 
-                wallsContainer.appendChild(wallContainer);
+            wallContainer.style.setProperty('--depth', depth + 'px');
+            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+            if (translucent) {
+                wallContainer.classList.add('translucent');
+            } else {
+                wallContainer.classList.remove('translucent');
             }
         }
     }
