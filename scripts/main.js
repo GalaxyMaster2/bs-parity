@@ -244,9 +244,9 @@ function outputUI(note, parity, message, messageType) {
 }
 
 /** clears all error messages from output box */
-function clearOutput() {
-    while (output.lastChild) {
-        output.removeChild(output.lastChild);
+function clear(parent) {
+    while (parent.lastChild) {
+        parent.removeChild(parent.lastChild);
     }
 }
 
@@ -273,7 +273,7 @@ var lastNote = 0;
  * @returns {void} - outputs error messages through outputUI
  */
 function checkParity(notes = notesArray) {
-    clearOutput();
+    clear(output);
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
         return;

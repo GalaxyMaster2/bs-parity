@@ -451,7 +451,7 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
   display: block;
 }
-.main .renderbox #render-container span {
+.main .renderbox #render-wrapper span {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;

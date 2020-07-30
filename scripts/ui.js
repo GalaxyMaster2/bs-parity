@@ -123,20 +123,32 @@ function readFile(file) {
 }
 
 async function readUrl() {
+    let _url = urlInput.value;
+    console.log(_url);
     const validurl = new RegExp('^(https?:\\/\\/)?'+ // protocol
                                 '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
                                 '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
                                 '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
                                 '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
                                 '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-    if (!validurl.test(urlInput.value)) return;
-    if (urlInput.value == '') return;
+    const validhex = new RegExp('\/[0-9A-Fa-f]{*}\/g'); // string only made of 0-9, a-f and A-F
 
-    let url = 'https://cors-anywhere.herokuapp.com/' + urlInput.value; // fixes cors headers on most urls
+    if (!validurl.test(_url)) return -3;
+    if (_url == '') return -2;
+
+    if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
+        let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
+        console.log(songID);
+        if (!validhex.test(songID)) return -1; // key must be valid hex
+        _url = 'https://beatsaver.com/api/download/key/' + songID;
+    }
+
+    _url = 'https://cors-anywhere.herokuapp.com/' + _url; // fixes cors headers on most urls
+    console.log(_url);
 
     introDiv.classList.add('uploading');
 
-    JSZipUtils.getBinaryContent(url, function(err, data) { 
+    JSZipUtils.getBinaryContent(_url, function(err, data) { 
         if (err) { throw err; }
         else {
             extractZip(data);
@@ -215,12 +227,8 @@ async function extractZip(data) {
         notesArray = datFiles[select.value][0];
         wallsArray = datFiles[select.value][1];
         getInfo(select.value);
-        while (notesContainer.childNodes.length != 0) { // clear to avoid errors with selective renderer
-            notesContainer.removeChild(notesContainer.childNodes[0]);
-        } 
-        while (wallsContainer.childNodes.length != 0) {
-            wallsContainer.removeChild(wallsContainer.childNodes[0]);
-        }
+        clear(notesContainer); // avoids errors with selective renderer
+        clear(wallsContainer);
         recycledNotes = [];
         recycledWalls = [];
         render(notesArray);
