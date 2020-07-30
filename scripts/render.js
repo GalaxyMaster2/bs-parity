@@ -38,6 +38,22 @@ function renderTransition(timestamp) {
     }
 }
 
+var deltaTime = 0;
+/**
+ * when music is playing, attempt to keep preview in line with song
+ * @param {Number} timeoffset 
+ */
+function syncPlayback(timeoffset = 0.01) {
+    centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
+    render();
+
+    if (!audio.paused) {
+        requestAnimationFrame(function() {
+            syncPlayback();
+        });
+    }
+}
+
 /**
  * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
  * calculates animation time proportional to log of distance
@@ -154,7 +170,7 @@ function render(notes = notesArray, walls = wallsArray) {
         let note = notes[i];
         let noteContainer;
 
-        let relTime = note._time - centerBeat;
+        let relTime = note._time + offset - centerBeat;
         let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
         let noteAngle = cutAngles[note._cutDirection];
         let translucent = relTime < -2 * comparisonTolerance;
@@ -227,7 +243,7 @@ function render(notes = notesArray, walls = wallsArray) {
 
             noteContainer.style.setProperty('left', posX + 'px');
             noteContainer.style.setProperty('top', posY + 'px');
-            noteContainer.onclick = function () { scrollTo(note._time); };
+            noteContainer.onclick = function () { scrollTo(note._time + offset); };
             noteContainer.dataset.note_id = i;
         }
 
@@ -248,8 +264,8 @@ function render(notes = notesArray, walls = wallsArray) {
 
     if (gridContainer.classList.contains('showWalls')) {
         function renderWall(wall) {
-            let start = wall._time;
-            let end = wall._time + wall._duration;
+            let start = wall._time + offsest;
+            let end = wall._time + wall._duration + offset;
             let rStart = centerBeat + firstViewableNote;
             let rEnd = centerBeat + renderDistance + 0.5;
             return (start <= rEnd && end >= rStart);
@@ -295,7 +311,7 @@ function render(notes = notesArray, walls = wallsArray) {
             let wall = walls[i];
             let wallContainer;
 
-            let relTime = wall._time - centerBeat;
+            let relTime = wall._time + offset - centerBeat;
             let relEnd = relTime + wall._duration;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
             let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime) * timeScale * (gridHeight * 4 / 3);
