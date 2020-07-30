@@ -198,8 +198,8 @@ function handleKeyDown(event) {
  * @returns {void} - will lead to render call if mouse has moved more than one ulp
  */
 function mouseRotate(e) {
-    angleX = mod(angleX - e.movementY * 0.5, 360);
-    angleY = mod(angleY + e.movementX * 0.5, 360);
+    angleX = angleX - e.movementY * -0.005;
+    angleY = angleY + e.movementX * 0.005;
     render();
 }
 

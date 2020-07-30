@@ -195,6 +195,9 @@ body.light {
   margin-bottom: var(--gap);
   border-radius: 1rem;
 }
+.main .renderbox #render-wrapper canvas {
+  display: block;
+}
 .main .renderbox #render-wrapper #render-container {
   position: relative;
   width: 100%;

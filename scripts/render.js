@@ -73,6 +73,7 @@ function scrollTo(target) {
  * @param {Array} walls - the array of walls to render, defaults to wallsArray
  * @returns {void} - outputs to DOM, should not return a value
  */
+/*
 function render(notes = notesArray, walls = wallsArray) {
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
@@ -408,3 +409,4 @@ function render(notes = notesArray, walls = wallsArray) {
     gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px) ' +
         'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) translateZ(' + containerHeight / -3 + 'px)');
 }
+*/
