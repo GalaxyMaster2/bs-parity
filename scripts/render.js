@@ -130,7 +130,8 @@ function render(notes = notesArray, walls = wallsArray) {
 
     // limit number of recycled notes
     // TODO: tweak value for best performance?
-    while (recycledNotes.length > 20) {
+    // assuming user scrolls one full beat in an 8 nps 160bpm song, they will need to paint 3 new notes, any of 4 types >> 12 notes?
+    while (recycledNotes.length > 12) {
         recycledNotes[0].remove();
         recycledNotes.shift();
     }
@@ -285,7 +286,7 @@ function render(notes = notesArray, walls = wallsArray) {
             }
         }
 
-        while (recycledWalls.length > 10) {
+        while (recycledWalls.length > 5) {
             recycledWalls[0].remove();
             recycledWalls.shift();
         }
