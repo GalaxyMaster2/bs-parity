@@ -1,27 +1,54 @@
 var scene, camera, renderer;
-var notes = [];
+var renderedNotes = [];
 
 angleY = 0;
-angleX = 0.5;
+angleX = 1;
 
 const geometry = new THREE.BoxGeometry();
-const redMaterial = new THREE.MeshBasicMaterial({ color: 0xf03e2d });
+const redMaterial  = new THREE.MeshBasicMaterial({ color: 0xf03e2d });
 const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x3f96e6 });
+const bombMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+const markMaterial = new THREE.LineBasicMaterial({ color: 0xeeeeee });
 
 initRender();
 function initRender() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, 800/320, 0.1, 1000 );
 
-    notes[0] = makeCube(0, 0, 0);
-    scene.add( notes[0] );
-
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( 800, 320 );
 
     renderContainer.appendChild( renderer.domElement );
 }
-var cameraPos = [0, -2, 3];
+
+function placeMarkers(count) {
+    for (let i = 0; i < Math.floor(count); i++) {
+        let points = []
+        points.push(new THREE.Vector3(-1, i * 4, -.5));
+        points.push(new THREE.Vector3(4, i * 4, -.5));
+        let geometry = new THREE.BufferGeometry().setFromPoints(points);
+        let line = new THREE.Line(geometry, markMaterial);
+        scene.add( line );
+    }
+}
+
+function placeNotes(notes = notesArray) {
+    for (let i = 0; i < notes.length; i++) {
+        let material = notes[i]._type == 0 ? redMaterial : (notes[i]._type == 1) ? blueMaterial : bombMaterial;
+        renderedNotes[i] = makeCube(notes[i]._lineIndex, notes[i]._time * 4 * timeScale / 1.25, notes[i]._lineLayer, material);
+    }
+    renderedNotes.forEach(element => {
+        scene.add(element);
+    });
+    placeMarkers(notes[notes.length - 1]._time);
+    render();
+}
+function updateNotes() {
+    for (let i = 0; i < renderedNotes.length; i++) {
+        renderedNotes[i].position.y = notesArray[i]._time * 4 * timeScale / 1.25; // this breaks centerbeat so far which isn't great
+    }
+}
+var cameraPos = [1.5, -2, 3]; // todo: orbit
 function render() {
     camera.position.x = cameraPos[0]; 
     camera.position.y = centerBeat + cameraPos[1]; 

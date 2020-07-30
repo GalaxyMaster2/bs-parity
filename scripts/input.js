@@ -15,6 +15,7 @@ renderDistanceSlider.addEventListener('input', function () {
 timeScaleSlider.addEventListener('input', function () {
     timeScale = parseFloat(timeScaleSlider.value);
     timeScaleSlider.setAttribute('title', parseFloat(timeScaleSlider.value).toFixed(2) + 'x');
+    updateNotes();
     render();
 });
 divisionValueSlider.addEventListener('input', function () {

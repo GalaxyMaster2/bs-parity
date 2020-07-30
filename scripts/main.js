@@ -107,6 +107,7 @@ function getNotes(obj) {
         return types[note._type] !== undefined;
     });
 
+    placeNotes(notes);
     return notes;
 }
 
