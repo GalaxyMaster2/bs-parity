@@ -163,14 +163,6 @@ function render(notes = notesArray, walls = wallsArray) {
             noteContainer = presentNotes[i];
 
             noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn');
-
-            for (let face of noteContainer.childNodes) {
-                if (translucent) {
-                    face.classList.add('translucent');
-                } else {
-                    face.classList.remove('translucent');
-                }
-            }
         } else {
             let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
@@ -186,14 +178,6 @@ function render(notes = notesArray, walls = wallsArray) {
                 let type = types[note._type];
                 front.classList.remove('note_front_' + type, 'dot_front_' + type);
                 front.classList.add((dot ? 'dot_' : 'note_') + 'front_' + type);
-
-                for (let face of noteContainer.childNodes) {
-                    if (translucent) {
-                        face.classList.add('translucent');
-                    } else {
-                        face.classList.remove('translucent');
-                    }
-                }
             } else {
                 noteContainer = document.createElement('div');
                 noteContainer.classList.add('note');
@@ -209,9 +193,6 @@ function render(notes = notesArray, walls = wallsArray) {
                             (face === 'front' ? 'front_' : 'side_') + types[note._type];
                     }
                     noteFace.classList.add('note-face', face, imgClass);
-                    if (translucent) { // given beat times are rounded, some may not correctly centred beats may not highlight
-                        noteFace.classList.add('translucent');
-                    }
                     noteContainer.appendChild(noteFace);
                 }
 
@@ -235,6 +216,12 @@ function render(notes = notesArray, walls = wallsArray) {
             noteContainer.classList.add('warn');
         } else if (note.precedingWarn) {
             noteContainer.classList.add('precedingWarn');
+        }
+
+        if (translucent) {
+            noteContainer.classList.add('translucent');
+        } else {
+            noteContainer.classList.remove('translucent');
         }
     }
 

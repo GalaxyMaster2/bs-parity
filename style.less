@@ -391,8 +391,6 @@ body {
                                 &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
                                 &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
 
-                                &.translucent { opacity: 0.3; }
-
                                 &.bomb            {  background-image: url('assets/bomb.svg');            }
                                 &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
                                 &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
@@ -433,6 +431,9 @@ body {
                                     outline: none;
                                     &.front { outline: var(--error) solid var(--border-size); }
                                 }
+                            }
+                            &.translucent .note-face {
+                                opacity: 0.3;
                             }
                             &.recycled {
                                 opacity: 0;
