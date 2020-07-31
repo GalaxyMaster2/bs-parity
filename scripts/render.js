@@ -17,6 +17,8 @@ var olaPosition = Ola(0);
 var angleX = 330;
 var angleY = 320;
 
+var renderContainerHeight;
+
 var animationFrameId;
 
 /**
@@ -125,14 +127,8 @@ function render(notes = notesArray, walls = wallsArray) {
         }
     }
 
-    // container size in pixels
-    // TODO: render the page again when the width / height changes
-    //        this could be done with a listener, but it would kill resizing performance
-    //        if we didn't delay / debounce (?) it to a reasonable degree
-    let containerHeight = renderContainer.offsetHeight;
-
     // TODO: set grid-container CSS dimensions here
-    let gridHeight = containerHeight / 2;
+    let gridHeight = renderContainerHeight / 2;
 
     let noteSize = gridHeight / 3 / Math.SQRT2;
     let wallSize = gridHeight / 3;
@@ -405,6 +401,6 @@ function render(notes = notesArray, walls = wallsArray) {
         i++;
     }
 
-    gridContainer.style.setProperty('transform', 'perspective(' + containerHeight * (1 / perspectiveMultiplier) + 'px) ' +
-        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) translateZ(' + containerHeight / -3 + 'px)');
+    gridContainer.style.setProperty('transform', 'perspective(' + renderContainerHeight * (1 / perspectiveMultiplier) + 'px) ' +
+        'rotateX(' + angleX + 'deg) rotateY(' + angleY + 'deg) translateZ(' + renderContainerHeight / -3 + 'px)');
 }

@@ -99,9 +99,14 @@ function readFile(files) {
         ready = true;
         centerBeat = 0;
         olaPosition = Ola(0);
+        renderContainerHeight = getRenderContainerHeight();
         checkParity();
         render();
     });
+}
+
+function getRenderContainerHeight() {
+    return renderContainer.offsetHeight;
 }
 
 /**
