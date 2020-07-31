@@ -68,7 +68,12 @@ function scrollTo(target) {
     }
 }
 
-let recycledNotes = [], recycledWalls = [];
+let recycledNotes = {
+    red: [],
+    blue: [],
+    bomb: []
+};
+let recycledWalls = [];
 /**
  * outputs notes and positions them within the render container around centerBeat
  * does many fancy things
@@ -118,24 +123,25 @@ function render(notes = notesArray, walls = wallsArray) {
     let presentNotes = [];
     for (let i = 0; i < notesContainer.childNodes.length; i++) {
         let child = notesContainer.childNodes[i];
-        if (!recycledNotes.includes(child)) {
-            let id = child.dataset.note_id;
-
+        let id = child.dataset.note_id;
+        if (!recycledNotes[types[notes[id]._type]].includes(child)) {
             if (renderNote(notes[id]._time)) {
                 presentNotes[id] = child;
             } else {
                 child.classList.add('recycled');
-                recycledNotes.push(child);
+                recycledNotes[types[notes[id]._type]].push(child);
             }
         }
     }
 
     // limit number of recycled notes
     // TODO: tweak value for best performance?
-    // assuming user scrolls one full beat in an 8 nps 160bpm song, they will need to paint 3 new notes, any of 4 types >> 12 notes?
-    while (recycledNotes.length > 12) {
-        recycledNotes[0].remove();
-        recycledNotes.shift();
+    // ideally this should depend on highest common note density in the map
+    for (let type in recycledNotes) {
+        while (recycledNotes[type].length > (2.5 * renderDistance)) {
+            recycledNotes[type][0].remove();
+            recycledNotes[type].shift();
+        }
     }
 
     // TODO: set grid-container CSS dimensions here
@@ -170,16 +176,8 @@ function render(notes = notesArray, walls = wallsArray) {
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
             let dot = (cutDirections[note._cutDirection] === 'dot');
 
-            // only recycle notes of same type to avoid repaints with changing texture
-            let recyclableNote;
-            for (let [index, recycledNote] of recycledNotes.entries()) {
-                if (notes[recycledNote.dataset.note_id]._type === note._type) {
-                    recyclableNote = index;
-                    break;
-                }
-            }
-            if (recyclableNote !== undefined) {
-                noteContainer = recycledNotes.splice(recyclableNote, 1)[0];
+            if (recycledNotes[types[note._type]].length > 0) {
+                noteContainer = recycledNotes[types[note._type]].shift();
 
                 noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn', 'recycled');
 
