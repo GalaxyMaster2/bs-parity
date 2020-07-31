@@ -250,7 +250,7 @@ body.light {
   transform-style: preserve-3d;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
-  --size: 2.36rem;
+  --size: calc(10rem / 3);
   position: absolute;
   transform-style: preserve-3d;
   pointer-events: none;
@@ -301,7 +301,7 @@ body.light {
   transform-style: preserve-3d;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note {
-  --size: 2.36rem;
+  --size: calc(10rem / 3 / 1.41);
   width: var(--size);
   height: var(--size);
   position: absolute;

@@ -130,8 +130,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // TODO: set grid-container CSS dimensions here
     let gridHeight = renderContainerHeight / 2;
 
-    let noteSize = gridHeight / 3 / Math.SQRT2;
-    let wallSize = gridHeight / 3;
+    let noteSize = gridHeight / 3 / 1.41;
 
     // calculate note position, make note element and add to the container
     // firstRenderedNote == undefined is handled because undefined <= undefined evaluates to false
@@ -143,7 +142,6 @@ function render(notes = notesArray, walls = wallsArray) {
             let noteAngle = cutAngles[note._cutDirection];
             let noteContainer = presentNotes[i];
 
-            noteContainer.style.setProperty('--size', noteSize + 'px');
             noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
 
             let translucent = relTime < -2 * comparisonTolerance;
@@ -178,7 +176,6 @@ function render(notes = notesArray, walls = wallsArray) {
 
             let noteContainer = document.createElement('div');
             noteContainer.classList.add('note');
-            noteContainer.style.setProperty('--size', noteSize + 'px');
 
             let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
             for (let face of faces) {
@@ -272,7 +269,6 @@ function render(notes = notesArray, walls = wallsArray) {
                 depth = depth * timeScale * (gridHeight * 4 / 3);
 
                 wallContainer.style.setProperty('--depth', depth + 'px');
-                wallContainer.style.setProperty('--size', wallSize + 'px');
                 wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
 
                 if (relEnd < -2 * comparisonTolerance) {
@@ -295,7 +291,6 @@ function render(notes = notesArray, walls = wallsArray) {
                 let wallContainer = document.createElement('div');
 
                 wallContainer.classList.add('wall');
-                wallContainer.style.setProperty('--size', wallSize + 'px');
                 wallContainer.style.setProperty('--width', width);
                 wallContainer.style.setProperty('--depth', depth + 'px');
                 wallContainer.style.setProperty('--height', height);
