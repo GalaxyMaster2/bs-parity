@@ -254,9 +254,11 @@ body {
                     width: var(--width);
                     height: var(--height);
                     transform-style: preserve-3d;
+                    pointer-events: none;
 
                     #marker-container {
                         transform-style: preserve-3d;
+                        pointer-events: auto;
 
                         .marker {
                             display: flex;
@@ -287,6 +289,7 @@ body {
                     #wall-container {
                         display: none;
                         transform-style: preserve-3d;
+                        pointer-events: auto;
 
                         .wall {
                             --size: calc(10rem / 3);
@@ -351,6 +354,7 @@ body {
 
                     #note-container {
                         transform-style: preserve-3d;
+                        pointer-events: auto;
 
                         .note {
                             --size: calc(10rem / 3 / 1.41);

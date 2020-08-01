@@ -217,9 +217,11 @@ body.light {
   width: var(--width);
   height: var(--height);
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #marker-container {
   transform-style: preserve-3d;
+  pointer-events: auto;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker {
   display: flex;
@@ -248,6 +250,7 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container {
   display: none;
   transform-style: preserve-3d;
+  pointer-events: auto;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
   --size: calc(10rem / 3);
@@ -299,6 +302,7 @@ body.light {
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container {
   transform-style: preserve-3d;
+  pointer-events: auto;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note {
   --size: calc(10rem / 3 / 1.41);
