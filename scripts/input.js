@@ -15,12 +15,13 @@ renderDistanceSlider.addEventListener('input', function () {
 timeScaleSlider.addEventListener('input', function () {
     timeScale = parseFloat(timeScaleSlider.value);
     timeScaleSlider.setAttribute('title', parseFloat(timeScaleSlider.value).toFixed(2) + 'x');
-    updateNotes();
+    update();
     render();
 });
 divisionValueSlider.addEventListener('input', function () {
     divisionValue = parseFloat(divisionValueSlider.value);
     divisionValueSlider.setAttribute('title', '1/' + parseFloat(divisionValueSlider.value).toFixed(0));
+    placeMarkers();
     render();
 });
 perspectiveSlider.addEventListener('input', function () {
@@ -64,8 +65,8 @@ function changeTheme() {
 // fancy click handler
 // 
 var mouseHandle = false;
-var cursorX = -1;
-var cursorY = 0;
+// var cursorX = -1;
+// var cursorY = 0;
 
 /**
  * detects middle and right click and assigns them to actions
@@ -112,7 +113,7 @@ async function handleMouseDown(e) {
             olaPosition = Ola(centerBeat);
 
             highlightElements(centerBeat);
-            render();
+            update();
 
             if (mouseHandle) {
                 lastTimestamp = timestamp;

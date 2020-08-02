@@ -34,6 +34,7 @@ function renderTransition(timestamp) {
     } else {
         animationFrameId = window.requestAnimationFrame(renderTransition);
         centerBeat = olaPosition.value;
+        update();
         render();
     }
 }
