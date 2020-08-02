@@ -72,37 +72,106 @@ function handleFileInput(e) {
 }
 
 /**
- * parses json files and extracts notes from them
- * @param {Object} files - uploaded files (is it an object?)
+ * reads selected file and calls functions based on file extension
+ * @param {Array} files - uploaded files
  * @returns {void} - will lead to parity/render calls
  */
 function readFile(files) {
-    ready = false;
     introDiv.classList.add('uploading');
+    let file = files[0];
     const fr = new FileReader();
-    fr.readAsText(files[0]);
-    fr.addEventListener('load', function () {
-        let parsed = JSON.parse(fr.result);
-        notesArray = getNotes(parsed);
-        wallsArray = getWalls(parsed);
+    if (file.name.substr(-4) === '.dat') {
+        fr.readAsText(file);
+        fr.addEventListener('load', function () {
+            loadDifficultyDat(fr.result);
+            fileLoaded();
+        });
+    } else if (file.name.substr(-4) === '.zip') {
+        fr.readAsArrayBuffer(file);
+        fr.addEventListener('load', extractZip);
+    } else {
+        // an unsupported file was selected
+        console.log('unsupported file format');
+    }
+}
 
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log('successful read!');
+/**
+ * extracts a map zip and attempts to load all present difficulties
+ * @param {ProgressEvent} e
+ */
+async function extractZip(e) {
+    let zip = await JSZip.loadAsync(e.target.result);
+    let infoFile = zip.file('Info.dat') || zip.file('info.dat');
+    if (infoFile) {
+        let mapInfo = await infoFile.async('string');
+        loadMapInfo(mapInfo);
 
-        // disable the intro screen after animation
-        // unfortunately this doesn't seem to be possible in pure CSS
-        setTimeout(function () {
-            introDiv.style.setProperty('display', 'none');
-        }, 1000);
+        let availableDifficulties = [];
+        for (let difficulty of mapDifficulties) {
+            let diff = zip.file(difficulty._beatmapFilename);
+            if (diff) {
+                difficulty.mapString = await diff.async('string');
+                availableDifficulties.push(difficulty);
+            } else {
+                // difficulty file doesn't exist
+                console.log('difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip');
+            }
+        }
+        mapDifficulties = availableDifficulties;
 
-        ready = true;
-        centerBeat = 0;
-        olaPosition = Ola(0);
-        renderContainerHeight = getRenderContainerHeight();
-        checkParity();
-        render();
-    });
+        if (mapDifficulties[0]) {
+            loadDifficultyDat(mapDifficulties[0].mapString);
+            fileLoaded();
+        } else {
+            // no available difficulties
+            console.log('no difficulty file available to load')
+        }
+    } else {
+        // no info.dat present
+        console.log('no info.dat present in zip');
+    }
+}
+
+/**
+ * parses an Info.dat string and extracts the useful properties into global variables
+ * @param {String} datString - the text contents of an Info.dat file
+ */
+function loadMapInfo(datString) {
+    let parsed = JSON.parse(datString);
+    mapDifficulties = parsed._difficultyBeatmapSets[0]._difficultyBeatmaps;
+}
+
+/**
+ * parses and loads a difficulty.dat string
+ * @param {String} datString - the text contents of a difficulty.dat file
+ */
+function loadDifficultyDat(datString) {
+    ready = false;
+    let parsed = JSON.parse(datString);
+    notesArray = getNotes(parsed);
+    wallsArray = getWalls(parsed);
+
+    ready = true;
+    centerBeat = 0;
+    olaPosition = Ola(0);
+    checkParity();
+    render();
+}
+
+/**
+ * triggers the transition to the main screen -
+ * should be called when the selected files have been loaded successfully
+ */
+function fileLoaded() {
+    introDiv.classList.remove('uploading');
+    introDiv.classList.add('done');
+    console.log('successful read!');
+
+    // disable the intro screen after animation
+    // unfortunately this doesn't seem to be possible in pure CSS
+    setTimeout(function () {
+        introDiv.style.setProperty('display', 'none');
+    }, 1000);
 }
 
 function getRenderContainerHeight() {

@@ -144,6 +144,10 @@ function render(notes = notesArray, walls = wallsArray) {
         }
     }
 
+    if (renderContainerHeight === undefined) {
+        renderContainerHeight = getRenderContainerHeight();
+    }
+
     // TODO: set grid-container CSS dimensions here
     let gridHeight = renderContainerHeight / 2;
 

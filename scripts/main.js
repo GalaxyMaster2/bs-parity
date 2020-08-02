@@ -87,6 +87,7 @@ class Parity {
 
 const scrollLineHeight = getScrollLineHeight();
 
+var mapDifficulties;
 var notesArray, wallsArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
