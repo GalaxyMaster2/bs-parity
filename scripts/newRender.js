@@ -61,6 +61,7 @@ function makeCube(x, y, z, noteData) {
     cube.position.x = x;
     cube.position.y = y;
     cube.position.z = z;
+    cube.rotation.y = cutAngles[noteData._cutDirection] * 2 * Math.PI / 360;
     return cube;
 }
 
