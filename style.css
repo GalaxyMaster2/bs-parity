@@ -300,6 +300,9 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.translucent .wall-face {
   background-color: rgba(221, 48, 48, 0.6);
 }
+.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.recycled {
+  opacity: 0;
+}
 .main .renderbox #render-wrapper #render-container #grid-container #note-container {
   transform-style: preserve-3d;
   pointer-events: auto;
@@ -356,9 +359,6 @@ body.light {
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.bottom {
   transform: rotateX(45deg) translateZ(0);
-}
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.translucent {
-  opacity: 0.3;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
@@ -420,6 +420,13 @@ body.light {
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   outline: var(--error) solid var(--border-size);
+}
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.translucent .note-face {
+  opacity: 0.3;
+}
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.recycled {
+  opacity: 0;
+  pointer-events: none;
 }
 .main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
   display: block;

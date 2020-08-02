@@ -68,6 +68,12 @@ function scrollTo(target) {
     }
 }
 
+let recycledNotes = {
+    red: [],
+    blue: [],
+    bomb: []
+};
+let recycledWalls = [];
 /**
  * outputs notes and positions them within the render container around centerBeat
  * does many fancy things
@@ -115,15 +121,26 @@ function render(notes = notesArray, walls = wallsArray) {
 
     // remove notes not to be rendered and store the remaining ones in presentNotes
     let presentNotes = [];
-    for (let i = 0; i < notesContainer.childNodes.length;) {
+    for (let i = 0; i < notesContainer.childNodes.length; i++) {
         let child = notesContainer.childNodes[i];
         let id = child.dataset.note_id;
+        if (!recycledNotes[types[notes[id]._type]].includes(child)) {
+            if (renderNote(notes[id]._time)) {
+                presentNotes[id] = child;
+            } else {
+                child.classList.add('recycled');
+                recycledNotes[types[notes[id]._type]].push(child);
+            }
+        }
+    }
 
-        if (!renderNote(notes[id]._time)) {
-            notesContainer.removeChild(child);
-        } else {
-            presentNotes[id] = child;
-            i++;
+    // limit number of recycled notes
+    // TODO: tweak value for best performance?
+    // ideally this should depend on highest common note density in the map
+    for (let type in recycledNotes) {
+        while (recycledNotes[type].length > (2.5 * renderDistance)) {
+            recycledNotes[type][0].remove();
+            recycledNotes[type].shift();
         }
     }
 
@@ -136,85 +153,75 @@ function render(notes = notesArray, walls = wallsArray) {
     // firstRenderedNote == undefined is handled because undefined <= undefined evaluates to false
     for (let i = firstRenderedNote; i <= lastRenderedNote; i++) {
         let note = notes[i];
+        let noteContainer;
+
+        let relTime = note._time - centerBeat;
+        let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+        let noteAngle = cutAngles[note._cutDirection];
+        let translucent = relTime < -2 * comparisonTolerance;
         if (presentNotes[i] !== undefined) {
-            let relTime = note._time - centerBeat;
-            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-            let noteAngle = cutAngles[note._cutDirection];
-            let noteContainer = presentNotes[i];
-
-            noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
-
-            let translucent = relTime < -2 * comparisonTolerance;
-            for (let face of noteContainer.childNodes) {
-                if (translucent) {
-                    face.classList.add('translucent');
-                } else {
-                    face.classList.remove('translucent');
-                }
-            }
+            noteContainer = presentNotes[i];
 
             noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn');
-            if (note.error) {
-                noteContainer.classList.add('error');
-            } else if (note.precedingError) {
-                noteContainer.classList.add('precedingError');
-            }
-            if (note.warn) {
-                noteContainer.classList.add('warn');
-            } else if (note.precedingWarn) {
-                noteContainer.classList.add('precedingWarn');
-            }
         } else {
-            let relTime = note._time - centerBeat;
-
             let posX = (gridHeight / 3) * (0.5 + note._lineIndex) - (noteSize / 2);
             let posY = (gridHeight / 3) * (2.5 - note._lineLayer) - (noteSize / 2);
-            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-
-            let noteAngle = cutAngles[note._cutDirection];
             let dot = (cutDirections[note._cutDirection] === 'dot');
 
-            let noteContainer = document.createElement('div');
-            noteContainer.classList.add('note');
+            if (recycledNotes[types[note._type]].length > 0) {
+                noteContainer = recycledNotes[types[note._type]].shift();
 
-            let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-            for (let face of faces) {
-                let noteFace = document.createElement('div');
-                let imgClass;
-                if (types[note._type] === 'bomb') {
-                    imgClass = 'bomb';
-                } else {
-                    imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                        (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                noteContainer.classList.remove('error', 'warn', 'precedingError', 'precedingWarn', 'recycled');
+
+                // only causes a repaint when the class actually changes (at least in Chromium)
+                let front = noteContainer.childNodes[0];
+                let type = types[note._type];
+                front.classList.remove('note_front_' + type, 'dot_front_' + type);
+                front.classList.add((dot ? 'dot_' : 'note_') + 'front_' + type);
+            } else {
+                noteContainer = document.createElement('div');
+                noteContainer.classList.add('note');
+
+                let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+                for (let face of faces) {
+                    let noteFace = document.createElement('div');
+                    let imgClass;
+                    if (types[note._type] === 'bomb') {
+                        imgClass = 'bomb';
+                    } else {
+                        imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
+                            (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                    }
+                    noteFace.classList.add('note-face', face, imgClass);
+                    noteContainer.appendChild(noteFace);
                 }
-                noteFace.classList.add('note-face', face, imgClass);
-                if (relTime < -2 * comparisonTolerance) { // given beat times are rounded, some may not correctly centred beats may not highlight
-                    noteFace.classList.add('translucent');
-                }
-                noteContainer.appendChild(noteFace);
+
+                notesContainer.appendChild(noteContainer);
             }
 
             noteContainer.style.setProperty('left', posX + 'px');
             noteContainer.style.setProperty('top', posY + 'px');
-            noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
-
-            noteContainer.addEventListener('click', function () { scrollTo(note._time); });
-
-            if (note.error) {
-                noteContainer.classList.add('error');
-            } else if (note.precedingError) {
-                noteContainer.classList.add('precedingError');
-            }
-
-            if (note.warn) {
-                noteContainer.classList.add('warn');
-            } else if (note.precedingWarn) {
-                noteContainer.classList.add('precedingWarn');
-            }
-
+            noteContainer.onclick = function () { scrollTo(note._time); };
             noteContainer.dataset.note_id = i;
+        }
 
-            notesContainer.appendChild(noteContainer);
+        noteContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px) rotateZ(' + noteAngle + 'deg)');
+
+        if (note.error) {
+            noteContainer.classList.add('error');
+        } else if (note.precedingError) {
+            noteContainer.classList.add('precedingError');
+        }
+        if (note.warn) {
+            noteContainer.classList.add('warn');
+        } else if (note.precedingWarn) {
+            noteContainer.classList.add('precedingWarn');
+        }
+
+        if (translucent) {
+            noteContainer.classList.add('translucent');
+        } else {
+            noteContainer.classList.remove('translucent');
         }
     }
 
@@ -244,74 +251,72 @@ function render(notes = notesArray, walls = wallsArray) {
         }
 
         let presentWalls = [];
-        for (let i = 0; i < wallsContainer.childNodes.length;) {
+        for (let i = 0; i < wallsContainer.childNodes.length; i++) {
             let child = wallsContainer.childNodes[i];
-            let id = child.dataset.wall_id;
+            if (!recycledWalls.includes(child)) {
+                let id = child.dataset.wall_id;
 
-            if (!renderWall(walls[id])) {
-                wallsContainer.removeChild(child);
-            } else {
-                presentWalls[id] = child;
-                i++;
+                if (renderWall(walls[id])) {
+                    presentWalls[id] = child;
+                } else {
+                    child.classList.add('recycled');
+                    recycledWalls.push(child);
+                }
             }
+        }
+
+        while (recycledWalls.length > 5) {
+            recycledWalls[0].remove();
+            recycledWalls.shift();
         }
 
         for (let i = firstRenderedWall; i <= lastRenderedWall; i++) {
             let wall = walls[i];
+            let wallContainer;
+
+            let relTime = wall._time - centerBeat;
+            let relEnd = relTime + wall._duration;
+            let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+            let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime) * timeScale * (gridHeight * 4 / 3);
+            let translucent = relEnd < -2 * comparisonTolerance;
+
             if (presentWalls[i] !== undefined) {
-                let wallContainer = presentWalls[i];
-                let relTime = wall._time - centerBeat;
-                let relEnd = relTime + wall._duration;
-
-                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
-
-                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
-                depth = depth * timeScale * (gridHeight * 4 / 3);
-
-                wallContainer.style.setProperty('--depth', depth + 'px');
-                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
-
-                if (relEnd < -2 * comparisonTolerance) {
-                    wallContainer.classList.add('translucent');
-                } else {
-                    wallContainer.classList.remove('translucent');
-                }
+                wallContainer = presentWalls[i];
             } else {
-                let relTime = wall._time - centerBeat;
-                let relEnd = relTime + wall._duration;
-
                 let posX = (gridHeight / 3) * wall._lineIndex;
-                let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
                 let width = wall._width;
-                let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime);
                 let height = (wall._type == 0) ? 1 : 0.5
 
-                depth = depth * timeScale * (gridHeight * 4 / 3);
+                if (recycledWalls.length > 0) {
+                    wallContainer = recycledWalls.shift();
+                    wallContainer.classList.remove('recycled');
+                } else {
+                    wallContainer = document.createElement('div');
+                    wallContainer.classList.add('wall');
 
-                let wallContainer = document.createElement('div');
+                    let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+                    for (let face of faces) {
+                        let wallFace = document.createElement('div');
+                        wallFace.classList.add('wall-face', face);
+                        wallContainer.appendChild(wallFace);
+                    }
 
-                wallContainer.classList.add('wall');
+                    wallsContainer.appendChild(wallContainer);
+                }
+
                 wallContainer.style.setProperty('--width', width);
-                wallContainer.style.setProperty('--depth', depth + 'px');
                 wallContainer.style.setProperty('--height', height);
-
-                let faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-                for (let face of faces) {
-                    let wallFace = document.createElement('div');
-                    wallFace.classList.add('wall-face', face);
-                    wallContainer.appendChild(wallFace);
-                }
-
-                if (relEnd < -2 * comparisonTolerance) {
-                    wallContainer.classList.add('translucent');
-                }
-
                 wallContainer.style.setProperty('left', posX + 'px');
-                wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
-
                 wallContainer.dataset.wall_id = i;
+            }
 
-                wallsContainer.appendChild(wallContainer);
+            wallContainer.style.setProperty('--depth', depth + 'px');
+            wallContainer.style.setProperty('transform', 'translateZ(' + posZ + 'px)');
+
+            if (translucent) {
+                wallContainer.classList.add('translucent');
+            } else {
+                wallContainer.classList.remove('translucent');
             }
         }
     }
