@@ -14,6 +14,7 @@ const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
+const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
 
@@ -121,6 +122,7 @@ async function extractZip(e) {
 
         if (mapDifficulties[0]) {
             loadDifficultyDat(mapDifficulties[0].mapString);
+            populateDiffSelect();
             fileLoaded();
         } else {
             // no available difficulties
@@ -154,8 +156,32 @@ function loadDifficultyDat(datString) {
     ready = true;
     centerBeat = 0;
     olaPosition = Ola(0);
+    clearRenderedElements();
     checkParity();
     render();
+}
+
+/**
+ * populates the difficulty selection input with all available difficulties
+ */
+function populateDiffSelect() {
+    diffSelect.removeAttribute('disabled');
+    diffSelect.firstElementChild.remove();
+
+    for (let [index, difficulty] of mapDifficulties.entries()) {
+        let option = document.createElement('option');
+
+        let optionString;
+        if (difficulty._customData?._difficultyLabel) {
+            optionString = difficulty._customData._difficultyLabel;
+        } else {
+            optionString = difficulty._difficulty;
+        }
+
+        option.textContent = optionString;
+        option.value = index;
+        diffSelect.appendChild(option);
+    }
 }
 
 /**

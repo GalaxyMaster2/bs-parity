@@ -68,6 +68,23 @@ function scrollTo(target) {
     }
 }
 
+/**
+ * clears all rendered elements
+ */
+function clearRenderedElements() {
+    recycledNotes = {
+        red: [],
+        blue: [],
+        bomb: []
+    };
+    recycledWalls = [];
+    for (let container of [notesContainer, wallsContainer, markerContainer]) {
+        while (container.lastChild) {
+            container.removeChild(container.lastChild);
+        }
+    }
+}
+
 let recycledNotes = {
     red: [],
     blue: [],
