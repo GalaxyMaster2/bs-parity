@@ -27,6 +27,7 @@ divisionValueSlider.addEventListener('input', function () {
 perspectiveSlider.addEventListener('input', function () {
     perspectiveMultiplier = parseFloat(perspectiveSlider.value);
     perspectiveSlider.setAttribute('title', parseFloat(perspectiveSlider.value).toFixed(2));
+    focalLength(perspectiveMultiplier);
     render();
 });
 
@@ -177,20 +178,20 @@ function until(condition, interval = 1000 / 30) {
 function handleKeyDown(event) {
     switch (event.key) {
         case 'w':
-            angleX -= 10;
+            angleY -= 0.05;
             break;
         case 'a':
-            angleY += 10;
+            angleX += 0.05;
             break;
         case 's':
-            angleX += 10;
+            angleY += 0.05;
             break;
         case 'd':
-            angleY -= 10;
+            angleX -= 0.05;
             break;
+        default:
+            return;
     }
-    angleX = mod(angleX, 360);
-    angleY = mod(angleY, 360);
     render();
 }
 

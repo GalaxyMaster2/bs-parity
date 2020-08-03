@@ -1,3 +1,5 @@
+console.log('three.js renderer loaded');
+
 var scene, camera, renderer;
 var renderedNotes = [], renderedMarkers = [];
 var songLength;
@@ -19,28 +21,29 @@ const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
 const redMaterial  = new THREE.MeshBasicMaterial({ color: 0xf03e2d });
 const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x3f96e6 });
-const bombMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
 const mrk1Material = new THREE.LineBasicMaterial({ color: 0xeeeeee });
 const mrk2Material = new THREE.LineBasicMaterial({ color: 0x777777 });
 
-const nFB = new THREE.MeshBasicMaterial({map: loader.load('assets/png/note_front_blue.png')});
+const nFB = new THREE.MeshBasicMaterial({map: loader.load('assets/png/note_front_blue.png')}); // convert to 128x128s?
 const dFB = new THREE.MeshBasicMaterial({map: loader.load('assets/png/dot_front_blue.png')});
 const nSB = new THREE.MeshBasicMaterial({map: loader.load('assets/png/note_side_blue.png')});
 const nFR = new THREE.MeshBasicMaterial({map: loader.load('assets/png/note_front_red.png')});
 const dFR = new THREE.MeshBasicMaterial({map: loader.load('assets/png/dot_front_red.png')});
 const nSR = new THREE.MeshBasicMaterial({map: loader.load('assets/png/note_side_red.png')});
+const bMa = new THREE.MeshBasicMaterial({ color: 0x333333 }); // todo: replace with bomb tex
 
 const textures = [
     [[nSR, nSR, nSR, nFR, nSR, nSR], [nSR, nSR, nSR, dFR, nSR, nSR]],
-    [[nSB, nSB, nSB, nFB, nSB, nSB], [nSB, nSB, nSB, dFB, nSB, nSB]]
-]
-const blueNote = [nSB, nSB, nSB, nFB, nSB, nSB];
-const redNote = [nSR, nSR, nSR, nFR, nSR, nSR];
+    [[nSB, nSB, nSB, nFB, nSB, nSB], [nSB, nSB, nSB, dFB, nSB, nSB]],
+    [],
+    [[bMa, bMa, bMa, bMa, bMa, bMa], [bMa, bMa, bMa, bMa, bMa, bMa]]
+];
 
 initRender();
 function initRender() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, 800/320, 0.1, 1000 );
+    camera.setFocalLength(10);
 
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize( 800, 320 );
@@ -48,14 +51,7 @@ function initRender() {
     renderContainer.appendChild( renderer.domElement );
 }
 function makeCube(x, y, z, noteData) {
-    let type;
-    if (noteData._type <= 1) { // red or blue
-        if (noteData._cutDirection != 8) { // note not dot
-            type = textures[noteData._type][0];
-        } else type = textures[noteData._type][1];
-    } else {
-        type = bombMaterial;
-    }
+    let type = textures[noteData._type][noteData._cutDirection != 8 ? 0 : 1];;
 
     let cube = new THREE.Mesh(geometry, type);
     cube.position.x = x;
@@ -64,7 +60,7 @@ function makeCube(x, y, z, noteData) {
     cube.rotation.y = cutAngles[noteData._cutDirection] * 2 * Math.PI / 360;
     return cube;
 }
-
+function focalLength(value = 10) { camera.setFocalLength(value); } // for perspective slider
 function placeMarkers(count = songLength) {
     renderedMarkers.forEach(element => {
         scene.remove(element);

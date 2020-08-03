@@ -14,8 +14,8 @@ var centerBeat = 0; // changed to match values in html
 var olaPosition = Ola(0);
 
 // angle (0,0) is looking directly at the notes from player perspective
-var angleX = 330;
-var angleY = 320;
+// var angleX = 330;
+// var angleY = 320;
 
 var animationFrameId;
 
