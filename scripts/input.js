@@ -33,9 +33,12 @@ wallsToggle.addEventListener('change', function () {
     render();
 });
 
+diffSetSelect.addEventListener('change', function () {
+    populateDiffSelect();
+    loadDifficultyDat(getSelectedDiff().mapString);
+});
 diffSelect.addEventListener('change', function () {
-    let index = diffSelect.options[diffSelect.selectedIndex].value;
-    loadDifficultyDat(mapDifficulties[index].mapString);
+    loadDifficultyDat(getSelectedDiff().mapString);
 });
 
 warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });

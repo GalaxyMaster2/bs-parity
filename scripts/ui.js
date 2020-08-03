@@ -14,6 +14,7 @@ const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
+const diffSetSelect = document.getElementById('diffset-select');
 const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
@@ -107,22 +108,32 @@ async function extractZip(e) {
         let mapInfo = await infoFile.async('string');
         loadMapInfo(mapInfo);
 
-        let availableDifficulties = [];
-        for (let difficulty of mapDifficulties) {
-            let diff = zip.file(difficulty._beatmapFilename);
-            if (diff) {
-                difficulty.mapString = await diff.async('string');
-                availableDifficulties.push(difficulty);
-            } else {
-                // difficulty file doesn't exist
-                console.log('difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip');
+        // prune unavailable difficulties
+        for (let i = mapDifficultySets.length - 1; i >= 0; i--) {
+            let beatmaps = mapDifficultySets[i]._difficultyBeatmaps;
+
+            for (let j = beatmaps.length - 1; j >= 0; j--) {
+                let difficulty = beatmaps[j];
+                let difficultyFile = zip.file(difficulty._beatmapFilename);
+                if (difficultyFile) {
+                    difficulty.mapString = await difficultyFile.async('string');
+                } else {
+                    // difficulty file doesn't exist
+                    console.log('difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip');
+                    beatmaps.splice(j, 1);
+                }
+            }
+
+            // remove set if empty
+            if (beatmaps.length === 0) {
+                mapDifficultySets.splice(i, 1);
             }
         }
-        mapDifficulties = availableDifficulties;
 
-        if (mapDifficulties[0]) {
-            loadDifficultyDat(mapDifficulties[0].mapString);
+        if (mapDifficultySets.length > 0) {
+            populateDiffSetSelect();
             populateDiffSelect();
+            loadDifficultyDat(getSelectedDiff().mapString);
             fileLoaded();
         } else {
             // no available difficulties
@@ -140,7 +151,7 @@ async function extractZip(e) {
  */
 function loadMapInfo(datString) {
     let parsed = JSON.parse(datString);
-    mapDifficulties = parsed._difficultyBeatmapSets[0]._difficultyBeatmaps;
+    mapDifficultySets = parsed._difficultyBeatmapSets;
 }
 
 /**
@@ -162,13 +173,32 @@ function loadDifficultyDat(datString) {
 }
 
 /**
- * populates the difficulty selection input with all available difficulties
+ * populates the difficulty set selection input
+ */
+function populateDiffSetSelect() {
+    for (let [index, set] of mapDifficultySets.entries()) {
+        let option = document.createElement('option');
+        option.textContent = set._beatmapCharacteristicName;
+        option.value = index;
+        diffSetSelect.appendChild(option);
+    }
+    if (mapDifficultySets.length > 1) {
+        diffSetSelect.classList.add('enabled');
+    }
+}
+
+/**
+ * populates the difficulty selection input with all difficulties in the active set
  */
 function populateDiffSelect() {
     diffSelect.removeAttribute('disabled');
-    diffSelect.firstElementChild.remove();
 
-    for (let [index, difficulty] of mapDifficulties.entries()) {
+    while (diffSelect.lastChild) {
+        diffSelect.removeChild(diffSelect.lastChild);
+    }
+
+    let activeSet = getSelectedDiffSet()._difficultyBeatmaps;
+    for (let [index, difficulty] of activeSet.entries()) {
         let option = document.createElement('option');
 
         let optionString;
@@ -182,6 +212,22 @@ function populateDiffSelect() {
         option.value = index;
         diffSelect.appendChild(option);
     }
+}
+
+/**
+ * returns the currently selected difficulty
+ * @returns {Object} - the currently selected difficulty
+ */
+function getSelectedDiff() {
+    return getSelectedDiffSet()._difficultyBeatmaps[diffSelect.options[diffSelect.selectedIndex].value];
+}
+
+/**
+ * returns the currently selected difficulty set
+ * @returns {Object} - the currentlly selected difficulty set
+ */
+function getSelectedDiffSet() {
+    return mapDifficultySets[diffSetSelect.options[diffSetSelect.selectedIndex].value];
 }
 
 /**
