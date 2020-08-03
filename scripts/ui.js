@@ -117,34 +117,32 @@ function readFile(file) {
         ready = true;
         centerBeat = 0;
         olaPosition = Ola(0);
-        checkParity();
+        checkMap();
         render();
     });
 }
 
 async function readUrl() {
     let _url = urlInput.value;
-    console.log(_url);
     const validurl = new RegExp('^(https?:\\/\\/)?'+ // protocol
                                 '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
                                 '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
                                 '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
                                 '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
                                 '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-    const validhex = new RegExp('\/[0-9A-Fa-f]{*}\/g'); // string only made of 0-9, a-f and A-F
+    const validhex = /^[0-9a-fA-F]+$/; // string only made of 0-9, a-f and A-F
 
     if (!validurl.test(_url)) return -3;
     if (_url == '') return -2;
 
     if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
         let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
-        console.log(songID);
         if (!validhex.test(songID)) return -1; // key must be valid hex
+        console.log("downloading map #" + songID);
         _url = 'https://beatsaver.com/api/download/key/' + songID;
+    } else {
+        _url = 'https://cors-anywhere.herokuapp.com/' + _url; // fixes cors headers on most urls
     }
-
-    _url = 'https://cors-anywhere.herokuapp.com/' + _url; // fixes cors headers on most urls
-    console.log(_url);
 
     introDiv.classList.add('uploading');
 
@@ -185,9 +183,8 @@ async function extractZip(data) {
                 }
                 else {
                     let name = filename; // async hates me but i think this works
-                    zip.file(filename).async('text')
-                    .then(function (content) {
-                        let parsed = JSON.parse(fr.result);
+                    zip.file(filename).async('text').then(function (content) {
+                        let parsed = JSON.parse(content);
                         datFiles[name] = [getNotes(parsed), getWalls(parsed)];
                     });
                 }
@@ -210,6 +207,7 @@ async function extractZip(data) {
     fileSelector.removeChild(fileSelector.firstChild);
 
     let select = document.createElement('select');
+    console.log(datFiles);
 
     let count = 0;
     for (var key in datFiles) {
@@ -232,7 +230,7 @@ async function extractZip(data) {
         recycledNotes = [];
         recycledWalls = [];
         render(notesArray);
-        checkParity();
+        checkMap();
     });
 
     if (count > 1) fileSelector.append(select);
@@ -262,7 +260,7 @@ async function extractZip(data) {
     ready = true;
     
     getInfo(key);
-    checkParity();
+    checkMap();
     render();
 }
 

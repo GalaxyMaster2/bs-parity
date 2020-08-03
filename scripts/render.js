@@ -43,7 +43,7 @@ var deltaTime = 0;
  * when music is playing, attempt to keep preview in line with song
  * @param {Number} timeoffset 
  */
-function syncPlayback(timeoffset = 0.01) {
+function syncPlayback(timeoffset = 0.02) {
     centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
     render();
 

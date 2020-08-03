@@ -272,7 +272,7 @@ var lastNote = 0;
  * @param notes - the array of notes to scan for errors
  * @returns {void} - outputs error messages through outputUI
  */
-function checkParity(notes = notesArray) {
+function checkMap(notes = notesArray) {
     clear(output);
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
@@ -307,112 +307,14 @@ function checkParity(notes = notesArray) {
 
     for (let i = 0; i < notes.length; i++) {
         let note = notes[i];
-        let type = types[note._type];
-        let cutDirection = cutDirections[note._cutDirection];
-        let column = lineIndices[note._lineIndex];
-        let row = lineLayers[note._lineLayer];
 
         let hcErr = checkClap(notes, i);
         warnCount += hcErr[0];
-        warnCount += hcErr[1];
+        errCount += hcErr[1];
 
-        if (type === 'bomb') {
-            // this is super ugly, I'm hoping to come up with a better way later
-            if (!(['middleLeft', 'middleRight'].includes(column)) || !(['bottom', 'top'].includes(row))) {
-                continue;
-            }
-
-            // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
-            let setParity = {
-                red: true,
-                blue: true
-            };
-            let offset = -1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) >= 0 &&
-                (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
-                switch (types[offsetNote._type]) {
-                    case 'bomb':
-                        if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
-                            setParity.red = false;
-                        } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
-                            setParity.blue = false;
-                        }
-                        break;
-                    case 'red':
-                        setParity.red = false;
-                        break;
-                    case 'blue':
-                        setParity.blue = false;
-                        break;
-                }
-                offset--;
-                offsetNote = notes[i + offset];
-            }
-
-            // invert parity if needed and log the bomb if so
-            for (let color in setParity) {
-                if (setParity[color]) {
-                    if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
-                        parity.invert(color);
-                        outputUI(note, parity[color], color, 'info');
-                        infCount++;
-                    }
-                }
-            }
-        } else {
-            if (cuts[type].good[parity[type]].includes(cutDirection)) {
-                parity.invert(type);
-            } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                note.warn = true;
-
-                try {
-                    let last = notes[findCol(notes, type, i - 1)];
-                    last.precedingWarn = true;
-                }
-                catch {
-                    console.log('error finding note!');
-                }
-
-                outputUI(note, parity[type], borderlineHitText, 'warning');
-                parity.invert(type);
-                warnCount++;
-            } else {
-                note.error = true;
-                let deltaTime = 0;
-                try {
-                    let last = notes[findCol(notes, type, i - 1)];
-                    if (zipFile) {
-                        deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
-                        deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
-                    }
-                    else { 
-                        deltaTime = (note._time - last._time).toFixed(3);
-                        deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
-                    }
-                    last.precedingError = true;
-                }
-                catch {
-                    console.log('error finding note!');
-                }
-
-                outputUI(note, parity[type], badHitText + deltaTime, 'error');
-                errCount++;
-            }
-
-            // invert parity again if there's a same-color note within sliderPrecision
-            let offset = 1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) < notes.length &&
-                (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
-                if (note._type === offsetNote._type) {
-                    parity.invert(type);
-                    break;
-                }
-                offset++;
-                offsetNote = notes[i + offset];
-            }
-        }
+        let pErr = checkParity(notes, i, parity);
+        warnCount += pErr[0];
+        errCount += pErr[1];
     }
 
     summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors and ') +
@@ -421,6 +323,116 @@ function checkParity(notes = notesArray) {
     if (warnCount === 0 && errCount === 0) {
         outputUI(false, 0, 'No errors found!', 'success');
     }
+}
+
+function checkParity(notes = notesArray, i, parity = new Parity()) {
+    let note = notes[i];
+    let type = types[note._type];
+    let cutDirection = cutDirections[note._cutDirection];
+    let column = lineIndices[note._lineIndex];
+    let row = lineLayers[note._lineLayer];
+
+    let state = [0, 0, 0];
+
+    if (type === 'bomb') {
+        // this is super ugly, I'm hoping to come up with a better way later
+        if (!(['middleLeft', 'middleRight'].includes(column)) || !(['bottom', 'top'].includes(row))) {
+            return state;
+        }
+
+        // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
+        let setParity = {
+            red: true,
+            blue: true
+        };
+        let offset = -1;
+        let offsetNote = notes[i + offset];
+        while ((i + offset) >= 0 &&
+            (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
+            switch (types[offsetNote._type]) {
+                case 'bomb':
+                    if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
+                        setParity.red = false;
+                    } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
+                        setParity.blue = false;
+                    }
+                    break;
+                case 'red':
+                    setParity.red = false;
+                    break;
+                case 'blue':
+                    setParity.blue = false;
+                    break;
+            }
+            offset--;
+            offsetNote = notes[i + offset];
+        }
+
+        // invert parity if needed and log the bomb if so
+        for (let color in setParity) {
+            if (setParity[color]) {
+                if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
+                    parity.invert(color);
+                    outputUI(note, parity[color], color, 'info');
+                    state[2]++;
+                }
+            }
+        }
+    } else {
+        if (cuts[type].good[parity[type]].includes(cutDirection)) {
+            parity.invert(type);
+        } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
+            note.warn = true;
+
+            try {
+                let last = notes[findCol(notes, type, i - 1)];
+                last.precedingWarn = true;
+            }
+            catch {
+                console.log('error finding note!');
+            }
+
+            outputUI(note, parity[type], borderlineHitText, 'warning');
+            parity.invert(type);
+            state[0]++;
+        } else {
+            note.error = true;
+            let deltaTime = 0;
+            try {
+                let last = notes[findCol(notes, type, i - 1)];
+                if (zipFile) {
+                    deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
+                    deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
+                }
+                else { 
+                    deltaTime = (note._time - last._time).toFixed(3);
+                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
+                }
+                last.precedingError = true;
+            }
+            catch {
+                console.log('error finding note!');
+            }
+
+            outputUI(note, parity[type], badHitText + deltaTime, 'error');
+            state[1]++;
+        }
+
+        // invert parity again if there's a same-color note within sliderPrecision
+        let offset = 1;
+        let offsetNote = notes[i + offset];
+        while ((i + offset) < notes.length &&
+            (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
+            if (note._type === offsetNote._type) {
+                parity.invert(type);
+                break;
+            }
+            offset++;
+            offsetNote = notes[i + offset];
+        }
+    }
+
+    return state;
 }
 
 function checkClap(notes = notesArray, i) {
