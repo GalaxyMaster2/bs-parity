@@ -119,7 +119,7 @@ async function extractZip(e) {
                     difficulty.mapString = await difficultyFile.async('string');
                 } else {
                     // difficulty file doesn't exist
-                    console.log('difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip');
+                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip|but is referenced in info.dat', 'error');
                     beatmaps.splice(j, 1);
                 }
             }
@@ -136,11 +136,14 @@ async function extractZip(e) {
             fileLoaded();
         } else {
             // no available difficulties
-            console.log('no difficulty files available to load')
+            outputUI(false, 0, 'no difficulty files available to load', 'error');
+            fileLoaded();
         }
     } else {
         // no info.dat present
-        console.log('no info.dat present in zip');
+        // todo: find all files anyway? it'd be ugly but maybe worth considering
+        outputUI(false, 0, 'no info.dat present in zip, cannot load map difficulties', 'error');
+        fileLoaded();
     }
 }
 

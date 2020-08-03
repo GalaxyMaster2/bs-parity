@@ -33,10 +33,6 @@ wallsToggle.addEventListener('change', function () {
     render();
 });
 
-diffSetSelect.addEventListener('change', function () {
-    populateDiffSelect();
-    loadDifficultyDat(getSelectedDiff().mapString);
-});
 diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });

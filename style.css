@@ -619,6 +619,9 @@ body.light {
 .main .outputbox .outputwrapper #output .parent.error img {
   box-shadow: 0 0 0 0.125rem var(--error);
 }
+.main .outputbox .outputwrapper #output .parent.noHighlight img {
+  box-shadow: none;
+}
 .main .outputbox .outputwrapper #output .parent .text {
   flex: 1;
   white-space: nowrap;

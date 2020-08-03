@@ -195,7 +195,6 @@ function outputUI(note, parity, message, messageType) {
         element.dataset.time = time.toFixed(3);
         element.addEventListener('click', function () { scrollTo(time); });
     } else { // message output mode
-        time = parity;
         imgSrc = 'assets/' + messageType + '.svg';
         if (message.includes('|')) {
             infoString = message.split('|')[0];
@@ -204,6 +203,7 @@ function outputUI(note, parity, message, messageType) {
             infoString = message;
             message = '';
         }
+        element.dataset.time = parity.toFixed(3);
     }
 
     let img = document.createElement('img');
