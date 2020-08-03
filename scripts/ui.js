@@ -184,14 +184,14 @@ function populateDiffSelect() {
         for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
             let option = document.createElement('option');
 
-            let optionString = set._beatmapCharacteristicName + ' ';
+            let optionString = set._beatmapCharacteristicName.replace( /([A-Z])/g, " $1" ) + ' - ';
             if (difficulty._customData?._difficultyLabel) {
                 optionString += difficulty._customData._difficultyLabel;
             } else {
-                optionString += difficulty._difficulty;
+                optionString += difficulty._difficulty.replace( /([A-Z])/g, " $1" ); // html ignores the second space, so we don't need to remove it after this
             }
 
-            option.textContent = optionString.replace( /([A-Z])/g, " $1" ); // spacing
+            option.textContent = optionString
             option.value = index + ' ' + index2; // this is a little hacky but it's faster to implement than passing it properly
             option.selected = true;
             diffSelect.appendChild(option);
