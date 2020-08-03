@@ -94,7 +94,7 @@ var ready = false;
 
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
- * @param {Array} obj - A beat saber JSON array of notes
+ * @param {Object} obj - A beat saber JSON array of notes
  * @returns {Array} - filtered, tagged & sorted notes
  */
 function getNotes(obj) {
@@ -111,6 +111,11 @@ function getNotes(obj) {
     return notes;
 }
 
+/**
+ * Filters and sorts walls to ensure all walls in array are valid, and assigns an index to each
+ * @param {Object} obj - A beat saber JSON array of notes
+ * @returns {Array} - filtered, tagged & sorted notes
+ */
 function getWalls(obj) {
     let walls = obj._obstacles;
     walls.sort(function (a, b) {
@@ -175,7 +180,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
 
     let time, imgSrc, infoString;
     if (note != false) { // if note passed in note function
-        time = note._time;
+        time = note._time + offset;
         let type = types[note._type];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
