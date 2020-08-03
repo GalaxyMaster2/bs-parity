@@ -231,12 +231,21 @@ body {
             margin-bottom: var(--gap);
             border-radius: 1rem;
 
+            // needed to work around firefox rendering bug
+            // caused by overflow: hidden combined with border-radius
+            // - will cause some overflow at the corners of the render container
+            // - might break in the future
+            @-moz-document url-prefix() {
+                border-radius: 0;
+            }
+
             #render-container {
                 position: relative;
                 width: 100%;
                 height: 20rem;
                 background-color: var(--ebg);
                 transition: background-color 0.3s var(--trans);
+                border-radius: 1rem;
 
                 &.rotating {
                     cursor: all-scroll;

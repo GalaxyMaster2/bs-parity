@@ -59,4 +59,5 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - Any map editing capabilities
 
 # Known issues
-Due to a bug in Chromium (used in Chrome, Edge, Opera, etc.) walls can render incorrectly for some camera angles, especially with higher perspective intensity settings. Due to this, wall rendering is disabled by default.
+- Due to a bug in Chromium (used in Chrome, Edge, Opera, etc.) walls can render incorrectly for some camera angles, especially with higher perspective intensity settings. Due to this, wall rendering is disabled by default.
+- A bug in Firefox causes rendering problems when hiding overflowed elements in a container with rounded corners. As a result of a workaround rendered elements will overflow the rounded corners in Firefox.

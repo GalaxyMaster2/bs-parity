@@ -195,12 +195,18 @@ body.light {
   margin-bottom: var(--gap);
   border-radius: 1rem;
 }
+@-moz-document url-prefix() {
+  .main .renderbox #render-wrapper {
+    border-radius: 0;
+  }
+}
 .main .renderbox #render-wrapper #render-container {
   position: relative;
   width: 100%;
   height: 20rem;
   background-color: var(--ebg);
   transition: background-color 0.3s var(--trans);
+  border-radius: 1rem;
 }
 .main .renderbox #render-wrapper #render-container.rotating {
   cursor: all-scroll;
