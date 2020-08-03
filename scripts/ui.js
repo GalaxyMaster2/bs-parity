@@ -172,22 +172,41 @@ function displayLoadError(message) {
 
 /**
  * parses an Info.dat string and extracts the useful properties into global variables
- * @param {String} datString - the text contents of an Info.dat file
+ * @param {Object} datString - the parsed contents of an Info.dat file
  */
 function loadMapInfo(datString) {
     let parsed = JSON.parse(datString);
     mapDifficultySets = parsed._difficultyBeatmapSets;
+    globalOffset = parsed._songTimeOffset;
+    bpm = parsed._beatsPerMinute;
+}
+
+/**
+ * gets the local time offset of the map and converts it to beats
+ * @param {Object} datString - the parsed contents of a difficulty.dat file
+ */
+function getLocalOffset(songInfo = getSelectedDiff()) {
+    try {
+        localOffset = songInfo["_customData"]._editorOffset;
+    } catch {
+        localOffset = 0;
+    } // not all files have this defined
+    offset = -0.001 * (localOffset + globalOffset) * bpm / 60;
+    if (Math.abs(notesArray[0] + offset) < comparisonTolerance) { // support for people who offset first note to 0 mark - makes it exact instead of floating point errors
+        offset = notesArray[0] ;
+    }
 }
 
 /**
  * parses and loads a difficulty.dat string
- * @param {String} datString - the text contents of a difficulty.dat file
+ * @param {Object} datString - the parsed contents of a difficulty.dat file
  */
 function loadDifficultyDat(datString) {
     ready = false;
     let parsed = JSON.parse(datString);
     notesArray = getNotes(parsed);
     wallsArray = getWalls(parsed);
+    getLocalOffset();
 
     ready = true;
     centerBeat = 0;
