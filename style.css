@@ -470,6 +470,21 @@ body.light {
   display: flex;
   flex-direction: column;
 }
+.main .outputbox select {
+  background-color: var(--ebg);
+  color: var(--etext);
+  border-radius: 1rem;
+  border: none;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+}
+.main .outputbox select:focus,
+.main .outputbox select:active {
+  border: 0.0625rem solid var(--text);
+  outline: none;
+  position: relative;
+  top: -0.0625rem;
+  left: -0.0625rem;
+}
 .main .outputbox .outboxline {
   line-height: 1.875rem;
 }

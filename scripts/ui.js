@@ -131,13 +131,12 @@ async function extractZip(e) {
         }
 
         if (mapDifficultySets.length > 0) {
-            populateDiffSetSelect();
             populateDiffSelect();
             loadDifficultyDat(getSelectedDiff().mapString);
             fileLoaded();
         } else {
             // no available difficulties
-            console.log('no difficulty file available to load')
+            console.log('no difficulty files available to load')
         }
     } else {
         // no info.dat present
@@ -173,61 +172,45 @@ function loadDifficultyDat(datString) {
 }
 
 /**
- * populates the difficulty set selection input
- */
-function populateDiffSetSelect() {
-    for (let [index, set] of mapDifficultySets.entries()) {
-        let option = document.createElement('option');
-        option.textContent = set._beatmapCharacteristicName;
-        option.value = index;
-        diffSetSelect.appendChild(option);
-    }
-    if (mapDifficultySets.length > 1) {
-        diffSetSelect.classList.add('enabled');
-    }
-}
-
-/**
  * populates the difficulty selection input with all difficulties in the active set
  */
 function populateDiffSelect() {
-    diffSelect.removeAttribute('disabled');
-
     while (diffSelect.lastChild) {
         diffSelect.removeChild(diffSelect.lastChild);
     }
 
-    let activeSet = getSelectedDiffSet()._difficultyBeatmaps;
-    for (let [index, difficulty] of activeSet.entries()) {
-        let option = document.createElement('option');
+    diffSelect.removeAttribute('disabled');
+    for (let [index, set] of mapDifficultySets.entries()) {
+        for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
+            let option = document.createElement('option');
 
-        let optionString;
-        if (difficulty._customData?._difficultyLabel) {
-            optionString = difficulty._customData._difficultyLabel;
-        } else {
-            optionString = difficulty._difficulty;
+            let optionString = set._beatmapCharacteristicName + ' ';
+            if (difficulty._customData?._difficultyLabel) {
+                optionString += difficulty._customData._difficultyLabel;
+            } else {
+                optionString += difficulty._difficulty;
+            }
+
+            option.textContent = optionString.replace( /([A-Z])/g, " $1" ); // spacing
+            option.value = index + ' ' + index2; // this is a little hacky but it's faster to implement than passing it properly
+            option.selected = true;
+            diffSelect.appendChild(option);
         }
-
-        option.textContent = optionString;
-        option.value = index;
-        diffSelect.appendChild(option);
+        let gap = document.createElement('option');
+        gap.disabled = true;
+        gap.textContent = "---------";
+        diffSelect.append(gap);
     }
+    diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
 }
 
 /**
  * returns the currently selected difficulty
  * @returns {Object} - the currently selected difficulty
  */
-function getSelectedDiff() {
-    return getSelectedDiffSet()._difficultyBeatmaps[diffSelect.options[diffSelect.selectedIndex].value];
-}
-
-/**
- * returns the currently selected difficulty set
- * @returns {Object} - the currentlly selected difficulty set
- */
-function getSelectedDiffSet() {
-    return mapDifficultySets[diffSetSelect.options[diffSetSelect.selectedIndex].value];
+function getSelectedDiff(input = diffSelect.value) {
+    let arr = input.split(' ');
+    return mapDifficultySets[arr[0]]._difficultyBeatmaps[arr[1]];
 }
 
 /**
