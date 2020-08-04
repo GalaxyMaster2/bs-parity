@@ -44,7 +44,7 @@ document.addEventListener('dragenter', function () {
     dropArea.style.setProperty('opacity', '0.3');
 });
 
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+['dragenter', 'dragover', 'dragleave'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 });
 ['dragleave', 'drop'].forEach(eventName => {
@@ -64,12 +64,16 @@ urlInput.addEventListener('keyup', function (event) {
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
  * todo: feature detection for drag and drop? (although tbf the overlap between transform 3d and drag/drop is probably pretty big)
+ *       support for text drops instead of just ignoring them and letting the browser handle it
  * @param {*} e - a drop event
  */
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
-    readFile(files);
+    if (files.length != 0) {
+        preventDefaults(e);
+        readFile(files);
+    }
 }
 
 /**
