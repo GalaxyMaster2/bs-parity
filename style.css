@@ -470,20 +470,23 @@ body.light {
   display: flex;
   flex-direction: column;
 }
-.main .outputbox select {
+.main .outputbox .diffSel {
+  display: none;
+}
+.main .outputbox .diffSel.enabled {
+  display: block;
+}
+.main .outputbox .diffSel select.style {
   background-color: var(--ebg);
   color: var(--etext);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border: none;
   padding: 0.25rem 0.5rem 0.25rem 0.25rem;
 }
-.main .outputbox select:focus,
-.main .outputbox select:active {
+.main .outputbox .diffSel select.style:focus,
+.main .outputbox .diffSel select.style:active {
   border: 0.0625rem solid var(--text);
   outline: none;
-  position: relative;
-  top: -0.0625rem;
-  left: -0.0625rem;
 }
 .main .outputbox .outboxline {
   line-height: 1.875rem;

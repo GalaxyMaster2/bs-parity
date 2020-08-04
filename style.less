@@ -499,19 +499,20 @@ body {
         display: flex;
         flex-direction: column;
 
-        select {
-            background-color: var(--ebg);
-            color: var(--etext);
-            border-radius: 1rem;
-            border: none;
-            padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-
-            &:focus, &:active {
-                border: 0.0625rem solid var(--text);
-                outline: none;
-                position: relative;
-                top: -0.0625rem;
-                left: -0.0625rem;
+        .diffSel { 
+            display: none; 
+            &.enabled { display: block; }
+            select.style {
+                background-color: var(--ebg);
+                color: var(--etext);
+                border-radius: 0.5rem;
+                border: none;
+                padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    
+                &:focus, &:active {
+                    border: 0.0625rem solid var(--text);
+                    outline: none;
+                }
             }
         }
 

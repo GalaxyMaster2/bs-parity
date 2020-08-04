@@ -181,11 +181,12 @@ function populateDiffSelect() {
     while (diffSelect.lastChild) {
         diffSelect.removeChild(diffSelect.lastChild);
     }
+    let count = 0;
 
-    diffSelect.removeAttribute('disabled');
     for (let [index, set] of mapDifficultySets.entries()) {
         for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
             let option = document.createElement('option');
+            count++;
 
             let optionString = set._beatmapCharacteristicName.replace( /([A-Z])/g, " $1" ) + ' - ';
             if (difficulty._customData?._difficultyLabel) {
@@ -205,6 +206,13 @@ function populateDiffSelect() {
         diffSelect.append(gap);
     }
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
+    if (count > 1) {
+        diffSelect.parentElement.classList.add('enabled');
+        diffSelect.removeAttribute('disabled');
+    }
+    if (!!window.chrome && !window.opr) {
+        diffSelect.classList.add('style');
+    }
 }
 
 /**
