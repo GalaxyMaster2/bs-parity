@@ -19,6 +19,7 @@ const output = document.getElementById('output');
 const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
+const urlInput = document.getElementById('url');
 
 const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
@@ -51,6 +52,12 @@ document.addEventListener('dragenter', function () {
         dropArea.style.setProperty('pointer-events', 'none');
         dropArea.style.setProperty('opacity', '0');
     }, false);
+});
+
+urlInput.addEventListener('keyup', function (event) {
+    if (event.key == 'Enter') {
+        readUrl();
+    }
 });
 
 /**
@@ -105,13 +112,52 @@ function readFile(files) {
 }
 
 /**
- * extracts a map zip and attempts to load all present difficulties
- * @param {ProgressEvent} e
+ * fetches a zip file from a url or beatsaver link and extracts
+ * @param {String} inUrl - the url to be loaded
+ * @returns {void}
  */
-async function extractZip(e) {
+async function readUrl(inUrl = urlInput.value) {
+    let _url = inUrl;
+    const validurl = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    const validhex = /^[0-9a-fA-F]+$/; // string only made of 0-9, a-f and A-F
+
+    if (!validurl.test(_url)) return -3;
+    if (_url == '') return -2;
+
+    if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
+        let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
+        if (!validhex.test(songID)) return -1; // key must be valid hex
+        console.log("downloading map #" + songID);
+        _url = 'https://beatsaver.com/api/download/key/' + songID;
+    } else {
+        _url = 'https://cors-anywhere.herokuapp.com/' + _url; // fixes cors headers on most urls
+    }
+
+    introDiv.classList.add('uploading');
+
+    JSZipUtils.getBinaryContent(_url, function (err, data) {
+        if (err) { throw err; }
+        else {
+            extractZip(data, 1);
+        }
+    });
+}
+
+/**
+ * extracts a map zip and attempts to load all present difficulties
+ * @param {ProgressEvent | Object} e - the event or data of the zip
+ * @param {Number} mode - whether an event or zip data is passed
+ */
+async function extractZip(e, mode = 0) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(e.target.result);
+        if (mode == 0) { zip = await JSZip.loadAsync(e.target.result); }
+        else { zip = await JSZip.loadAsync(e); }
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
