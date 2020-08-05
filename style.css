@@ -470,13 +470,13 @@ body.light {
   display: flex;
   flex-direction: column;
 }
-.main .outputbox .diffSel {
+.main .outputbox .diff-select-container {
   display: none;
 }
-.main .outputbox .diffSel.enabled {
+.main .outputbox .diff-select-container.enabled {
   display: block;
 }
-.main .outputbox .diffSel select.style {
+.main .outputbox .diff-select-container select.style {
   background-color: var(--ebg);
   color: var(--etext);
   border-radius: 0.375rem;
@@ -484,8 +484,8 @@ body.light {
   padding: 0.2rem;
   vertical-align: middle;
 }
-.main .outputbox .diffSel select.style:focus,
-.main .outputbox .diffSel select.style:active {
+.main .outputbox .diff-select-container select.style:focus,
+.main .outputbox .diff-select-container select.style:active {
   border: 0.0625rem solid var(--text);
   outline: none;
 }
