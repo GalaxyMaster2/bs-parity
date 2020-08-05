@@ -121,8 +121,8 @@ async function extractZip(e) {
                     difficulty.mapString = await difficultyFile.async('string');
                 } else {
                     // difficulty file doesn't exist
-                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename +
-                        ' does not exist in zip|but is referenced in Info.dat', 'error');
+                    outputUI(false, -1, 'difficulty file ' + difficulty._beatmapFilename +
+                        ' does not exist in zip|but is referenced in Info.dat', 'error', true);
                     beatmaps.splice(j, 1);
                 }
             }

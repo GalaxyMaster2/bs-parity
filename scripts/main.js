@@ -165,9 +165,10 @@ function mod(n, m) {
  * @param {String | Number} parity - if in note mode, the type of parity broken, otherwise the time of the error
  * @param {String} message - the caption/description of the error. can be broken into two lines with '|' in text mode
  * @param {String} messageType - the severity of the error - will be added to output as a class
+ * @param {Boolean} persistent - indicates whether or not the message should be persistent
  * @returns {void} - outputs to DOM, should not return a value
  */
-function outputUI(note, parity, message, messageType) {
+function outputUI(note, parity, message, messageType, persistent = false) {
     let wrapper = document.createElement('div');
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
@@ -219,13 +220,21 @@ function outputUI(note, parity, message, messageType) {
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
     wrapper.appendChild(element);
+
+    if (persistent) {
+        wrapper.classList.add('persistent');
+    }
+
     output.appendChild(wrapper);
 }
 
-/** clears all error messages from output box */
+/** clears all non-persistent error messages from output box */
 function clearOutput() {
-    while (output.lastChild) {
-        output.removeChild(output.lastChild);
+    for (let i = output.childNodes.length - 1; i >= 0; i--) {
+        let child = output.childNodes[i];
+        if (!child.classList.contains('persistent')) {
+            output.removeChild(child);
+        }
     }
 }
 
