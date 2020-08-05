@@ -118,7 +118,7 @@ body {
     padding: 0 1rem;
     box-sizing: border-box;
 
-    .choose-file, .choose-url {
+    .choose-file {
         flex: 1;
         max-width: 45rem;
         margin: 1rem;
@@ -134,6 +134,7 @@ body {
         transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
 
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
 
@@ -150,6 +151,7 @@ body {
             transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
             border: none;
             outline: none;
+            margin: 1rem 0rem;
 
             &:active, &:focus {
                 background-color: var(--etext);
@@ -166,8 +168,7 @@ body {
         label {
             display: inline-block;
             width: 100%;
-            height: 100%;
-            padding: 1rem;
+            padding: 1rem 0rem;
             box-sizing: border-box;
             text-align: center;
             cursor: pointer;
@@ -184,6 +185,7 @@ body {
 
         .uploading-text, .done-text, .load-error {
             display: none;
+            margin: 1rem 0rem;
         }
     }
 

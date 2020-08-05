@@ -102,8 +102,7 @@ body.light {
   padding: 0 1rem;
   box-sizing: border-box;
 }
-.intro .choose-file,
-.intro .choose-url {
+.intro .choose-file {
   flex: 1;
   max-width: 45rem;
   margin: 1rem;
@@ -118,11 +117,11 @@ body.light {
   text-align: center;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.intro .choose-file input.url-file,
-.intro .choose-url input.url-file {
+.intro .choose-file input.url-file {
   display: block;
   width: 100%;
   width: calc(100% - 3rem);
@@ -135,26 +134,22 @@ body.light {
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
   border: none;
   outline: none;
+  margin: 1rem 0rem;
 }
 .intro .choose-file input.url-file:active,
-.intro .choose-url input.url-file:active,
-.intro .choose-file input.url-file:focus,
-.intro .choose-url input.url-file:focus {
+.intro .choose-file input.url-file:focus {
   background-color: var(--etext);
   border: 0.125rem solid var(--blue);
   height: 2.75rem;
   color: var(--dbg);
 }
-.intro .choose-file input,
-.intro .choose-url input {
+.intro .choose-file input {
   display: none;
 }
-.intro .choose-file label,
-.intro .choose-url label {
+.intro .choose-file label {
   display: inline-block;
   width: 100%;
-  height: 100%;
-  padding: 1rem;
+  padding: 1rem 0rem;
   box-sizing: border-box;
   text-align: center;
   cursor: pointer;
@@ -163,18 +158,14 @@ body.light {
   align-items: center;
 }
 .intro .choose-file label:focus strong,
-.intro .choose-url label:focus strong,
-.intro .choose-file label:hover strong,
-.intro .choose-url label:hover strong {
+.intro .choose-file label:hover strong {
   color: var(--blue);
 }
 .intro .choose-file .uploading-text,
-.intro .choose-url .uploading-text,
 .intro .choose-file .done-text,
-.intro .choose-url .done-text,
-.intro .choose-file .load-error,
-.intro .choose-url .load-error {
+.intro .choose-file .load-error {
   display: none;
+  margin: 1rem 0rem;
 }
 .intro #drop-overlay {
   position: fixed;
