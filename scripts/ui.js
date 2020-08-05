@@ -188,11 +188,11 @@ function populateDiffSelect() {
             let option = document.createElement('option');
             count++;
 
-            let optionString = set._beatmapCharacteristicName.replace( /([A-Z])/g, " $1" ) + ' - ';
+            let optionString = set._beatmapCharacteristicName.replace(/([A-Z])/g, " $1") + ' - ';
             if (difficulty._customData?._difficultyLabel) {
                 optionString += difficulty._customData._difficultyLabel;
             } else {
-                optionString += difficulty._difficulty.replace( /([A-Z])/g, " $1" ); // html ignores the second space, so we don't need to remove it after this
+                optionString += difficulty._difficulty.replace(/([A-Z])/g, " $1"); // html ignores the second space, so we don't need to remove it after this
             }
 
             option.textContent = optionString
@@ -208,7 +208,6 @@ function populateDiffSelect() {
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
     if (count > 1) {
         diffSelect.parentElement.classList.add('enabled');
-        diffSelect.removeAttribute('disabled');
     }
     if (!!window.chrome && !window.opr) {
         diffSelect.classList.add('style');
