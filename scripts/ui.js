@@ -134,12 +134,12 @@ async function readUrl(inUrl = urlInput.value) {
 
     if (_url == '') return -2;
     if (!validurl.test(_url)) {
-        if (validhex.test(songID)) {
-            _url = 'beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that 
+        if (validhex.test(_url)) {
+            _url = 'https://beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that 
         }
         else { return -3; }
     }
-
+    
     if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
         let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
         if (!validhex.test(songID)) return -1; // key must be valid hex
