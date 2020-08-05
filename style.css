@@ -483,6 +483,7 @@ body.light {
   border: 0.0625rem solid transparent;
   padding: 0.2rem;
   vertical-align: middle;
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
 }
 .main .outputbox .diff-select-container select.style:focus,
 .main .outputbox .diff-select-container select.style:active {
