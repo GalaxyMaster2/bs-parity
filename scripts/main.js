@@ -204,6 +204,7 @@ function outputUI(note, parity, message, messageType) {
             message = '';
         }
         element.dataset.time = parity.toFixed(3);
+        element.classList.add('noHighlight');
     }
 
     let img = document.createElement('img');
