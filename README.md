@@ -36,9 +36,11 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Better ui
 - [x] Map visualizer
 - [x] Rendering walls in map visualizer
+- [x] Map zip support
+- [x] Handclap detection
+- [x] Hammer hit detection
 
 # Planned for future
-- [ ] Map zip support
 - [ ] Downloading map from url
 - [ ] Arm rotation support in parity algorithm
 - [ ] Vision block detection
@@ -47,8 +49,6 @@ The end goal of this project is to provide a tool to easily check a map for comm
 # Under consideration
 - [ ] Detection of improper stacks/windows/sliders etc.
 - [ ] Support for angle snapping on windows
-- [ ] Handclap detection
-- [ ] Hammer hit detection
 - [ ] 3-wide wall detection
 - [ ] Audio playback for map visualizer
 - [ ] Support for BPM changes
