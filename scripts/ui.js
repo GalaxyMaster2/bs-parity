@@ -119,8 +119,8 @@ function readFile(files) {
 
 /**
  * fetches a zip file from a url or beatsaver link and extracts
- * @param {String} inUrl - the url to be loaded
- * @returns {void}
+ * @param {String} inUrl - the url or id to be loaded
+ * @returns {Number} - error code, if needed
  */
 async function readUrl(inUrl = urlInput.value) {
     let _url = inUrl;
@@ -132,8 +132,13 @@ async function readUrl(inUrl = urlInput.value) {
         '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     const validhex = /^[0-9a-fA-F]+$/; // string only made of 0-9, a-f and A-F
 
-    if (!validurl.test(_url)) return -3;
     if (_url == '') return -2;
+    if (!validurl.test(_url)) {
+        if (validhex.test(songID)) {
+            _url = 'beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that 
+        }
+        else { return -3; }
+    }
 
     if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
         let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
