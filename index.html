@@ -19,9 +19,9 @@
         </div>
         <div class="intro" id="intro">
             <div class="choose-file">
-                <input type="file" name="file" id="file" class="inputfile" accept=".dat">
+                <input type="file" name="file" id="file" class="inputfile" accept=".dat,.zip">
                 <label for="file">
-                    <span><strong>choose a difficulty.dat</strong> or drag it here</span>
+                    <span><strong>choose a difficulty.dat / map.zip</strong> or drag it here</span>
                 </label>
                 <span class="uploading-text">uploading&hellip;</span>
                 <span class="done-text">done!</span>
@@ -63,6 +63,12 @@
                 </div>
             </div>
             <div class="outputbox">
+                <div class="outboxline diffSel">
+                    <label for="diff-select">select difficulty:</label>
+                    <select id="diff-select" disabled>
+                        <option>unavailable</option>
+                    </select>
+                </div>
                 <div class="outboxline">
                     <label for="slider-precision">slider precision: 1/</label>
                     <input type="number" id="slider-precision" min="0" value="8">
@@ -81,6 +87,7 @@
     </body>
 
     <script src="scripts/libs/ola.min.js" defer></script>
+    <script src="scripts/libs/jszip.min.js" defer></script>
     <script src="scripts/main.js" defer></script>
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/input.js" defer></script>

@@ -68,6 +68,23 @@ function scrollTo(target) {
     }
 }
 
+/**
+ * clears all rendered elements
+ */
+function clearRenderedElements() {
+    recycledNotes = {
+        red: [],
+        blue: [],
+        bomb: []
+    };
+    recycledWalls = [];
+    for (let container of [notesContainer, wallsContainer, markerContainer]) {
+        while (container.lastChild) {
+            container.removeChild(container.lastChild);
+        }
+    }
+}
+
 let recycledNotes = {
     red: [],
     blue: [],
@@ -142,6 +159,10 @@ function render(notes = notesArray, walls = wallsArray) {
             recycledNotes[type][0].remove();
             recycledNotes[type].shift();
         }
+    }
+
+    if (renderContainerHeight === undefined) {
+        renderContainerHeight = getRenderContainerHeight();
     }
 
     // TODO: set grid-container CSS dimensions here

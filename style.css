@@ -470,8 +470,32 @@ body.light {
   display: flex;
   flex-direction: column;
 }
+.main .outputbox .diffSel {
+  display: none;
+}
+.main .outputbox .diffSel.enabled {
+  display: block;
+}
+.main .outputbox .diffSel select.style {
+  background-color: var(--ebg);
+  color: var(--etext);
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+}
+.main .outputbox .diffSel select.style:focus,
+.main .outputbox .diffSel select.style:active {
+  border: 0.0625rem solid var(--text);
+  outline: none;
+}
 .main .outputbox .outboxline {
   line-height: 1.875rem;
+}
+.main .outputbox .outboxline #diffset-select {
+  display: none;
+}
+.main .outputbox .outboxline #diffset-select.enabled {
+  display: inline-block;
 }
 .main .outputbox .outboxline input,
 .main .outputbox .outboxline label {
@@ -597,6 +621,9 @@ body.light {
 }
 .main .outputbox .outputwrapper #output .parent.error img {
   box-shadow: 0 0 0 0.125rem var(--error);
+}
+.main .outputbox .outputwrapper #output .parent.noHighlight img {
+  box-shadow: none;
 }
 .main .outputbox .outputwrapper #output .parent .text {
   flex: 1;

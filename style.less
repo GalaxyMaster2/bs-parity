@@ -499,8 +499,33 @@ body {
         display: flex;
         flex-direction: column;
 
+        .diffSel { 
+            display: none; 
+            &.enabled { display: block; }
+            select.style {
+                background-color: var(--ebg);
+                color: var(--etext);
+                border-radius: 0.5rem;
+                border: none;
+                padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    
+                &:focus, &:active {
+                    border: 0.0625rem solid var(--text);
+                    outline: none;
+                }
+            }
+        }
+
         .outboxline {
             line-height: 1.875rem;
+
+            #diffset-select {
+                display: none;
+
+                &.enabled {
+                    display: inline-block;
+                }
+            }
 
             input, label {
                 vertical-align: middle;
@@ -640,6 +665,9 @@ body {
                     }
                     &.error img {
                         box-shadow: 0 0 0 0.125rem var(--error);
+                    }
+                    &.noHighlight img {
+                        box-shadow: none;
                     }
 
                     .text {

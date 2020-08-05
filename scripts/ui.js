@@ -14,6 +14,8 @@ const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
+const diffSetSelect = document.getElementById('diffset-select');
+const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
 
@@ -72,37 +74,170 @@ function handleFileInput(e) {
 }
 
 /**
- * parses json files and extracts notes from them
- * @param {Object} files - uploaded files (is it an object?)
+ * reads selected file and calls functions based on file extension
+ * @param {Array} files - uploaded files
  * @returns {void} - will lead to parity/render calls
  */
 function readFile(files) {
-    ready = false;
     introDiv.classList.add('uploading');
+    let file = files[0];
     const fr = new FileReader();
-    fr.readAsText(files[0]);
-    fr.addEventListener('load', function () {
-        let parsed = JSON.parse(fr.result);
-        notesArray = getNotes(parsed);
-        wallsArray = getWalls(parsed);
+    if (file.name.substr(-4) === '.dat') {
+        fr.readAsText(file);
+        fr.addEventListener('load', function () {
+            loadDifficultyDat(fr.result);
+            fileLoaded();
+        });
+    } else if (file.name.substr(-4) === '.zip') {
+        fr.readAsArrayBuffer(file);
+        fr.addEventListener('load', extractZip);
+    } else {
+        // an unsupported file was selected
+        console.log('unsupported file format');
+    }
+}
 
-        introDiv.classList.remove('uploading');
-        introDiv.classList.add('done');
-        console.log('successful read!');
+/**
+ * extracts a map zip and attempts to load all present difficulties
+ * @param {ProgressEvent} e
+ */
+async function extractZip(e) {
+    let zip = await JSZip.loadAsync(e.target.result);
+    let infoFile = zip.file('Info.dat') || zip.file('info.dat');
+    if (infoFile) {
+        let mapInfo = await infoFile.async('string');
+        loadMapInfo(mapInfo);
 
-        // disable the intro screen after animation
-        // unfortunately this doesn't seem to be possible in pure CSS
-        setTimeout(function () {
-            introDiv.style.setProperty('display', 'none');
-        }, 1000);
+        // prune unavailable difficulties
+        for (let i = mapDifficultySets.length - 1; i >= 0; i--) {
+            let beatmaps = mapDifficultySets[i]._difficultyBeatmaps;
 
-        ready = true;
-        centerBeat = 0;
-        olaPosition = Ola(0);
-        renderContainerHeight = getRenderContainerHeight();
-        checkParity();
-        render();
-    });
+            for (let j = beatmaps.length - 1; j >= 0; j--) {
+                let difficulty = beatmaps[j];
+                let difficultyFile = zip.file(difficulty._beatmapFilename);
+                if (difficultyFile) {
+                    difficulty.mapString = await difficultyFile.async('string');
+                } else {
+                    // difficulty file doesn't exist
+                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip|but is referenced in info.dat', 'error');
+                    beatmaps.splice(j, 1);
+                }
+            }
+
+            // remove set if empty
+            if (beatmaps.length === 0) {
+                mapDifficultySets.splice(i, 1);
+            }
+        }
+
+        if (mapDifficultySets.length > 0) {
+            populateDiffSelect();
+            loadDifficultyDat(getSelectedDiff().mapString);
+            fileLoaded();
+        } else {
+            // no available difficulties
+            outputUI(false, 0, 'no difficulty files available to load', 'error');
+            fileLoaded();
+        }
+    } else {
+        // no info.dat present
+        // todo: find all files anyway? it'd be ugly but maybe worth considering
+        outputUI(false, 0, 'no info.dat present in zip, cannot load map difficulties', 'error');
+        fileLoaded();
+    }
+}
+
+/**
+ * parses an Info.dat string and extracts the useful properties into global variables
+ * @param {String} datString - the text contents of an Info.dat file
+ */
+function loadMapInfo(datString) {
+    let parsed = JSON.parse(datString);
+    mapDifficultySets = parsed._difficultyBeatmapSets;
+}
+
+/**
+ * parses and loads a difficulty.dat string
+ * @param {String} datString - the text contents of a difficulty.dat file
+ */
+function loadDifficultyDat(datString) {
+    ready = false;
+    let parsed = JSON.parse(datString);
+    notesArray = getNotes(parsed);
+    wallsArray = getWalls(parsed);
+
+    ready = true;
+    centerBeat = 0;
+    olaPosition = Ola(0);
+    clearRenderedElements();
+    checkParity();
+    render();
+}
+
+/**
+ * populates the difficulty selection input with all difficulties in the active set
+ */
+function populateDiffSelect() {
+    while (diffSelect.lastChild) {
+        diffSelect.removeChild(diffSelect.lastChild);
+    }
+    let count = 0;
+
+    for (let [index, set] of mapDifficultySets.entries()) {
+        for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
+            let option = document.createElement('option');
+            count++;
+
+            let optionString = set._beatmapCharacteristicName.replace( /([A-Z])/g, " $1" ) + ' - ';
+            if (difficulty._customData?._difficultyLabel) {
+                optionString += difficulty._customData._difficultyLabel;
+            } else {
+                optionString += difficulty._difficulty.replace( /([A-Z])/g, " $1" ); // html ignores the second space, so we don't need to remove it after this
+            }
+
+            option.textContent = optionString
+            option.value = index + ' ' + index2; // this is a little hacky but it's faster to implement than passing it properly
+            option.selected = true;
+            diffSelect.appendChild(option);
+        }
+        let gap = document.createElement('option');
+        gap.disabled = true;
+        gap.textContent = "---------";
+        diffSelect.append(gap);
+    }
+    diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
+    if (count > 1) {
+        diffSelect.parentElement.classList.add('enabled');
+        diffSelect.removeAttribute('disabled');
+    }
+    if (!!window.chrome && !window.opr) {
+        diffSelect.classList.add('style');
+    }
+}
+
+/**
+ * returns the currently selected difficulty
+ * @returns {Object} - the currently selected difficulty
+ */
+function getSelectedDiff(input = diffSelect.value) {
+    let arr = input.split(' ');
+    return mapDifficultySets[arr[0]]._difficultyBeatmaps[arr[1]];
+}
+
+/**
+ * triggers the transition to the main screen -
+ * should be called when the selected files have been loaded successfully
+ */
+function fileLoaded() {
+    introDiv.classList.remove('uploading');
+    introDiv.classList.add('done');
+    console.log('successful read!');
+
+    // disable the intro screen after animation
+    // unfortunately this doesn't seem to be possible in pure CSS
+    setTimeout(function () {
+        introDiv.style.setProperty('display', 'none');
+    }, 1000);
 }
 
 function getRenderContainerHeight() {
