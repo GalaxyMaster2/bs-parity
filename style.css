@@ -437,6 +437,15 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
   display: block;
 }
+.main .renderbox #render-wrapper #render-container #playback {
+  position: relative;
+  top: 0.5rem;
+  left: 0.5rem;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
 .main .renderbox .sliders-container {
   display: grid;
   grid-template-columns: auto;

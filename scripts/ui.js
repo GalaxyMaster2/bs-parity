@@ -33,6 +33,7 @@ const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
 
 const wallsToggle = document.getElementById('toggleWalls');
+const playbackToggle = document.getElementById('playback');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
@@ -139,6 +140,28 @@ async function extractZip(e) {
             outputUI(false, 0, 'no difficulty files available to load', 'error');
             fileLoaded();
         }
+
+        if (songFilename != '') {
+            zip.file(songFilename).async('blob').then(function (content) {
+                audio = new Audio(window.URL.createObjectURL(content));
+                audio.preload = true;
+
+                playbackToggle.append(' \u25B6');
+            
+                playbackToggle.addEventListener('click', function() {
+                    if (audio.paused) {
+                        audio.currentTime = centerBeat * 60 / bpm;
+                        audio.play(); 
+                        playbackToggle.classList.add('playing');
+                        syncPlayback();
+                    }
+                    else { 
+                        audio.pause(); 
+                        playbackToggle.classList.remove('playing');
+                    }
+                });
+            });
+        }
     } else {
         // no info.dat present
         // todo: find all files anyway? it'd be ugly but maybe worth considering
@@ -155,6 +178,7 @@ function loadMapInfo(datString) {
     let parsed = JSON.parse(datString);
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
+    songFilename = parsed._songFilename;
     bpm = parsed._beatsPerMinute;
 }
 

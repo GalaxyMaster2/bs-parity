@@ -42,6 +42,21 @@ function renderTransition(timestamp) {
 }
 
 /**
+ * when music is playing, attempt to keep preview in line with song
+ * @param {Number} timeoffset 
+ */
+function syncPlayback(timeoffset = 0.0167) { // default timeoffset assumes 60fps rendering
+    centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
+    render();
+
+    if (!audio.paused) {
+        requestAnimationFrame(function() {
+            syncPlayback();
+        });
+    }
+}
+
+/**
  * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
  * calculates animation time proportional to log of distance
  * @param {Number} target - the beat to scroll to
@@ -50,6 +65,11 @@ function renderTransition(timestamp) {
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);
+
+    if (audio != null && !audio.paused) { // pause music and stop scrolling when the user intervenes
+        audio.pause();
+        playback.classList.remove('playing');
+    }
 
     let distance = target - olaPosition.value;
 
