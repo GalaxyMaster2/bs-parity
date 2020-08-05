@@ -106,12 +106,12 @@ function readFile(files) {
 
 /**
  * extracts a map zip and attempts to load all present difficulties
- * @param {ProgressEvent} e
+ * @param {ProgressEvent} event - a load event
  */
-async function extractZip(e) {
+async function extractZip(event) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(e.target.result);
+        zip = await JSZip.loadAsync(event.target.result);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
@@ -179,6 +179,11 @@ function loadMapInfo(datString) {
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
     bpm = parsed._beatsPerMinute;
+    songTitle = ' - ' + parsed._songName;
+    if (songTitle != ' - ') {
+        pageTitle.textContent += songTitle;
+        document.getElementsByTagName('title')[0].textContent = "map inspector" + songTitle;
+    }
 }
 
 /**
@@ -194,7 +199,7 @@ function getLocalOffset(songInfo) {
     } // not all files have this defined
     offset = -0.001 * (localOffset + globalOffset) * bpm / 60;
     if (Math.abs(notesArray[0] + offset) < comparisonTolerance) { // support for people who offset first note to 0 mark - makes it exact instead of floating point errors
-        offset = notesArray[0] ;
+        offset = notesArray[0];
     }
 }
 
@@ -350,5 +355,5 @@ const easterEggTitles = [
 ];
 
 function randomizeTitle() {
-    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
+    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)] + songTitle;
 }
