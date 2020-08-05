@@ -154,7 +154,7 @@ body {
             }
         }
 
-        .uploading-text, .done-text {
+        .uploading-text, .done-text, .load-error {
             display: none;
         }
     }
@@ -179,7 +179,7 @@ body {
         transform: translateX(-100%);
     }
 
-    &.uploading, &.done {
+    &.uploading, &.done, &.error {
         label {
             display: none;
         }
@@ -206,6 +206,12 @@ body {
     &.done + .main {
         transition: transform 1s var(--trans);
         transform: translateX(0%);
+    }
+
+    &.error {
+        .load-error {
+            display: inline;
+        }
     }
 }
 

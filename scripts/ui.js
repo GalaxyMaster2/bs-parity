@@ -7,6 +7,8 @@ console.log('ui js loaded');
 
 const pageTitle = document.getElementById('title');
 
+const loadError = document.getElementById('load-error-text');
+
 const renderContainer = document.getElementById('render-container');
 const markerContainer = document.getElementById('marker-container');
 const notesContainer = document.getElementById('note-container');
@@ -119,7 +121,8 @@ async function extractZip(e) {
                     difficulty.mapString = await difficultyFile.async('string');
                 } else {
                     // difficulty file doesn't exist
-                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip|but is referenced in info.dat', 'error');
+                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename +
+                        ' does not exist in zip|but is referenced in Info.dat', 'error');
                     beatmaps.splice(j, 1);
                 }
             }
@@ -136,15 +139,22 @@ async function extractZip(e) {
             fileLoaded();
         } else {
             // no available difficulties
-            outputUI(false, 0, 'no difficulty files available to load', 'error');
-            fileLoaded();
+            displayLoadError('no difficulty files available to load');
         }
     } else {
         // no info.dat present
-        // todo: find all files anyway? it'd be ugly but maybe worth considering
-        outputUI(false, 0, 'no info.dat present in zip, cannot load map difficulties', 'error');
-        fileLoaded();
+        displayLoadError('no Info.dat present in zip, cannot load map');
     }
+}
+
+/**
+ * displays an error message in the intro screen
+ * @param {String} message - the error message to display
+ */
+function displayLoadError(message) {
+    loadError.textContent = message;
+    introDiv.classList.remove('uploading');
+    introDiv.classList.add('error');
 }
 
 /**

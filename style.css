@@ -135,7 +135,8 @@ body.light {
   color: var(--blue);
 }
 .intro .choose-file .uploading-text,
-.intro .choose-file .done-text {
+.intro .choose-file .done-text,
+.intro .choose-file .load-error {
   display: none;
 }
 .intro #drop-overlay {
@@ -156,11 +157,13 @@ body.light {
   transform: translateX(-100%);
 }
 .intro.uploading label,
-.intro.done label {
+.intro.done label,
+.intro.error label {
   display: none;
 }
 .intro.uploading #drop-overlay,
-.intro.done #drop-overlay {
+.intro.done #drop-overlay,
+.intro.error #drop-overlay {
   display: none;
 }
 .intro.uploading .uploading-text {
@@ -175,6 +178,9 @@ body.light {
 .intro.done + .main {
   transition: transform 1s var(--trans);
   transform: translateX(0%);
+}
+.intro.error .load-error {
+  display: inline;
 }
 .main {
   position: relative;
