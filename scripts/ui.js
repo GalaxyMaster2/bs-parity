@@ -68,11 +68,13 @@ urlInput.addEventListener('keyup', function (event) {
  * @param {*} e - a drop event
  */
 function handleDrop(e) {
+    
     let dt = e.dataTransfer;
     let files = dt.files;
     if (files.length != 0) {
-        preventDefaults(e);
         readFile(files);
+    } else {
+        readUrl(dt.getData("Text"));
     }
 }
 
