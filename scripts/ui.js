@@ -181,34 +181,40 @@ function populateDiffSelect() {
     while (diffSelect.lastChild) {
         diffSelect.removeChild(diffSelect.lastChild);
     }
-    let count = 0;
 
     for (let [index, set] of mapDifficultySets.entries()) {
         for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
             let option = document.createElement('option');
-            count++;
 
-            let optionString = set._beatmapCharacteristicName.replace(/([A-Z])/g, " $1") + ' - ';
+            let diffName, setName = set._beatmapCharacteristicName.replace(/([A-Z])/g, ' $1').trim();
             if (difficulty._customData?._difficultyLabel) {
-                optionString += difficulty._customData._difficultyLabel;
+                diffName = difficulty._customData._difficultyLabel.trim();
             } else {
-                optionString += difficulty._difficulty.replace(/([A-Z])/g, " $1"); // html ignores the second space, so we don't need to remove it after this
+                diffName = difficulty._difficulty.replace(/([A-Z])/g, ' $1').trim();
             }
 
-            option.textContent = optionString
-            option.value = index + ' ' + index2; // this is a little hacky but it's faster to implement than passing it properly
-            option.selected = true;
+            option.textContent = setName + ' - ' + diffName;
+            option.value = index + ' ' + index2;
+
+            // select the last difficulty of the first set
+            if (index === 0 && index2 === set._difficultyBeatmaps.length - 1) {
+                option.selected = true;
+            }
+
             diffSelect.appendChild(option);
         }
         let gap = document.createElement('option');
         gap.disabled = true;
         gap.textContent = "---------";
-        diffSelect.append(gap);
+        diffSelect.appendChild(gap);
     }
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
-    if (count > 1) {
+
+    if (diffSelect.childElementCount > 1) {
         diffSelect.parentElement.classList.add('enabled');
     }
+
+    // only style on Chromium-based browsers, excluding Opera
     if (!!window.chrome && !window.opr) {
         diffSelect.classList.add('style');
     }
@@ -216,10 +222,11 @@ function populateDiffSelect() {
 
 /**
  * returns the currently selected difficulty
+ * @param {HTMLSelectElement} input - the select element from which to read the selected difficulty
  * @returns {Object} - the currently selected difficulty
  */
-function getSelectedDiff(input = diffSelect.value) {
-    let arr = input.split(' ');
+function getSelectedDiff(input = diffSelect) {
+    let arr = input.value.split(' ');
     return mapDifficultySets[arr[0]]._difficultyBeatmaps[arr[1]];
 }
 
