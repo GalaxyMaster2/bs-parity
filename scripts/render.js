@@ -50,6 +50,7 @@ function syncPlayback(timeoffset = 0.0167) { // default timeoffset assumes 60fps
     render();
 
     if (!audio.paused) {
+        olaPosition.set({ value: centerBeat }, 0); // technically ola will be off when it stops by ~1/100 of a beat because it is async, but that should be fine
         requestAnimationFrame(function() {
             syncPlayback();
         });
@@ -67,8 +68,7 @@ function scrollTo(target) {
     highlightElements(target);
 
     if (audio != null && !audio.paused) { // pause music and stop scrolling when the user intervenes
-        audio.pause();
-        playback.classList.remove('playing');
+        playbackToggle.click();
     }
 
     let distance = target - olaPosition.value;

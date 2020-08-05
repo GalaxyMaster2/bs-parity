@@ -152,10 +152,11 @@ async function extractZip(e) {
                     if (audio.paused) {
                         audio.currentTime = centerBeat * 60 / bpm;
                         audio.play(); 
+                        highlightElements(-1); // un-highlight elements
                         playbackToggle.classList.add('playing');
                         syncPlayback();
                     }
-                    else { 
+                    else {
                         audio.pause(); 
                         playbackToggle.classList.remove('playing');
                     }
@@ -194,7 +195,7 @@ function getLocalOffset(songInfo = getSelectedDiff()) {
     } // not all files have this defined
     offset = -0.001 * (localOffset + globalOffset) * bpm / 60;
     if (Math.abs(notesArray[0] + offset) < comparisonTolerance) { // support for people who offset first note to 0 mark - makes it exact instead of floating point errors
-        offset = notesArray[0] ;
+        offset = notesArray[0];
     }
 }
 

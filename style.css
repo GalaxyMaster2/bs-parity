@@ -439,12 +439,15 @@ body.light {
 }
 .main .renderbox #render-wrapper #render-container #playback {
   position: relative;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: 0.625rem;
+  left: 0.75rem;
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
   cursor: pointer;
+}
+.main .renderbox #render-wrapper #render-container #playback.playing {
+  color: var(--blue);
 }
 .main .renderbox .sliders-container {
   display: grid;
