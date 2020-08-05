@@ -28,6 +28,7 @@ const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
 const downloadProgress = document.getElementById('download-progress');
 
+const bookmarksToggle = document.getElementById('bookmarks');
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
 const infoToggle = document.getElementById('info');
@@ -443,8 +444,9 @@ function loadMapInfo(datString) {
  * gets the local time offset of the map and converts it to beats
  * @param {Object} songInfo - the parsed contents of a difficulty.dat file
  */
-function getLocalOffset(songInfo = getSelectedDiff()) {
+function getLocalOffset(songInfo) {
     try {
+        songInfo = getSelectedDiff();
         localOffset = songInfo["_customData"]._editorOffset;
     } catch {
         localOffset = 0;
@@ -462,8 +464,10 @@ function getLocalOffset(songInfo = getSelectedDiff()) {
 function loadDifficultyDat(datString) {
     ready = false;
     let parsed = JSON.parse(datString);
+    bookmarksArray = getBookmarks(parsed);
     notesArray = getNotes(parsed);
     wallsArray = getWalls(parsed);
+    bookmarks = getBookmarks(parsed);
     getLocalOffset();
 
     ready = true;
@@ -576,7 +580,7 @@ function highlightElements(time) {
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
-    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error';
+    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error, .showBookmarks [data-time="' + timeInd + '"].bookmark';
     let QScount = document.querySelectorAll(selector).length;
     let i = 0;
 

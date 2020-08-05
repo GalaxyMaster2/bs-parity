@@ -88,7 +88,7 @@ class Parity {
 const scrollLineHeight = getScrollLineHeight();
 
 var mapDifficultySets;
-var notesArray, wallsArray;
+var notesArray, wallsArray, bookmarksArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
@@ -128,6 +128,29 @@ function getWalls(obj) {
     });
 
     return walls;
+}
+
+/**
+ * Filters and sorts bookmarks
+ * @param {Array} obj - A beat saber map data JSON array
+ * @returns {Array} - filtered / sorted bookmarks
+ */
+function getBookmarks(obj) {
+    try {
+        let bookmarks = obj._customData._bookmarks;
+        bookmarks.sort(function (a, b) {
+            return a._time - b._time;
+        })
+
+        // filter out invalid note types
+        bookmarks = bookmarks.filter(function (bookmark) {
+            return bookmark._name !== "";
+        });
+
+        return bookmarks;
+    } catch (error) {
+        return [];
+    }
 }
 
 /**
@@ -197,19 +220,16 @@ function outputUI(note, parity, message, messageType, persistent = false) {
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
         }
         imgSrc += '.svg';
-
-        element.dataset.time = time.toFixed(3);
-        element.addEventListener('click', function () { scrollTo(time); });
     } else { // message output mode
         imgSrc = 'assets/' + messageType + '.svg';
-        if (message.includes('|')) {
+        if (message.includes('|') && messageType != 'bookmark') { // prevent unintentional splitting for user-generated bookmarks
             infoString = message.split('|')[0];
             message = message.split('|')[1];
         } else {
             infoString = message;
             message = '';
         }
-        element.dataset.time = parity.toFixed(3);
+        time = parity;
         element.classList.add('noHighlight');
     }
 
@@ -224,6 +244,8 @@ function outputUI(note, parity, message, messageType, persistent = false) {
 
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
+    element.dataset.time = time.toFixed(3); // this may be overwritten by infoDat support or extraWarnings, which is completely fine
+    element.addEventListener('click', function () { scrollTo(time); });
     wrapper.appendChild(element);
 
     if (persistent) {
@@ -264,7 +286,7 @@ function findCol(jsonData, type, lastVal) {
  * @param notes - the array of notes to scan for errors
  * @returns {void} - outputs error messages through outputUI
  */
-function checkParity(notes = notesArray) {
+function checkParity(notes = notesArray, bookmarks = bookmarksArray) {
     clearOutput();
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
@@ -274,6 +296,7 @@ function checkParity(notes = notesArray) {
     let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
+    let bookmarkCount = 0; // this isn't a great way of doing this to be completely honest, but it'll do for now
     let summary = document.getElementById('summary');
 
     let parity = new Parity();
@@ -285,6 +308,13 @@ function checkParity(notes = notesArray) {
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
+
+        if (bookmarkCount < bookmarks.length) {
+            if (note._time > bookmarks[bookmarkCount]._time) { 
+                outputUI(false, bookmarks[bookmarkCount]._time, bookmarks[bookmarkCount]._name, 'bookmark');
+                bookmarkCount++; 
+            }
+        }
 
         note.error = false;
         note.warn = false;

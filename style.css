@@ -635,8 +635,8 @@ body.light #output div {
   vertical-align: middle;
   cursor: pointer;
 }
-.main .outputbox .outboxline #errors {
-  margin-right: 1rem;
+.main .outputbox .outboxline label:not(:first-child) {
+  margin-left: 1rem;
 }
 .main .outputbox .outboxline#summary {
   padding-bottom: 0.25rem;
@@ -723,6 +723,9 @@ body.light #output div {
   background-color: var(--mbg);
   --time: 0.001s;
 }
+.main .outputbox .outputwrapper #output .parent.bookmark img {
+  height: 1rem;
+}
 .main .outputbox .outputwrapper #output .parent.selected {
   background-color: var(--ebg);
   color: var(--etext);
@@ -741,7 +744,8 @@ body.light #output div {
 }
 .main .outputbox .outputwrapper #output .parent.info,
 .main .outputbox .outputwrapper #output .parent.warning,
-.main .outputbox .outputwrapper #output .parent.error {
+.main .outputbox .outputwrapper #output .parent.error,
+.main .outputbox .outputwrapper #output .parent.bookmark {
   display: none;
 }
 .main .outputbox .outputwrapper #output .parent img {
@@ -762,9 +766,10 @@ body.light #output div {
   flex: 1;
   white-space: nowrap;
 }
-.main .outputbox .outputwrapper #output.showInfo .info,
+.main .outputbox .outputwrapper #output.showBookmarks .bookmark,
 .main .outputbox .outputwrapper #output.showWarnings .warning,
-.main .outputbox .outputwrapper #output.showErrors .error {
+.main .outputbox .outputwrapper #output.showErrors .error,
+.main .outputbox .outputwrapper #output.showInfo .info {
   display: flex;
 }
 @media screen and (max-width: 75rem) {
