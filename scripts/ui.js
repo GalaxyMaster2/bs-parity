@@ -360,12 +360,12 @@ function validateMapKey(id) {
 
 /**
  * extracts a map zip and attempts to load all present difficulties
- * @param {ArrayBuffer} e - data of the zip
+ * @param {ProgressEvent} event - a load event
  */
-async function extractZip(e) {
+async function extractZip(event) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(e);
+        zip = await JSZip.loadAsync(event.target.result);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
@@ -432,8 +432,8 @@ function loadMapInfo(datString) {
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
     bpm = parsed._beatsPerMinute;
-    songTitle =  ' - ' + parsed._songName;
-    if (songTitle != ' - ') { 
+    songTitle = ' - ' + parsed._songName;
+    if (songTitle != ' - ') {
         pageTitle.textContent += songTitle;
         document.getElementsByTagName('title')[0].textContent = "map inspector" + songTitle;
     }
