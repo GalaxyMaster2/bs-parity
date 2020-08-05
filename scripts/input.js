@@ -46,12 +46,12 @@ themeToggle.addEventListener('click', changeTheme);
 /**
  * reads the value of the input sliderPrecision and sets the variable sliderPrecision
  * to the inverse of its value, swapping infinity to zero
- * @returns {void} - runs checkParity again
+ * @returns {void} - runs checkMap again
  */
 function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
     sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
-    checkParity();
+    checkMap();
     render();
 }
 

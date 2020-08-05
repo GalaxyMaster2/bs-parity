@@ -156,6 +156,7 @@ function loadMapInfo(datString) {
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
     bpm = parsed._beatsPerMinute;
+    zipFile = true;
 }
 
 /**
@@ -189,7 +190,7 @@ function loadDifficultyDat(datString) {
     centerBeat = 0;
     olaPosition = Ola(0);
     clearRenderedElements();
-    checkParity();
+    checkMap();
     render();
 }
 

@@ -6,6 +6,7 @@ console.log('main js loaded');
 
 const cutDirections = ['up', 'down', 'left', 'right', 'upLeft', 'upRight', 'downLeft', 'downRight', 'dot'];
 const cutAngles = [180, 0, 90, 270, 135, 225, 45, 315, 0];
+const cutVectors = [[0, 1], [0, -1], [-1, 0], [1, 0], [-Math.SQRT1_2, Math.SQRT1_2], [Math.SQRT1_2, Math.SQRT1_2], [-Math.SQRT1_2, -Math.SQRT1_2], [Math.SQRT1_2, -Math.SQRT1_2], [0, 0]];
 
 // bombs are type 3 for some reason
 const types = {
@@ -91,6 +92,7 @@ var mapDifficultySets;
 var notesArray, wallsArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
+var zipFile = false;
 
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
@@ -196,10 +198,8 @@ function outputUI(note, parity, message, messageType) {
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
         }
         imgSrc += '.svg';
-
-        element.dataset.time = time.toFixed(3);
-        element.addEventListener('click', function () { scrollTo(time); });
     } else { // message output mode
+        time = parity;
         imgSrc = 'assets/' + messageType + '.svg';
         if (message.includes('|')) {
             infoString = message.split('|')[0];
@@ -208,8 +208,11 @@ function outputUI(note, parity, message, messageType) {
             infoString = message;
             message = '';
         }
-        element.dataset.time = parity.toFixed(3);
+        element.classList.add('noHighlight');
     }
+
+    element.dataset.time = time.toFixed(3);
+    element.addEventListener('click', function () { scrollTo(time); });
 
     let img = document.createElement('img');
     img.src = imgSrc;
@@ -227,9 +230,9 @@ function outputUI(note, parity, message, messageType) {
 }
 
 /** clears all error messages from output box */
-function clearOutput() {
-    while (output.lastChild) {
-        output.removeChild(output.lastChild);
+function clear(toClear) {
+    while (toClear.lastChild) {
+        toClear.removeChild(toClear.lastChild);
     }
 }
 
@@ -250,12 +253,14 @@ function findCol(jsonData, type, lastVal) {
 }
 
 /**
- * checks for errors in parity within the notes
+ * checks for errors in the given notes array, current version
+ * implements parity checking, handclap/hammer hit checking and
+ * a few extra warnings for other things
  * @param notes - the array of notes to scan for errors
  * @returns {void} - outputs error messages through outputUI
  */
-function checkParity(notes = notesArray) {
-    clearOutput();
+function checkMap(notes = notesArray) {
+    clear(output);
     if (!ready) {
         outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
         return;
@@ -264,114 +269,37 @@ function checkParity(notes = notesArray) {
     let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
+    lastNote = 0;
+
     let summary = document.getElementById('summary');
+
+    if (!zipFile) {
+        outputUI(false, 0, 'Note that while .dat files are still supported, not all features are available:|Consider using a zip file instead!', 'warning noHighlight');
+    }
 
     let parity = new Parity();
     parity.init(notes);
 
-    for (let i = 0; i < notes.length; i++) {
-        let note = notes[i];
-        let type = types[note._type];
-        let cutDirection = cutDirections[note._cutDirection];
-        let column = lineIndices[note._lineIndex];
-        let row = lineLayers[note._lineLayer];
-
-        note.error = false;
-        note.warn = false;
-        note.precedingError = false;
-        note.precedingWarn = false;
-
-        if (type === 'bomb') {
-            // this is super ugly, I'm hoping to come up with a better way later
-            if (!(['middleLeft', 'middleRight'].includes(column)) || !(['bottom', 'top'].includes(row))) {
-                continue;
-            }
-
-            // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
-            let setParity = {
-                red: true,
-                blue: true
-            };
-            let offset = -1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) >= 0 &&
-                (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
-                switch (types[offsetNote._type]) {
-                    case 'bomb':
-                        if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
-                            setParity.red = false;
-                        } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
-                            setParity.blue = false;
-                        }
-                        break;
-                    case 'red':
-                        setParity.red = false;
-                        break;
-                    case 'blue':
-                        setParity.blue = false;
-                        break;
-                }
-                offset--;
-                offsetNote = notes[i + offset];
-            }
-
-            // invert parity if needed and log the bomb if so
-            for (let color in setParity) {
-                if (setParity[color]) {
-                    if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
-                        parity.invert(color);
-                        outputUI(note, parity[color], color, 'info');
-                        infCount++;
-                    }
-                }
-            }
-        } else {
-            if (cuts[type].good[parity[type]].includes(cutDirection)) {
-                parity.invert(type);
-            } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
-                note.warn = true;
-
-                try {
-                    let last = notes[findCol(notes, type, i - 1)];
-                    last.precedingWarn = true;
-                }
-                catch {
-                    console.log('error finding note!');
-                }
-
-                outputUI(note, parity[type], borderlineHitText, 'warning');
-                parity.invert(type);
-                warnCount++;
-            } else {
-                note.error = true;
-                let deltaTime = 0;
-                try {
-                    let last = notes[findCol(notes, type, i - 1)];
-                    deltaTime = (note._time - last._time).toFixed(3);
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
-                    last.precedingError = true;
-                }
-                catch {
-                    console.log('error finding note!');
-                }
-
-                outputUI(note, parity[type], badHitText + deltaTime, 'error');
-                errCount++;
-            }
-
-            // invert parity again if there's a same-color note within sliderPrecision
-            let offset = 1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) < notes.length &&
-                (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
-                if (note._type === offsetNote._type) {
-                    parity.invert(type);
-                    break;
-                }
-                offset++;
-                offsetNote = notes[i + offset];
-            }
+    if (((notes[0]._time + offset) * 60 / bpm) < 1.5) {
+        if (!zipFile) { 
+            let plural = (notes[0]._time + offset == 1) ? ' beat ' : ' beats ';
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + notes[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning noHighlight'); 
         }
+        else {
+            let plural = (((notes[0]._time + offset) * 60 / bpm) == 1) ? ' second ' : ' seconds ';
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + ((notes[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning noHighlight');
+        }
+        warnCount++;
+    }
+
+    for (let i = 0; i < notes.length; i++) {
+        let hcErr = checkClap(notes, i);
+        warnCount += hcErr[0];
+        errCount += hcErr[1];
+
+        let pErr = checkParity(notes, i, parity);
+        warnCount += pErr[0];
+        errCount += pErr[1];
     }
 
     summary.textContent = 'found ' + ((errCount === 0) ? 'no' : errCount) + ((errCount === 1) ? ' error, ' : ' errors and ') +
@@ -380,4 +308,377 @@ function checkParity(notes = notesArray) {
     if (warnCount === 0 && errCount === 0) {
         outputUI(false, 0, 'No errors found!', 'success');
     }
+}
+
+/**
+ * checks for parity errors in the map
+ * @param notes - the array of notes to scan for errors
+ * @param i - the current note to check
+ * @param parity - the parity class used
+ * @returns {Array} - count of outputs by type - [warnings, errors, info]
+ */
+function checkParity(notes = notesArray, i, parity = new Parity()) {
+    let note = notes[i];
+    let type = types[note._type];
+    let cutDirection = cutDirections[note._cutDirection];
+    let column = lineIndices[note._lineIndex];
+    let row = lineLayers[note._lineLayer];
+
+    let state = [0, 0, 0];
+
+    if (type === 'bomb') {
+        // this is super ugly, I'm hoping to come up with a better way later
+        if (!(['middleLeft', 'middleRight'].includes(column)) || !(['bottom', 'top'].includes(row))) {
+            return state;
+        }
+
+        // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
+        let setParity = {
+            red: true,
+            blue: true
+        };
+        let offset = -1;
+        let offsetNote = notes[i + offset];
+        while ((i + offset) >= 0 &&
+            (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
+            switch (types[offsetNote._type]) {
+                case 'bomb':
+                    if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
+                        setParity.red = false;
+                    } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
+                        setParity.blue = false;
+                    }
+                    break;
+                case 'red':
+                    setParity.red = false;
+                    break;
+                case 'blue':
+                    setParity.blue = false;
+                    break;
+            }
+            offset--;
+            offsetNote = notes[i + offset];
+        }
+
+        // invert parity if needed and log the bomb if so
+        for (let color in setParity) {
+            if (setParity[color]) {
+                if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
+                    parity.invert(color);
+                    outputUI(note, parity[color], color, 'info');
+                    state[2]++;
+                }
+            }
+        }
+    } else {
+        if (cuts[type].good[parity[type]].includes(cutDirection)) {
+            parity.invert(type);
+        } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
+            note.warn = true;
+
+            try {
+                let last = notes[findCol(notes, type, i - 1)];
+                last.precedingWarn = true;
+            }
+            catch {
+                console.log('error finding note!');
+            }
+
+            outputUI(note, parity[type], borderlineHitText, 'warning');
+            parity.invert(type);
+            state[0]++;
+        } else {
+            note.error = true;
+            let deltaTime = 0;
+            try {
+                let last = notes[findCol(notes, type, i - 1)];
+                if (zipFile) {
+                    deltaTime = ((note._time - last._time) * 60 / bpm).toFixed(3);
+                    deltaTime += (deltaTime == 1) ? ' second' : ' seconds';
+                }
+                else { 
+                    deltaTime = (note._time - last._time).toFixed(3);
+                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats'; 
+                }
+                last.precedingError = true;
+            }
+            catch {
+                console.log('error finding note!');
+            }
+
+            outputUI(note, parity[type], badHitText + deltaTime, 'error');
+            state[1]++;
+        }
+
+        // invert parity again if there's a same-color note within sliderPrecision
+        let offset = 1;
+        let offsetNote = notes[i + offset];
+        while ((i + offset) < notes.length &&
+            (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
+            if (note._type === offsetNote._type) {
+                parity.invert(type);
+                break;
+            }
+            offset++;
+            offsetNote = notes[i + offset];
+        }
+    }
+
+    return state;
+}
+
+/**
+ * checks for handclaps and hammer hits in the map - todo: maybe split into two functions for readability?
+ * @param notes - the array of notes to scan for errors
+ * @param i - the current note to test around
+ * @returns {Array} - count of outputs by type - [warnings, errors]
+ */
+function checkClap(notes = notesArray, i) {
+    let state = [0, 0];
+    if (i < lastNote) return state;
+    let note = notes[i];
+    let time = note._time;
+
+    let surroundingNotes = notes.filter(function (note) {
+        return (Math.abs(note._time - time) <= 4 * comparisonTolerance);
+    }); // get notes in same effective 2d frame - this could be expanded to a 3d slice in the future if i am feeling masochistic
+
+    if (surroundingNotes.length == 1) return state; // ignore single-beat frames
+
+    let sNoteTypes = [[], [], [], []]; // bombs are type 3 of course, so sNT[2] will always be empty which is a bit of a waste but hey
+
+    for (let j = 0; j < surroundingNotes.length; j++) { // group notes by type
+        sNoteTypes[surroundingNotes[j]._type].push(surroundingNotes[j]);
+    }
+
+    if (sNoteTypes[0].length == 1 && sNoteTypes[1].length == 1) { // single note in blue and red, basic line collision
+        redLine = [
+            sNoteTypes[0][0]._lineIndex, sNoteTypes[0][0]._lineLayer,
+            cutVectors[sNoteTypes[0][0]._cutDirection][0],
+            cutVectors[sNoteTypes[0][0]._cutDirection][1]
+        ];
+
+        blueLine = [
+            sNoteTypes[1][0]._lineIndex, sNoteTypes[1][0]._lineLayer,
+            cutVectors[sNoteTypes[1][0]._cutDirection][0],
+            cutVectors[sNoteTypes[1][0]._cutDirection][1]
+        ];
+
+        let intersection = checkIntersection(redLine, blueLine, time);
+
+        if (typeof(intersection) != "number") {}
+        else if (intersection >= 0) {
+            if (Math.abs(intersection) <= 1) {
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                notes[i].error = true;
+                notes[i + 1].error = true;
+                state[1] += 1;
+            }
+            else if (Math.abs(intersection) <= 2) {
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                notes[i].warn = true;
+                notes[i + 1].warn = true;
+                state[0] += 1;
+            }
+        } else {
+            if (Math.abs(intersection) <= 0.71) {
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                notes[i].error = true;
+                notes[i + 1].error = true;
+                state[1] += 1;
+            }
+            else if (Math.abs(intersection) <= 1.5) {
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                notes[i].warn = true;
+                notes[i + 1].warn = true;
+                state[0] += 1;
+            }
+        }
+    }
+    
+    else { // multiple lines: filter, then check every combination of lines
+        let redLines = [], blueLines = [];
+
+        sNoteTypes[0].forEach(element => { // add all notes to lines[] array
+            let line = [element._lineIndex, element._lineLayer,
+                        cutVectors[element._cutDirection][0],
+                        cutVectors[element._cutDirection][1] ];
+            redLines.push(line);
+        });
+
+        sNoteTypes[1].forEach(element => {
+            let line = [element._lineIndex, element._lineLayer,
+                cutVectors[element._cutDirection][0],
+                cutVectors[element._cutDirection][1] ];
+            blueLines.push(line);
+        });
+
+        for (let i = 0; i < redLines.length; i++) {
+            for (let j = 0; j < redLines.length;) {
+                if (i == j) j++;
+                else {
+                    if (checkIntersection(redLines[i], redLines[j]) == 'same') { // if the lines go in the same direction
+                        redLines.splice(j, 1); // remove j from the array
+                    } else { j++; }
+                }
+            }
+        }
+
+        for (let i = 0; i < blueLines.length; i++) {
+            for (let j = 0; j < blueLines.length;) {
+                if (i == j) j++;
+                else {
+                    if (checkIntersection(blueLines[i], blueLines[j]) == -2) { // if the lines go in the same direction
+                        blueLines.splice(j, 1); // remove j from the array
+                    } else { j++; }
+                }
+            }
+        }
+
+        blueLines.forEach(blue => { // add all notes to lines[] array
+            redLines.forEach(red => {
+                let intersection = checkIntersection(red, blue, time);
+                if (typeof(intersection) != "number") {}
+                else if (intersection >= 0) {
+                    if (Math.abs(intersection) <= 1) {
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                        state[1] += 1;
+                    }
+                    else if (Math.abs(intersection) <= 2) {
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                        state[0] += 1;
+                    }
+                } else {
+                    if (Math.abs(intersection) <= 0.71) {
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                        state[1] += 1;
+                    }
+                    else if (Math.abs(intersection) <= 1.5) {
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                        state[0] += 1;
+                    }
+                }
+            });
+        });
+    }
+
+    // hammer hit detection
+    let hhLines = [];
+
+    sNoteTypes[0].forEach(element => { // add all notes to lines[] array
+        let line = [element._lineIndex, element._lineLayer,
+                    cutVectors[element._cutDirection][0],
+                    cutVectors[element._cutDirection][1] ];
+        hhLines.push(line);
+    });
+
+    sNoteTypes[1].forEach(element => {
+        let line = [element._lineIndex, element._lineLayer,
+            cutVectors[element._cutDirection][0],
+            cutVectors[element._cutDirection][1] ];
+        hhLines.push(line);
+    });
+
+    for (let j = 0; j < sNoteTypes[3].length; j++) { // for every bomb, check collision with every block
+        let bombX = sNoteTypes[3][j]._lineIndex;
+        let bombY = sNoteTypes[3][j]._lineLayer;
+        
+        hhLines.forEach(element => {
+            intersection = 'none'
+            intersection = checkIntersection(element, [bombX, bombY, 0, 0], time);
+            if (typeof(intersection) != "number") {}
+            else if (intersection >= 0) {
+                if (Math.abs(intersection) <= 1) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                    state[1] += 1;
+                }
+                else if (Math.abs(intersection) <= 1.5) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                    state[0] += 1;
+                }
+            } else {
+                if (Math.abs(intersection) <= 0.71) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                    state[1] += 1;
+                }
+                else if (Math.abs(intersection) <= 1) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                    state[0] += 1;
+                }
+            }
+        });
+    }
+
+    lastNote = i + surroundingNotes.length; // only test each frame once
+    return state;
+}
+
+/**
+ * tests whether two notes will cause a handclap
+ * based off of my own very dubious understanding of vector stuff and https://bit.ly/2Z393Gk
+ * i apologise for this code
+ * @param {Array} a  - the first note  - [xPos, yPos, xDir, yDir]
+ * @param {Array} b  - the second note - [xPos, yPos, xDir, yDir]
+ * @param {Number} time - no longer used, but still passed because it can make debugging a bit faster
+ * @returns {Number | text} - the distance/risk of clap (+/- depending on whether it is postswing or preswing) or some messages
+ */
+function checkIntersection(a, b, time) {
+    if ((a[2] == 0 && a[3] == 0) || (b[2] == 0 && b[3] == 0)) { // at least one of the notes is a dot, test for perpendicular distance between line and point
+        // todo: how does this handle two dots?
+        let line = a, dot = b;
+        if (a[2] == 0 && a[3] == 0) { // swap so a is the dot
+            dot = a;
+            line = b;
+        }
+
+        let distance = checkColinear(line, [dot[0], dot[1]]);
+
+        return distance[0] ? distance[1] : 'notOnLine'; 
+        // this may be a little harsh - assumes no hanclap possible if not immediately in a line, but i don't want to implement it properly right now
+        // it pretty much holds true though given the strict placement requirements of vanilla, so should be fine for now?
+    }
+
+    if (a[2] == b[2] && a[3] == b[3]) { // cut dirs are parallel, return same or notSame depending on if describe the same line
+        if (typeof(checkIntersection(a, [b[0], b[1], 0, 0])) == "number") return 'same'; // b lies on a, they describe the same line
+        return 'notSame'; // b does not lie on a, they do not describe the same line
+
+        // hopefully no hanclaps but there could be some abuse with regards to notes next to each other so you cannot get a full swing for both
+        // maybe something to look into in the future?
+    } 
+
+    else { // both notes have different & non-zero directions
+        let topA = (b[2] * (a[1] - b[1])) - (b[3] * (a[0] - b[0])); // calculating intersection point of lines using maths ugh
+        let topB = (a[2] * (a[1] - b[1])) - (a[3] * (a[0] - b[0]));
+        let bottom = (b[3] * a[2]) - (b[2] * a[3]);
+
+        if (bottom == 0) { // same line but flipped (eg > < or < >): find the vertical and horizontal distances and compare to cut dirs to see if claps could occur
+            return checkColinear(a, [b[0], b[1]])[1];      
+        }
+
+        if (Math.sign(topA/bottom) == -1 || Math.sign(topB/bottom) == -1) { // the intersection happens in the pre-swing to both: i want to make these collisions less sensitive
+            return -1 * Math.max(Math.abs(topA / bottom), Math.abs(topB / bottom));
+        }
+        return Math.max(Math.abs(topA / bottom), Math.abs(topB / bottom));
+    }
+}
+
+/**
+ * Tests whether a dot lies on a line
+ * @param {Array} line - the line - [xPos, yPos, xDir, yDir]
+ * @param {Array} dot  - the dot (does not need to be a dot) - [xPos, yPos, ...]
+ * @returns {Array} - whether an intersection occurs & how far along the line from (xPos, yPos) it is - [true/false, distance]
+ */
+function checkColinear(line, dot) { // checks whether a dot lies on a line, and returns the perpendicular (?) distance if that is the case
+    let dX = (dot[0] - line[0])/(2 * line[2]); // dX is the horizontal distance between the notes divided by twice the horizontal cut component of the swing
+    let dY = (dot[1] - line[1])/(2 * line[3]); // the square of x/y direction components sums to one, so this just normalises the 45deg stuff for less swinging in each dir for full points
+    
+    if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return [false, 'no']; } // if d(A) is infinity, there is distance but no direction in d(A) so no clap would be expected
+
+    if (isNaN(dY) && !isNaN(dX)) return [true, Math.abs(dX)]; // if d(A) is NaN, both distance and direction are zero (eg deltaY in a |>| |<| handclap) so return the other value
+    if (isNaN(dX) && !isNaN(dY)) return [true, Math.abs(dY)]; // if both are NaN, the notes are both dots and also overlap which i am not handling here
+    
+    if (Math.sign(dX) == -1 || Math.sign(dY) == -1) { // the intersection happens in the pre-swing of either note: i want to make these collisions less sensitive
+        return [true, -Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
+    }
+    return [true, Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
 }
