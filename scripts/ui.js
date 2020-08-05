@@ -185,10 +185,11 @@ function loadMapInfo(datString) {
 
 /**
  * gets the local time offset of the map and converts it to beats
- * @param {Object} datString - the parsed contents of a difficulty.dat file
+ * @param {Object} songInfo - the parsed contents of a difficulty.dat file
  */
-function getLocalOffset(songInfo = getSelectedDiff()) {
+function getLocalOffset(songInfo) {
     try {
+        songInfo = getSelectedDiff();
         localOffset = songInfo["_customData"]._editorOffset;
     } catch {
         localOffset = 0;
