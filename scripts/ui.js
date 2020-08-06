@@ -16,7 +16,6 @@ const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
-const diffSetSelect = document.getElementById('diffset-select');
 const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');

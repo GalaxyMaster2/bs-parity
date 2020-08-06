@@ -499,12 +499,6 @@ body.light {
 .main .outputbox .outboxline {
   line-height: 1.875rem;
 }
-.main .outputbox .outboxline #diffset-select {
-  display: none;
-}
-.main .outputbox .outboxline #diffset-select.enabled {
-  display: inline-block;
-}
 .main .outputbox .outboxline input,
 .main .outputbox .outboxline label {
   vertical-align: middle;
