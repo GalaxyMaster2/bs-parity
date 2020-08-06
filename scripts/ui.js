@@ -87,7 +87,13 @@ function readFile(files) {
     if (file.name.substr(-4) === '.dat') {
         fr.readAsText(file);
         fr.addEventListener('load', function () {
-            loadDifficultyDat(fr.result);
+            try {
+                loadDifficultyDat(fr.result);
+            } catch (error) {
+                displayLoadError('unable to load difficulty.dat file');
+                console.error(error);
+                return;
+            }
             fileLoaded();
         });
     } else if (file.name.substr(-4) === '.zip') {
@@ -95,7 +101,7 @@ function readFile(files) {
         fr.addEventListener('load', extractZip);
     } else {
         // an unsupported file was selected
-        console.log('unsupported file format');
+        displayLoadError('unsupported file format');
     }
 }
 
@@ -104,7 +110,15 @@ function readFile(files) {
  * @param {ProgressEvent} e
  */
 async function extractZip(e) {
-    let zip = await JSZip.loadAsync(e.target.result);
+    let zip;
+    try {
+        zip = await JSZip.loadAsync(e.target.result);
+    } catch (error) {
+        displayLoadError('unable to extract zip file');
+        console.error(error);
+        return;
+    }
+
     let infoFile = zip.file('Info.dat') || zip.file('info.dat');
     if (infoFile) {
         let mapInfo = await infoFile.async('string');
