@@ -40,6 +40,11 @@ diffSelect.addEventListener('change', function () {
 warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
 errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 
+handclapToggle.addEventListener('click', function () { output.classList.toggle('showClap'); highlightElements(centerBeat); });
+generalToggle.addEventListener('click', function () { output.classList.toggle('showGen'); highlightElements(centerBeat); });
+parityToggle.addEventListener('click', function () { output.classList.toggle('showPar'); highlightElements(centerBeat); });
+hammerToggle.addEventListener('click', function () { output.classList.toggle('showHH'); highlightElements(centerBeat); });
+
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('click', changeTheme);
 

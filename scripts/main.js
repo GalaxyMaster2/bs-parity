@@ -172,12 +172,13 @@ function mod(n, m) {
  * @param {String | Number} parity - if in note mode, the type of parity broken, otherwise the time of the error
  * @param {String} message - the caption/description of the error. can be broken into two lines with '|' in text mode
  * @param {String} messageType - the severity of the error - will be added to output as a class
+ * @param {String} errorClass - the test responsible for the error - will be added to output as a class
  * @returns {void} - outputs to DOM, should not return a value
  */
-function outputUI(note, parity, message, messageType) {
+function outputUI(note, parity, message, messageType, errorClass = 'generic') {
     let wrapper = document.createElement('div');
     let element = document.createElement('div');
-    element.classList.add('parent', messageType);
+    element.classList.add('parent', messageType, errorClass);
 
     let time, imgSrc, infoString;
     if (note != false) { // if note passed in note function
@@ -266,15 +267,14 @@ function checkMap(notes = notesArray) {
         return;
     }
 
-    let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
-    lastNote = 0;
+    lastNote = 0, lastNote2 = 0; // maybe declare these somewhere?
 
     let summary = document.getElementById('summary');
 
     if (!zipFile) {
-        outputUI(false, 0, 'Note that while .dat files are still supported, not all features are available:|Consider using a zip file instead!', 'warning noHighlight');
+        outputUI(false, 0, 'Note that while .dat files are still supported, not all features are available:|Consider using a zip file instead!', 'warning');
     }
 
     let parity = new Parity();
@@ -283,21 +283,26 @@ function checkMap(notes = notesArray) {
     if (((notes[0]._time + offset) * 60 / bpm) < 1.5) {
         if (!zipFile) { 
             let plural = (notes[0]._time + offset == 1) ? ' beat ' : ' beats ';
-            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + notes[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning noHighlight'); 
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + notes[0]._time.toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning'); 
         }
         else {
             let plural = (((notes[0]._time + offset) * 60 / bpm) == 1) ? ' second ' : ' seconds ';
-            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + ((notes[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning noHighlight');
+            outputUI(false, notes[0]._time + offset, 'Potential hot start - first note is ' + ((notes[0]._time + offset) * 60 / bpm).toFixed(3) + plural + 'into the song:|Consider waiting before the first note or adding silence', 'warning');
         }
         warnCount++;
     }
 
+    let hcErr, hhErr, pErr;
     for (let i = 0; i < notes.length; i++) {
-        let hcErr = checkClap(notes, i);
+        hcErr = checkClap(notes, i);
         warnCount += hcErr[0];
         errCount += hcErr[1];
 
-        let pErr = checkParity(notes, i, parity);
+        hhErr = checkHH(notes, i);
+        warnCount += hhErr[0];
+        errCount += hhErr[1];
+
+        pErr = checkParity(notes, i, parity);
         warnCount += pErr[0];
         errCount += pErr[1];
     }
@@ -365,7 +370,7 @@ function checkParity(notes = notesArray, i, parity = new Parity()) {
             if (setParity[color]) {
                 if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
                     parity.invert(color);
-                    outputUI(note, parity[color], color, 'info');
+                    outputUI(note, parity[color], color, 'info', 'parity');
                     state[2]++;
                 }
             }
@@ -384,7 +389,7 @@ function checkParity(notes = notesArray, i, parity = new Parity()) {
                 console.log('error finding note!');
             }
 
-            outputUI(note, parity[type], borderlineHitText, 'warning');
+            outputUI(note, parity[type], borderlineHitText, 'warning', 'parity');
             parity.invert(type);
             state[0]++;
         } else {
@@ -406,7 +411,7 @@ function checkParity(notes = notesArray, i, parity = new Parity()) {
                 console.log('error finding note!');
             }
 
-            outputUI(note, parity[type], badHitText + deltaTime, 'error');
+            outputUI(note, parity[type], badHitText + deltaTime, 'error', 'parity');
             state[1]++;
         }
 
@@ -428,7 +433,9 @@ function checkParity(notes = notesArray, i, parity = new Parity()) {
 }
 
 /**
- * checks for handclaps and hammer hits in the map - todo: maybe split into two functions for readability?
+ * checks for handclaps in the map
+ * todo: highlighting isn't really a thing this does very well
+ *       that should probably be improved
  * @param notes - the array of notes to scan for errors
  * @param i - the current note to test around
  * @returns {Array} - count of outputs by type - [warnings, errors]
@@ -469,26 +476,26 @@ function checkClap(notes = notesArray, i) {
         if (typeof(intersection) != "number") {}
         else if (intersection >= 0) {
             if (Math.abs(intersection) <= 1) {
-                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', 'handclap');
                 notes[i].error = true;
                 notes[i + 1].error = true;
                 state[1] += 1;
             }
             else if (Math.abs(intersection) <= 2) {
-                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', 'handclap');
                 notes[i].warn = true;
                 notes[i + 1].warn = true;
                 state[0] += 1;
             }
         } else {
             if (Math.abs(intersection) <= 0.71) {
-                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', 'handclap');
                 notes[i].error = true;
                 notes[i + 1].error = true;
                 state[1] += 1;
             }
             else if (Math.abs(intersection) <= 1.5) {
-                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', 'handclap');
                 notes[i].warn = true;
                 notes[i + 1].warn = true;
                 state[0] += 1;
@@ -541,20 +548,20 @@ function checkClap(notes = notesArray, i) {
                 if (typeof(intersection) != "number") {}
                 else if (intersection >= 0) {
                     if (Math.abs(intersection) <= 1) {
-                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', 'handclap');
                         state[1] += 1;
                     }
                     else if (Math.abs(intersection) <= 2) {
-                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', 'handclap');
                         state[0] += 1;
                     }
                 } else {
                     if (Math.abs(intersection) <= 0.71) {
-                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                        outputUI(false, note._time + offset, 'Handclap detected at beat ' + (note._time + offset).toFixed(3), 'error', 'handclap');
                         state[1] += 1;
                     }
                     else if (Math.abs(intersection) <= 1.5) {
-                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning');
+                        outputUI(false, note._time + offset, 'Potential handclap detected at beat ' + (note._time + offset).toFixed(3) + '|Note that most handclaps depend upon context, and thus this may flag incorrectly', 'warning', 'handclap');
                         state[0] += 1;
                     }
                 }
@@ -562,8 +569,36 @@ function checkClap(notes = notesArray, i) {
         });
     }
 
+    lastNote = i + surroundingNotes.length; // only test each frame once
+    return state;
+}
+
+/**
+ * checks for hammer hits in the map
+ * @param notes - the array of notes to scan for errors
+ * @param i - the current note to test around
+ * @returns {Array} - count of outputs by type - [warnings, errors]
+ */
+function checkHH(notes = notesArray, i) {
     // hammer hit detection
+    // this duplicates code from checkClap, but unless we want them rolled into one function/global vars idk how else to do this
+    let state = [0, 0];
+    if (i < lastNote2) return state;
+    let note = notes[i];
+    let time = note._time;
     let hhLines = [];
+
+    let surroundingNotes = notes.filter(function (note) {
+        return (Math.abs(note._time - time) <= 4 * comparisonTolerance);
+    }); // get notes in same effective 2d frame - this could be expanded to a 3d slice in the future if i am feeling masochistic
+
+    if (surroundingNotes.length == 1) return state; // ignore single-beat frames
+
+    let sNoteTypes = [[], [], [], []]; // bombs are type 3 of course, so sNT[2] will always be empty which is a bit of a waste but hey
+
+    for (let j = 0; j < surroundingNotes.length; j++) { // group notes by type
+        sNoteTypes[surroundingNotes[j]._type].push(surroundingNotes[j]);
+    }
 
     sNoteTypes[0].forEach(element => { // add all notes to lines[] array
         let line = [element._lineIndex, element._lineLayer,
@@ -585,31 +620,31 @@ function checkClap(notes = notesArray, i) {
         
         hhLines.forEach(element => {
             intersection = 'none'
-            intersection = checkIntersection(element, [bombX, bombY, 0, 0], time);
-            if (typeof(intersection) != "number") {}
-            else if (intersection >= 0) {
-                if (Math.abs(intersection) <= 1) {
-                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+            intersection = checkColinear(element, [bombX, bombY, 0, 0], time);
+            if (!intersection[0]) {}
+            else if (intersection[1] >= 0) {
+                if (Math.abs(intersection[1]) <= 1) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error', 'hammerhit');
                     state[1] += 1;
                 }
-                else if (Math.abs(intersection) <= 1.5) {
-                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                else if (Math.abs(intersection[1]) <= 1.5) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning', 'hammerhit');
                     state[0] += 1;
                 }
             } else {
-                if (Math.abs(intersection) <= 0.71) {
-                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error');
+                if (Math.abs(intersection[1]) <= 0.71) {
+                    outputUI(false, note._time + offset, 'Hammer hit detected at beat ' + (note._time + offset).toFixed(3), 'error', 'hammerhit');
                     state[1] += 1;
                 }
-                else if (Math.abs(intersection) <= 1) {
-                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning');
+                else if (Math.abs(intersection[1]) <= 1) {
+                    outputUI(false, note._time + offset, 'Potential hammer hit detected at beat ' + (note._time + offset).toFixed(3) + '|Note that this filter ignores context, and thus this may flag incorrectly', 'warning', 'hammerhit');
                     state[0] += 1;
                 }
             }
         });
     }
 
-    lastNote = i + surroundingNotes.length; // only test each frame once
+    lastNote2 = i + surroundingNotes.length; // only test each frame once
     return state;
 }
 
@@ -652,7 +687,8 @@ function checkIntersection(a, b, time) {
         let bottom = (b[3] * a[2]) - (b[2] * a[3]);
 
         if (bottom == 0) { // same line but flipped (eg > < or < >): find the vertical and horizontal distances and compare to cut dirs to see if claps could occur
-            return checkColinear(a, [b[0], b[1]])[1];      
+            let colin = checkColinear(a, [b[0], b[1]]);
+            return colin[0] ? colin[1] : 'noIntersect'      
         }
 
         if (Math.sign(topA/bottom) == -1 || Math.sign(topB/bottom) == -1) { // the intersection happens in the pre-swing to both: i want to make these collisions less sensitive
@@ -671,14 +707,15 @@ function checkIntersection(a, b, time) {
 function checkColinear(line, dot) { // checks whether a dot lies on a line, and returns the perpendicular (?) distance if that is the case
     let dX = (dot[0] - line[0])/(2 * line[2]); // dX is the horizontal distance between the notes divided by twice the horizontal cut component of the swing
     let dY = (dot[1] - line[1])/(2 * line[3]); // the square of x/y direction components sums to one, so this just normalises the 45deg stuff for less swinging in each dir for full points
-    
+
     if (Math.abs(dX) == Infinity || Math.abs(dY) == Infinity) { return [false, 'no']; } // if d(A) is infinity, there is distance but no direction in d(A) so no clap would be expected
 
     if (isNaN(dY) && !isNaN(dX)) return [true, Math.abs(dX)]; // if d(A) is NaN, both distance and direction are zero (eg deltaY in a |>| |<| handclap) so return the other value
     if (isNaN(dX) && !isNaN(dY)) return [true, Math.abs(dY)]; // if both are NaN, the notes are both dots and also overlap which i am not handling here
+    if (dX == dY) { return [true, dX]; }
     
     if (Math.sign(dX) == -1 || Math.sign(dY) == -1) { // the intersection happens in the pre-swing of either note: i want to make these collisions less sensitive
-        return [true, -Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
+        return [false, -Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
     }
-    return [true, Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
+    return [false, Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2))];
 }

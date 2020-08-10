@@ -25,7 +25,11 @@ const themeToggle = document.getElementById('theme');
 
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
-const infoToggle = document.getElementById('info');
+// const infoToggle = document.getElementById('info');
+const handclapToggle = document.getElementById('handclap');
+const hammerToggle = document.getElementById('hammerhit');
+const generalToggle = document.getElementById('general');
+const parityToggle = document.getElementById('parity');
 
 const perspectiveSlider = document.getElementById('perspectiveIntensity');
 const renderDistanceSlider = document.getElementById('renderDistance');
@@ -270,11 +274,19 @@ function highlightElements(time) {
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
-    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error';
-    let QScount = document.querySelectorAll(selector).length;
+    let selector = '.showWarnings .warning[data-time="' + timeInd + '"], .showErrors .error[data-time="' + timeInd + '"]';
+    let selector2 = '.showClap .handclap, .showGen .generic, .showHH .hammerhit, .showPar .parity';
+
+    let qs = document.querySelectorAll(selector);
+    console.log(qs);
+    let qs2 = document.querySelectorAll(selector2);
+
+    let qs3 = Array.from(qs).filter(Set.prototype.has, new Set(Array.from(qs2))); // intersection of matching selector2 and selector - qsAll(selector, selector2) returns outer join
+
+    let QScount = qs3.length;
     let i = 0;
 
-    document.querySelectorAll(selector).forEach(
+    qs3.forEach(
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
