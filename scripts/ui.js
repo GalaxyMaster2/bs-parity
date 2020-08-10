@@ -7,6 +7,8 @@ console.log('ui js loaded');
 
 const pageTitle = document.getElementById('title');
 
+const loadError = document.getElementById('load-error-text');
+
 const renderContainer = document.getElementById('render-container');
 const markerContainer = document.getElementById('marker-container');
 const notesContainer = document.getElementById('note-container');
@@ -14,7 +16,6 @@ const wallsContainer = document.getElementById('wall-container');
 const gridContainer = document.getElementById('grid-container');
 const output = document.getElementById('output');
 
-const diffSetSelect = document.getElementById('diffset-select');
 const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
@@ -85,7 +86,13 @@ function readFile(files) {
     if (file.name.substr(-4) === '.dat') {
         fr.readAsText(file);
         fr.addEventListener('load', function () {
-            loadDifficultyDat(fr.result);
+            try {
+                loadDifficultyDat(fr.result);
+            } catch (error) {
+                displayLoadError('unable to load difficulty.dat file');
+                console.error(error);
+                return;
+            }
             fileLoaded();
         });
     } else if (file.name.substr(-4) === '.zip') {
@@ -93,7 +100,7 @@ function readFile(files) {
         fr.addEventListener('load', extractZip);
     } else {
         // an unsupported file was selected
-        console.log('unsupported file format');
+        displayLoadError('unsupported file format');
     }
 }
 
@@ -102,7 +109,15 @@ function readFile(files) {
  * @param {ProgressEvent} event - a load event
  */
 async function extractZip(event) {
-    let zip = await JSZip.loadAsync(event.target.result);
+    let zip;
+    try {
+        zip = await JSZip.loadAsync(event.target.result);
+    } catch (error) {
+        displayLoadError('unable to extract zip file');
+        console.error(error);
+        return;
+    }
+
     let infoFile = zip.file('Info.dat') || zip.file('info.dat');
     if (infoFile) {
         let mapInfo = await infoFile.async('string');
@@ -119,7 +134,8 @@ async function extractZip(event) {
                     difficulty.mapString = await difficultyFile.async('string');
                 } else {
                     // difficulty file doesn't exist
-                    outputUI(false, 0, 'difficulty file ' + difficulty._beatmapFilename + ' does not exist in zip|but is referenced in info.dat', 'error');
+                    outputUI(false, -1, 'difficulty file ' + difficulty._beatmapFilename +
+                        ' does not exist in zip|but is referenced in Info.dat', 'error', true);
                     beatmaps.splice(j, 1);
                 }
             }
@@ -136,15 +152,22 @@ async function extractZip(event) {
             fileLoaded();
         } else {
             // no available difficulties
-            outputUI(false, 0, 'no difficulty files available to load', 'error');
-            fileLoaded();
+            displayLoadError('no difficulty files available to load');
         }
     } else {
         // no info.dat present
-        // todo: find all files anyway? it'd be ugly but maybe worth considering
-        outputUI(false, 0, 'no info.dat present in zip, cannot load map difficulties', 'error');
-        fileLoaded();
+        displayLoadError('no Info.dat present in zip, cannot load map');
     }
+}
+
+/**
+ * displays an error message in the intro screen
+ * @param {String} message - the error message to display
+ */
+function displayLoadError(message) {
+    loadError.textContent = message;
+    introDiv.classList.remove('uploading');
+    introDiv.classList.add('error');
 }
 
 /**
@@ -156,8 +179,8 @@ function loadMapInfo(datString) {
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
     bpm = parsed._beatsPerMinute;
-    songTitle =  ' - ' + parsed._songName;
-    if (songTitle != ' - ') { 
+    songTitle = ' - ' + parsed._songName;
+    if (songTitle != ' - ') {
         pageTitle.textContent += songTitle;
         document.getElementsByTagName('title')[0].textContent = "map inspector" + songTitle;
     }
@@ -207,37 +230,51 @@ function populateDiffSelect() {
         diffSelect.removeChild(diffSelect.lastChild);
     }
 
-    diffSelect.removeAttribute('disabled');
     for (let [index, set] of mapDifficultySets.entries()) {
         for (let [index2, difficulty] of set._difficultyBeatmaps.entries()) {
             let option = document.createElement('option');
 
-            let optionString = set._beatmapCharacteristicName.replace( /([A-Z])/g, " $1" ) + ' - ';
+            let diffName, setName = set._beatmapCharacteristicName.replace(/([A-Z])/g, ' $1').trim();
             if (difficulty._customData?._difficultyLabel) {
-                optionString += difficulty._customData._difficultyLabel;
+                diffName = difficulty._customData._difficultyLabel.trim();
             } else {
-                optionString += difficulty._difficulty.replace( /([A-Z])/g, " $1" ); // html ignores the second space, so we don't need to remove it after this
+                diffName = difficulty._difficulty.replace(/([A-Z])/g, ' $1').trim();
             }
 
-            option.textContent = optionString
-            option.value = index + ' ' + index2; // this is a little hacky but it's faster to implement than passing it properly
-            option.selected = true;
+            option.textContent = setName + ' - ' + diffName;
+            option.value = index + ' ' + index2;
+
+            // select the last difficulty of the first set
+            if (index === 0 && index2 === set._difficultyBeatmaps.length - 1) {
+                option.selected = true;
+            }
+
             diffSelect.appendChild(option);
         }
         let gap = document.createElement('option');
         gap.disabled = true;
         gap.textContent = "---------";
-        diffSelect.append(gap);
+        diffSelect.appendChild(gap);
     }
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
+
+    if (diffSelect.childElementCount > 1) {
+        diffSelect.parentElement.classList.add('enabled');
+    }
+
+    // only style on Chromium-based browsers, excluding Opera
+    if (!!window.chrome && !window.opr) {
+        diffSelect.classList.add('style');
+    }
 }
 
 /**
  * returns the currently selected difficulty
+ * @param {HTMLSelectElement} input - the select element from which to read the selected difficulty
  * @returns {Object} - the currently selected difficulty
  */
-function getSelectedDiff(input = diffSelect.value) {
-    let arr = input.split(' ');
+function getSelectedDiff(input = diffSelect) {
+    let arr = input.value.split(' ');
     return mapDifficultySets[arr[0]]._difficultyBeatmaps[arr[1]];
 }
 

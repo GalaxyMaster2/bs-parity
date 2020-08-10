@@ -36,9 +36,9 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Better ui
 - [x] Map visualizer
 - [x] Rendering walls in map visualizer
+- [x] Map zip support
 
 # Planned for future
-- [ ] Map zip support
 - [ ] Downloading map from url
 - [ ] Arm rotation support in parity algorithm
 - [ ] Vision block detection

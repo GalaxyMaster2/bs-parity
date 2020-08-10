@@ -37,11 +37,11 @@ diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });
 
-warningToggle.addEventListener('click', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
-errorToggle.addEventListener('click', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
+errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
-themeToggle.addEventListener('click', changeTheme);
+themeToggle.addEventListener('change', changeTheme);
 
 /**
  * reads the value of the input sliderPrecision and sets the variable sliderPrecision
