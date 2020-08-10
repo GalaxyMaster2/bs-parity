@@ -40,18 +40,23 @@ diffSelect.addEventListener('change', function () {
 warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
 errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 
+handclapToggle.addEventListener('click', function () { output.classList.toggle('showClap'); highlightElements(centerBeat); });
+generalToggle.addEventListener('click', function () { output.classList.toggle('showGen'); highlightElements(centerBeat); });
+parityToggle.addEventListener('click', function () { output.classList.toggle('showPar'); highlightElements(centerBeat); });
+hammerToggle.addEventListener('click', function () { output.classList.toggle('showHH'); highlightElements(centerBeat); });
+
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('change', changeTheme);
 
 /**
  * reads the value of the input sliderPrecision and sets the variable sliderPrecision
  * to the inverse of its value, swapping infinity to zero
- * @returns {void} - runs checkParity again
+ * @returns {void} - runs checkMap again
  */
 function readSliderPrecision() {
     sliderPrecision = 1 / parseInt(sliderPrecisionInput.value) || 0;
     sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
-    checkParity();
+    checkMap();
     render();
 }
 

@@ -532,8 +532,8 @@ body {
                 cursor: pointer;
             }
     
-            #errors {
-                margin-right: 1rem;
+            label:not(:first-child) {
+                margin-left: 1rem;
             }
 
             &#summary {
@@ -642,16 +642,8 @@ body {
                     &.multiSelected {
                         border-radius: 0rem; 
 
-                        &.firstSelected {
-                            border-radius: 1rem 1rem 0rem 0rem;
-                        }
-                        &.lastSelected {
-                            border-radius: 0rem 0rem 1rem 1rem;
-                        }
-                    }
-
-                    &.info, &.warning, &.error {
-                        display: none;
+                        &.firstSelected { border-radius: 1rem 1rem 0rem 0rem; }
+                        &.lastSelected { border-radius: 0rem 0rem 1rem 1rem; }
                     }
 
                     img {
@@ -676,10 +668,17 @@ body {
                     }
                 }
 
-                &.showInfo .info,
-                &.showWarnings .warning,
-                &.showErrors .error {
-                    display: flex;
+                &:not(.showWarnings) .warning,
+                &:not(.showErrors) .error,
+                &:not(.showInfo) .info {
+                    display: none;
+                }
+
+                &:not(.showClap) .handclap, 
+                &:not(.showHH) .hammerhit,
+                &:not(.showGen) .generic,
+                &:not(.showPar) .parity {
+                    display: none;
                 }
             }
         }

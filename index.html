@@ -74,12 +74,18 @@
                     (blank / zero assumes no sliders)
                 </div>
                 <div class="outboxline">
+                    <label for="general">general&nbsp;</label><input type="checkbox" id="general" checked>
+                    <label for="parity">parity&nbsp;</label><input type="checkbox" id="parity" checked>
+                    <label for="handclap">handclaps&nbsp;</label><input type="checkbox" id="handclap" checked>
+                    <label for="hammerhit">hammer hits&nbsp;</label><input type="checkbox" id="hammerhit" checked>
+                </div>
+                <div class="outboxline">
                     <label for="errors">errors&nbsp;</label><input type="checkbox" id="errors" checked>
                     <label for="warnings">warnings&nbsp;</label><input type="checkbox" id="warnings" checked>
                 </div>
                 <div class="outboxline" id="summary">found no errors and no warnings</div>
                 <div class="outputwrapper">
-                    <div id="output" class="showErrors showWarnings"></div>
+                    <div id="output" class="showErrors showWarnings showGen showPar showClap showHH"></div>
                 </div>
             </div>
         </div>

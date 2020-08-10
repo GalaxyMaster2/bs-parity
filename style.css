@@ -504,8 +504,8 @@ body.light {
   vertical-align: middle;
   cursor: pointer;
 }
-.main .outputbox .outboxline #errors {
-  margin-right: 1rem;
+.main .outputbox .outboxline label:not(:first-child) {
+  margin-left: 1rem;
 }
 .main .outputbox .outboxline#summary {
   padding-bottom: 0.25rem;
@@ -608,11 +608,6 @@ body.light {
 .main .outputbox .outputwrapper #output .parent.multiSelected.lastSelected {
   border-radius: 0rem 0rem 1rem 1rem;
 }
-.main .outputbox .outputwrapper #output .parent.info,
-.main .outputbox .outputwrapper #output .parent.warning,
-.main .outputbox .outputwrapper #output .parent.error {
-  display: none;
-}
 .main .outputbox .outputwrapper #output .parent img {
   height: 2rem;
   margin: 0.7rem;
@@ -631,10 +626,16 @@ body.light {
   flex: 1;
   white-space: nowrap;
 }
-.main .outputbox .outputwrapper #output.showInfo .info,
-.main .outputbox .outputwrapper #output.showWarnings .warning,
-.main .outputbox .outputwrapper #output.showErrors .error {
-  display: flex;
+.main .outputbox .outputwrapper #output:not(.showWarnings) .warning,
+.main .outputbox .outputwrapper #output:not(.showErrors) .error,
+.main .outputbox .outputwrapper #output:not(.showInfo) .info {
+  display: none;
+}
+.main .outputbox .outputwrapper #output:not(.showClap) .handclap,
+.main .outputbox .outputwrapper #output:not(.showHH) .hammerhit,
+.main .outputbox .outputwrapper #output:not(.showGen) .generic,
+.main .outputbox .outputwrapper #output:not(.showPar) .parity {
+  display: none;
 }
 @media screen and (max-width: 75rem) {
   .main {
