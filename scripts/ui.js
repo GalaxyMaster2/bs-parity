@@ -68,7 +68,6 @@ urlInput.addEventListener('keyup', function (event) {
  * @param {*} e - a drop event
  */
 function handleDrop(e) {
-    
     let dt = e.dataTransfer;
     let files = dt.files;
     if (files.length != 0) {
@@ -118,6 +117,16 @@ function readFile(files) {
 }
 
 /**
+ * if beatsaver id or zip url in query, load the file
+ */
+function readQuery() {
+    let urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('url')) { readUrl(urlParams.get('url')); }
+    else if (urlParams.has('id')) { readUrl(urlParams.get('id')); } 
+}
+readQuery();
+
+/**
  * fetches a zip file from a url or beatsaver link and extracts
  * @param {String} inUrl - the url or id to be loaded
  * @returns {Number} - error code, if needed
@@ -135,7 +144,7 @@ async function readUrl(inUrl = urlInput.value) {
     if (_url == '') return -2;
     if (!validurl.test(_url)) {
         if (validhex.test(_url)) {
-            _url = 'https://beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that 
+            _url = 'https://beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that
         }
         else { return -3; }
     }
