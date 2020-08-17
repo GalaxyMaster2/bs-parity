@@ -157,26 +157,34 @@ async function extractZip(event) {
         }
 
         if (songFilename != '') {
-            zip.file(songFilename).async('blob').then(function (content) {
-                audio = new Audio(window.URL.createObjectURL(content));
-                audio.preload = true;
+            try {
+                zip.file(songFilename).async('blob').then(function (content) {
+                    audio = new Audio(window.URL.createObjectURL(content));
+                    audio.preload = true;
 
-                playbackToggle.append(' \u25B6');
-            
-                playbackToggle.addEventListener('click', function() {
-                    if (audio.paused) {
-                        audio.currentTime = centerBeat * 60 / bpm;
-                        audio.play(); 
-                        highlightElements(-1); // un-highlight elements
-                        playbackToggle.classList.add('playing');
-                        syncPlayback();
-                    }
-                    else {
-                        audio.pause(); 
-                        playbackToggle.classList.remove('playing');
+                    playbackToggle.append(' \u25B6');
+                
+                    playbackToggle.addEventListener('click', function() {
+                        if (audio.paused) {
+                            audio.currentTime = centerBeat * 60 / bpm;
+                            audio.play(); 
+                            highlightElements(-1); // un-highlight elements
+                            playbackToggle.classList.add('playing');
+                            syncPlayback();
+                        }
+                        else {
+                            audio.pause(); 
+                            playbackToggle.classList.remove('playing');
+                        }
+                    });
+
+                    audio.onloadedmetadata = function () {
+                        duration = audio.duration * bpm / 60;
                     }
                 });
-            });
+            } catch (error) {
+                outputUI(false, -1, 'error loading song file, playback will not be available', 'error', true);
+            }
         }
     } else {
         // no info.dat present

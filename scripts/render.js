@@ -366,7 +366,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // generate all valid beats within the range
     let bmCountOld = gridContainer.querySelectorAll('.marker').length;
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
+    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.min((duration == null) ? Infinity : divisionValue * duration, Math.floor(divisionValue * (centerBeat + renderDistance + 1))); i++) {
         beatMarkers.push(i / divisionValue);
     }
     let deltaMarkers = beatMarkers.length - bmCountOld;

@@ -111,7 +111,7 @@ async function handleMouseDown(e) {
             let deltaTime = timestamp - lastTimestamp;
 
             let deltaScroll = (initialY - cursorY) * deltaTime / 10000;
-            centerBeat = Math.max(0, olaPosition.value + deltaScroll);
+            centerBeat = Math.min((duration == null) ? Infinity : duration, Math.max(0, olaPosition.value + deltaScroll));
             olaPosition = Ola(centerBeat);
 
             highlightElements(centerBeat);
@@ -233,7 +233,7 @@ function scroll(event) {
         wheelScrolling = true;
     }
 
-    let target = Math.max(0, oldTarget + delta / -100);
+    let target = Math.min((duration == null) ? Infinity : duration, Math.max(0, oldTarget + delta / -100));
     oldTarget = target;
     highlightElements(target);
 
