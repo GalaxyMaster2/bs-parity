@@ -34,6 +34,7 @@ const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
 
 const wallsToggle = document.getElementById('toggleWalls');
+const playbackToggle = document.getElementById('playback');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
@@ -154,6 +155,29 @@ async function extractZip(event) {
             // no available difficulties
             displayLoadError('no difficulty files available to load');
         }
+
+        if (songFilename != '') {
+            zip.file(songFilename).async('blob').then(function (content) {
+                audio = new Audio(window.URL.createObjectURL(content));
+                audio.preload = true;
+
+                playbackToggle.append(' \u25B6');
+            
+                playbackToggle.addEventListener('click', function() {
+                    if (audio.paused) {
+                        audio.currentTime = centerBeat * 60 / bpm;
+                        audio.play(); 
+                        highlightElements(-1); // un-highlight elements
+                        playbackToggle.classList.add('playing');
+                        syncPlayback();
+                    }
+                    else {
+                        audio.pause(); 
+                        playbackToggle.classList.remove('playing');
+                    }
+                });
+            });
+        }
     } else {
         // no info.dat present
         displayLoadError('no Info.dat present in zip, cannot load map');
@@ -178,6 +202,7 @@ function loadMapInfo(datString) {
     let parsed = JSON.parse(datString);
     mapDifficultySets = parsed._difficultyBeatmapSets;
     globalOffset = parsed._songTimeOffset;
+    songFilename = parsed._songFilename;
     bpm = parsed._beatsPerMinute;
     songTitle = ' - ' + parsed._songName;
     if (songTitle != ' - ') {

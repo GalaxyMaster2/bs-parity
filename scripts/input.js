@@ -218,6 +218,11 @@ let lastScrollTime = Date.now();
  */
 function scroll(event) {
     preventDefaults(event);
+
+    if (audio != null && !audio.paused) { // pause music and stop scrolling when the user intervenes
+        playbackToggle.click();
+    }
+
     delta = event.deltaY;
     if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
         delta *= scrollLineHeight;

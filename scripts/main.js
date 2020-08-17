@@ -87,10 +87,11 @@ class Parity {
 
 const scrollLineHeight = getScrollLineHeight();
 
-var mapDifficultySets;
+var mapDifficultySets, songFilename;
 var notesArray, wallsArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
+var audio;
 
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each

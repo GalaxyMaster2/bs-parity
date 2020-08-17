@@ -37,6 +37,7 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Map visualizer
 - [x] Rendering walls in map visualizer
 - [x] Map zip support
+- [x] Audio playback for map visualizer
 
 # Planned for future
 - [ ] Downloading map from url
@@ -50,7 +51,6 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [ ] Handclap detection
 - [ ] Hammer hit detection
 - [ ] 3-wide wall detection
-- [ ] Audio playback for map visualizer
 - [ ] Support for BPM changes
 - [ ] Downloading map from beatsaver id
 
