@@ -44,7 +44,7 @@ document.addEventListener('dragenter', function () {
     dropArea.style.setProperty('opacity', '0.3');
 });
 
-['dragenter', 'dragover', 'dragleave'].forEach(eventName => {
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 });
 ['dragleave', 'drop'].forEach(eventName => {
@@ -54,7 +54,7 @@ document.addEventListener('dragenter', function () {
     }, false);
 });
 
-urlInput.addEventListener('keyup', function (event) {
+urlInput.addEventListener('keydown', function (event) {
     if (event.key == 'Enter') {
         readUrl();
     }
@@ -64,7 +64,6 @@ urlInput.addEventListener('keyup', function (event) {
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
  * todo: feature detection for drag and drop? (although tbf the overlap between transform 3d and drag/drop is probably pretty big)
- *       support for text drops instead of just ignoring them and letting the browser handle it
  * @param {*} e - a drop event
  */
 function handleDrop(e) {
@@ -122,7 +121,7 @@ function readFile(files) {
 function readQuery() {
     let urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('url')) { readUrl(urlParams.get('url')); }
-    else if (urlParams.has('id')) { readUrl(urlParams.get('id')); } 
+    else if (urlParams.has('id')) { readUrl(urlParams.get('id')); }
 }
 readQuery();
 
@@ -148,7 +147,7 @@ async function readUrl(inUrl = urlInput.value) {
         }
         else { return -3; }
     }
-    
+
     if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
         let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
         if (!validhex.test(songID)) return -1; // key must be valid hex
