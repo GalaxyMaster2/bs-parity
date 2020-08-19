@@ -183,7 +183,7 @@ body {
             }
         }
 
-        .uploading-text, .done-text, .load-error {
+        .uploading-text, .done-text, .load-error, .downloading-text {
             display: none;
             margin: 1rem 0rem;
         }
@@ -209,7 +209,7 @@ body {
         transform: translateX(-100%);
     }
 
-    &.uploading, &.done, &.error {
+    &.uploading, &.done, &.error, &.downloading {
         label {
             display: none;
         }
@@ -219,10 +219,8 @@ body {
         }
     }
 
-    &.uploading {
-        .uploading-text {
-            display: inline;
-        }
+    &.uploading .uploading-text, &.downloading .downloading-text {
+        display: inline;
     }
 
     &.done {

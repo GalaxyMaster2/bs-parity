@@ -155,18 +155,32 @@ async function readUrl(inUrl = urlInput.value) {
         if (!validhex.test(songID)) return -1; // key must be valid hex
         console.log("downloading map #" + songID);
         _url = 'https://beatsaver.com/api/download/key/' + songID;
+        introDiv.classList.add('downloading');
+
+        JSZipUtils.getBinaryContent(_url, function (err, data) {
+            if (err) { throw err; }
+            else {
+                extractZip(data);
+            }
+        });
     } else {
-        _url = 'https://cors-anywhere.herokuapp.com/' + _url; // fixes cors headers on most urls
-    }
-
-    introDiv.classList.add('uploading');
-
-    JSZipUtils.getBinaryContent(_url, function (err, data) {
-        if (err) { throw err; }
-        else {
-            extractZip(data);
+        introDiv.classList.add('downloading');
+        let corsProxies = ['https://cors-anywhere.herokuapp.com/','https://api.allorigins.win/raw?url='];
+        
+        for (let i = 0; i < corsProxies.length; i++) {
+            let proxy = corsProxies[i];
+            JSZipUtils.getBinaryContent(proxy + _url, function (err, data) {
+                if (err) { 
+                    if (i == corsProxies.length - 1) { displayLoadError('all CORS proxies seem to be down, try uploading the zip manually instead'); }
+                    else { console.log('proxy "' + proxy + '" failed, moving onto next proxy'); }
+                }
+                else {
+                    extractZip(data);
+                    return;
+                }
+            });
         }
-    });
+    }
 }
 
 /**
@@ -231,7 +245,7 @@ async function extractZip(e) {
  */
 function displayLoadError(message) {
     loadError.textContent = message;
-    introDiv.classList.remove('uploading');
+    introDiv.classList.remove('uploading', 'downloading');
     introDiv.classList.add('error');
 }
 
@@ -323,7 +337,7 @@ function getSelectedDiff(input = diffSelect) {
  * should be called when the selected files have been loaded successfully
  */
 function fileLoaded() {
-    introDiv.classList.remove('uploading');
+    introDiv.classList.remove('uploading', 'downloading');
     introDiv.classList.add('done');
     pageTitle.parentElement.classList.add('done');
     console.log('successful read!');
