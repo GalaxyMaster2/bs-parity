@@ -108,7 +108,9 @@ function readFile(files) {
         });
     } else if (file.name.substr(-4) === '.zip') {
         fr.readAsArrayBuffer(file);
-        fr.addEventListener('load', extractZip);
+        fr.addEventListener('load', function (e) {
+            extractZip(e.target.result);
+        });
     } else {
         // an unsupported file was selected
         displayLoadError('unsupported file format');
@@ -162,21 +164,19 @@ async function readUrl(inUrl = urlInput.value) {
     JSZipUtils.getBinaryContent(_url, function (err, data) {
         if (err) { throw err; }
         else {
-            extractZip(data, 1);
+            extractZip(data);
         }
     });
 }
 
 /**
  * extracts a map zip and attempts to load all present difficulties
- * @param {ProgressEvent | Object} e - the event or data of the zip
- * @param {Number} mode - whether an event or zip data is passed
+ * @param {ArrayBuffer} e - data of the zip
  */
-async function extractZip(e, mode = 0) {
+async function extractZip(e) {
     let zip;
     try {
-        if (mode == 0) { zip = await JSZip.loadAsync(e.target.result); }
-        else { zip = await JSZip.loadAsync(e); }
+        zip = await JSZip.loadAsync(e);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
