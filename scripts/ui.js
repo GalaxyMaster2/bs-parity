@@ -185,7 +185,11 @@ function readUrl(inUrl = urlInput.value) {
                     attemptDownload(currentProxy + 1);
                 }
             } else {
-                extractZip(data);
+                if (data.byteLength === 0) {
+                    displayLoadError('error downloading map, try manually uploading it instead');
+                } else {
+                    extractZip(data);
+                }
             }
         });
     }
