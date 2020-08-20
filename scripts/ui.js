@@ -132,8 +132,12 @@ readQuery();
  * @param {String} inUrl - the url or id to be loaded
  * @returns {Number} - error code, if needed
  */
-async function readUrl(inUrl = urlInput.value) {
-    let _url = inUrl;
+function readUrl(inUrl = urlInput.value) {
+    let _url = inUrl.trim();
+    let isBeatsaver = false;
+
+    const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
+
     const validurl = new RegExp('^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
         '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
@@ -142,45 +146,52 @@ async function readUrl(inUrl = urlInput.value) {
         '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     const validhex = /^[0-9a-fA-F]+$/; // string only made of 0-9, a-f and A-F
 
-    if (_url == '') return -2;
-    if (!validurl.test(_url)) {
-        if (validhex.test(_url)) {
-            _url = 'https://beatsaver.com/beatmap/' + inUrl; // if it's just a hex key, it could be a beatSaver id? try that
-        }
-        else { return -3; }
+    _url = _url.replace(/^(!bsr\s+)/, ''); // remove !bsr prefix if it exists
+
+    if (_url === '') {
+        return -2; // url is empty
     }
 
+    if (validhex.test(_url)) {
+        _url = 'https://beatsaver.com/beatmap/' + _url; // if it's just a hex key, it could be a beatSaver id? try that
+    } else if (!validurl.test(_url)) {
+        return -3; // no valid url or key was entered
+    }
+
+    let songID;
     if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
-        let songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
-        if (!validhex.test(songID)) return -1; // key must be valid hex
+        songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
+        if (!validhex.test(songID)) {
+            return -1; // key must be valid hex
+        }
         console.log("downloading map #" + songID);
         _url = 'https://beatsaver.com/api/download/key/' + songID;
-        introDiv.classList.add('downloading');
+        isBeatsaver = true;
+    }
 
-        JSZipUtils.getBinaryContent(_url, function (err, data) {
-            if (err) { throw err; }
-            else {
+    function attemptDownload(currentProxy = -1) {
+        let url = (corsProxies[currentProxy] || '') + _url; // prepend proxy if it exists in corsProxies
+        JSZipUtils.getBinaryContent(url, function (err, data) {
+            if (err) {
+                // it's impossible to tell a CORS error apart from other network errors
+                // so we have to try all proxies in either case
+                console.error(err);
+                if (isBeatsaver) { // no need to try proxies for beatsaver
+                    displayLoadError('unable to download map ' + songID + ' from beatsaver');
+                } else if (currentProxy === (corsProxies.length - 1)) {
+                    displayLoadError('error downloading map, try manually uploading it instead');
+                } else {
+                    console.log('download failed, trying next CORS proxy');
+                    attemptDownload(currentProxy + 1);
+                }
+            } else {
                 extractZip(data);
             }
         });
-    } else {
-        introDiv.classList.add('downloading');
-        let corsProxies = ['https://cors-anywhere.herokuapp.com/','https://api.allorigins.win/raw?url='];
-        
-        for (let i = 0; i < corsProxies.length; i++) {
-            let proxy = corsProxies[i];
-            JSZipUtils.getBinaryContent(proxy + _url, function (err, data) {
-                if (err) { 
-                    if (i == corsProxies.length - 1) { displayLoadError('all CORS proxies seem to be down, try uploading the zip manually instead'); }
-                    else { console.log('proxy "' + proxy + '" failed, moving onto next proxy'); }
-                }
-                else {
-                    extractZip(data);
-                    return;
-                }
-            });
-        }
     }
+
+    introDiv.classList.add('downloading');
+    attemptDownload();
 }
 
 /**
