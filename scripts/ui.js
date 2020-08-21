@@ -186,7 +186,7 @@ function readUrl(inUrl = urlInput.value) {
                 }
             } else {
                 if (data.byteLength === 0) {
-                    displayLoadError('error downloading map, try manually uploading it instead');
+                    displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
                 } else {
                     extractZip(data);
                 }
