@@ -39,6 +39,8 @@ diffSelect.addEventListener('change', function () {
 
 warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
 errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+statsToggle.addEventListener('change', function () { document.getElementById('statsbox').classList.toggle('hide'); });
+
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('change', changeTheme);

@@ -636,6 +636,38 @@ body.light {
 .main .outputbox .outputwrapper #output.showErrors .error {
   display: flex;
 }
+.main .outputbox .statsbox {
+  width: 36rem;
+  height: 5.875rem;
+  overflow: hidden;
+  position: relative;
+  transition: height 0.6s var(--trans);
+}
+.main .outputbox .statsbox.hide {
+  height: 0;
+}
+.main .outputbox .statsbox .line {
+  line-height: 0.7rem;
+}
+.main .outputbox .statsbox .line .tile {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  background-color: var(--etext);
+  opacity: var(--opacity);
+  transition: background-color 0.3s var(--trans);
+}
+.main .outputbox .statsbox .line .tile.red {
+  background-color: var(--red);
+}
+.main .outputbox .statsbox .line .tile.blue {
+  background-color: var(--blue);
+}
+.main .outputbox .statsbox :not(.line) :nth-child(2) {
+  position: absolute;
+  left: 20rem;
+}
 @media screen and (max-width: 75rem) {
   .main {
     flex-direction: column;

@@ -385,4 +385,115 @@ function checkParity(notes = notesArray) {
     if (warnCount === 0 && errCount === 0) {
         outputUI(false, 0, 'No errors found!', 'success');
     }
+
+    getStats(notes);
+}
+
+function getStats(notes = notesArray) {
+    const rotTranspose =    [1, 7, 3, 5, 0, 2, 6, 8, 4];
+    const rotTransposeInv = [4, 0, 5, 2, 8, 3, 6, 1, 7];
+
+
+    let notePos = [
+        [ [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ] ],
+        [ [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ] ],
+        [ [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ] ],
+        [ [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ],
+          [ 0, 0, 0, 0 ] ]
+    ];
+    let noteRot = [ [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0] ];
+    let noteTyp = [0, 0, 0, 0];
+
+    for (let i = 0; i < notes.length; i++) {
+        let note = notes[i];
+
+        notePos[0][2 - note._lineLayer][note._lineIndex]++;
+        notePos[Math.min(3, note._type + 1)][2 - note._lineLayer][note._lineIndex]++;
+
+        if (note._type != 3) { 
+            noteRot[0][note._cutDirection]++;
+            noteRot[note._type + 1][note._cutDirection]++; 
+        }
+
+        noteTyp[0]++;
+        noteTyp[Math.min(3, note._type + 1)]++;
+    }
+    
+    let out = document.getElementById('statsbox');
+
+    let line = document.createElement('div');
+    
+    let label = document.createElement('span');
+    label.append('block positioning');
+
+    let label2 = document.createElement('span');
+    label2.append('note rotation');
+
+    line.append(label);
+    line.append(label2);
+    out.append(line);
+
+    for (let i = 0; i < 3; i++) {
+        let line = document.createElement('div');
+        
+        line.classList.add('line');
+
+        for (let j = 0; j < 4; j++) { // position
+            let spacer  = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+
+            notePos[j][i].forEach(item => {
+                let tile = document.createElement('span');
+                tile.classList.add('tile');
+                tile.classList.add(['all', 'red', 'blue', 'bomb'][j]);
+                let max = Math.max(...notePos[j][0], ...notePos[j][1], ...notePos[j][2]);
+                let opacity = (noteTyp[j] == 0) ? 0.05 : (0.05 + 0.9 * Math.pow(item/max, 0.75)) // convert to percentages of largest value
+                tile.style = '--opacity: ' + opacity + ';';
+                let title = item + ' ';
+                title += ['note', 'red note', 'blue note', 'bomb block'][j];
+                title += (item == 1) ? '' :'s';
+                title += ' in this position';
+                tile.title = title;
+                line.append(tile);
+            });
+            line.append(spacer);
+        }
+
+        for (let j = 0; j < 3; j++) { // rotation
+            if (noteTyp[j] == 0) continue;
+            
+            let spacer  = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+
+            for (let k = 0; k < 3; k++) {
+                let item = noteRot[j][rotTransposeInv[3 * i + k]];
+                let tile = document.createElement('span');
+                tile.classList.add('tile');
+                tile.classList.add(['all', 'red', 'blue'][j]);
+                tile.style = '--opacity: '+ (0.05 + 0.9 * Math.pow(item/Math.max(...noteRot[j]), 0.75)) + ';'; // convert to percentages of largest value
+                let title = item + ' ';
+                title += ['', 'red ', 'blue ', 'bomb '][j];
+                title += cutDirections[rotTransposeInv[3 * i + k]];
+                title += (item == 1) ? ' block' :' blocks';
+                tile.title = title;
+                line.append(tile);
+            }
+            line.append(spacer);
+        }
+
+        
+        if (i == 0) { line.append('red/blue:'); }
+        else if (i == 1) { line.append((noteTyp[2] / noteTyp[1]).toFixed(2)); }
+
+        out.append(line);
+    }
 }
