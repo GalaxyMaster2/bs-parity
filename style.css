@@ -504,8 +504,8 @@ body.light {
   vertical-align: middle;
   cursor: pointer;
 }
-.main .outputbox .outboxline #errors {
-  margin-right: 1rem;
+.main .outputbox .outboxline label:not(:first-child) {
+  margin-left: 1rem;
 }
 .main .outputbox .outboxline#summary {
   padding-bottom: 0.25rem;
