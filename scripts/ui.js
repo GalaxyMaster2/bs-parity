@@ -91,7 +91,7 @@ function handleFileInput(e) {
  * @returns {void} - will lead to parity/render calls
  */
 function readFile(files) {
-    introDiv.classList.add('uploading');
+    setIntroDivStatus('uploading');
     let file = files[0];
     const fr = new FileReader();
     if (file.name.substr(-4) === '.dat') {
@@ -194,7 +194,7 @@ function readUrl(inUrl = urlInput.value) {
         });
     }
 
-    introDiv.classList.add('downloading');
+    setIntroDivStatus('downloading');
     attemptDownload();
 }
 
@@ -260,8 +260,7 @@ async function extractZip(e) {
  */
 function displayLoadError(message) {
     loadError.textContent = message;
-    introDiv.classList.remove('uploading', 'downloading');
-    introDiv.classList.add('error');
+    setIntroDivStatus('error');
 }
 
 /**
@@ -352,8 +351,7 @@ function getSelectedDiff(input = diffSelect) {
  * should be called when the selected files have been loaded successfully
  */
 function fileLoaded() {
-    introDiv.classList.remove('uploading', 'downloading');
-    introDiv.classList.add('done');
+    setIntroDivStatus('done');
     pageTitle.parentElement.classList.add('done');
     console.log('successful read!');
 
@@ -362,6 +360,17 @@ function fileLoaded() {
     setTimeout(function () {
         introDiv.style.setProperty('display', 'none');
     }, 1000);
+}
+
+/**
+ * sets the status of the intro screen
+ * @param {String} [status] - (optional) the status to be set, should be one of 'uploading', 'downloading', 'error', 'done'
+ */
+function setIntroDivStatus(status) {
+    introDiv.classList.remove('uploading', 'downloading', 'error');
+    if (status) {
+        introDiv.classList.add(status);
+    }
 }
 
 function getRenderContainerHeight() {
