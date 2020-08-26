@@ -37,6 +37,8 @@ const timeScaleSlider = document.getElementById('timeScale');
 
 const wallsToggle = document.getElementById('toggleWalls');
 
+document.getElementsByClassName('close-error')[0].addEventListener('click', setIntroDivStatus);
+
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 
