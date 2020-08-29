@@ -253,7 +253,12 @@ body.light #output div {
   background-color: var(--etext);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 3s var(--trans);
+  transition: opacity 0.4s var(--trans), background-color 0s 1s;
+}
+.intro #drop-overlay.visible {
+  opacity: 0.3;
+  pointer-events: auto;
+  transition: opacity 0.2s var(--trans);
 }
 .intro .madeby {
   position: absolute;
@@ -265,13 +270,11 @@ body.light #output div {
 }
 .intro.uploading label,
 .intro.done label,
-.intro.error label,
 .intro.downloading label {
   display: none;
 }
 .intro.uploading #drop-overlay,
 .intro.done #drop-overlay,
-.intro.error #drop-overlay,
 .intro.downloading #drop-overlay {
   display: none;
 }
@@ -294,33 +297,38 @@ body.light #output div {
   position: absolute;
   padding: 5rem 5rem;
   border-radius: 2rem;
+  opacity: 0;
+  transition: opacity 1s var(--trans);
 }
 .intro.error {
   z-index: 2;
 }
 .intro.error #drop-overlay {
-  display: block;
+  transition: opacity 0.4s var(--trans), background-color 0s 0s;
   background-color: black;
   opacity: 0.6;
-  pointer-events: none;
+  pointer-events: all;
 }
 .intro.error #load-error {
+  opacity: 1;
   z-index: 3;
   display: block;
   background-color: var(--bg);
 }
-.intro.error .close-error {
+.intro.error #load-error .close-error {
   background-color: var(--red);
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
   text-align: center;
   font-size: 1rem;
   line-height: 1rem;
   position: absolute;
   right: 1.25rem;
-  top: 1.25rem;
+  bottom: 1.25rem;
   cursor: pointer;
+}
+.intro.error #load-error .close-error:hover {
+  color: var(--etext);
 }
 .main {
   position: relative;

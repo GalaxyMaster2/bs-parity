@@ -43,18 +43,14 @@ fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 
 document.addEventListener('dragenter', function () {
-    dropArea.style.setProperty('pointer-events', 'auto');
-    dropArea.style.setProperty('opacity', '0.3');
+    dropArea.classList.add('visible');
 });
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
 });
 ['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, function () {
-        dropArea.style.setProperty('pointer-events', 'none');
-        dropArea.style.setProperty('opacity', '0');
-    }, false);
+    dropArea.addEventListener(eventName, function () { dropArea.classList.remove('visible'); }, false);
 });
 
 urlInput.addEventListener('keydown', function (event) {

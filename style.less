@@ -269,7 +269,13 @@ body {
         background-color: var(--etext);
         opacity: 0;
         pointer-events: none;
-        transition: opacity 3s var(--trans);
+        transition: opacity 0.4s var(--trans), background-color 0s 1s;
+
+        &.visible {
+            opacity: 0.3;
+            pointer-events: auto;
+            transition: opacity 0.2s var(--trans);
+        }
     }
 
     .madeby {
@@ -282,7 +288,7 @@ body {
         transform: translateX(-100%);
     }
 
-    &.uploading, &.done, &.error, &.downloading {
+    &.uploading, &.done, &.downloading {
         label {
             display: none;
         }
@@ -314,36 +320,40 @@ body {
         position: absolute;
         padding: 5rem 5rem;
         border-radius: 2rem;
+        opacity: 0;
+        transition: opacity 1s var(--trans);
     }
 
     &.error {
         z-index: 2;
 
         #drop-overlay {
-            display: block;
+            transition: opacity 0.4s var(--trans), background-color 0s 0s;
             background-color: black;
             opacity: 0.6;
-            pointer-events: none;
+            pointer-events: all;
         }
 
         #load-error {
+            opacity: 1;
             z-index: 3;
             display: block;
             background-color: var(--bg);
-        }
+            
+            .close-error {
+                background-color: var(--red);
+                padding: 0.5rem 1rem;
+                border-radius: 1rem;
+                text-align: center;
+                font-size: 1rem;
+                line-height: 1rem;
+                position: absolute;
+                right: 1.25rem;
+                bottom: 1.25rem;
+                cursor: pointer;
 
-        .close-error {
-            background-color: var(--red);
-            width: 1rem;
-            height: 1rem;
-            border-radius: 50%;
-            text-align: center;
-            font-size: 1rem;
-            line-height: 1rem;
-            position: absolute;
-            right: 1.25rem;
-            top: 1.25rem;
-            cursor: pointer;
+                &:hover { color: var(--etext); }
+            }
         }
     }
 }
