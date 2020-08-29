@@ -316,19 +316,17 @@ body.light #output div {
   background-color: var(--bg);
 }
 .intro.error #load-error .close-error {
-  background-color: var(--red);
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
   text-align: center;
-  font-size: 1rem;
-  line-height: 1rem;
+  font-size: 2rem;
+  line-height: 2rem;
   position: absolute;
   right: 1.25rem;
-  bottom: 1.25rem;
+  top: 1rem;
   cursor: pointer;
+  color: var(--etext);
 }
 .intro.error #load-error .close-error:hover {
-  color: var(--etext);
+  color: var(--red);
 }
 .main {
   position: relative;
