@@ -55,8 +55,9 @@ body {
     z-index: 1;
     align-self: flex-end;
     width: 100%;
-    max-width: calc(50vw + 96rem / 2 + 1rem);
+    max-width: 100%;
     box-sizing: border-box;
+    transition: max-width 1s var(--trans);
 
     display: flex;
     flex-direction: row;
@@ -95,6 +96,10 @@ body {
             line-height: 1.25rem !important;
         }
     }
+}
+
+.topbar.done {
+    max-width: calc(50vw + 96rem / 2 + 1rem);
 }
 
 // intro screen

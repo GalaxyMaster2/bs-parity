@@ -260,6 +260,7 @@ function getSelectedDiff(input = diffSelect) {
 function fileLoaded() {
     introDiv.classList.remove('uploading');
     introDiv.classList.add('done');
+    pageTitle.parentElement.classList.add('done');
     console.log('successful read!');
 
     // disable the intro screen after animation
