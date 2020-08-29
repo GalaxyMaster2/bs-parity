@@ -195,6 +195,7 @@ function loadDifficultyDat(datString) {
     olaPosition = Ola(0);
     clearRenderedElements();
     checkParity();
+    getStats();
     render();
 }
 

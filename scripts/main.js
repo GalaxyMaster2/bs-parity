@@ -385,14 +385,15 @@ function checkParity(notes = notesArray) {
     if (warnCount === 0 && errCount === 0) {
         outputUI(false, 0, 'No errors found!', 'success');
     }
-
-    getStats(notes);
 }
 
 function getStats(notes = notesArray) {
-    const rotTranspose =    [1, 7, 3, 5, 0, 2, 6, 8, 4];
+    const rotTranspose =    [1, 7, 3, 5, 0, 2, 6, 8, 4]; // no longer used except as reference
     const rotTransposeInv = [4, 0, 5, 2, 8, 3, 6, 1, 7];
 
+    const blockType = ['all', 'red', 'blue', 'bomb'];
+    const blockName = ['block', 'red note', 'blue note', 'bomb'];
+    const niceCutDirections = ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right', 'dot']; // while aB works well for class names it looks a bit off in text
 
     let notePos = [
         [ [ 0, 0, 0, 0 ],
@@ -408,6 +409,7 @@ function getStats(notes = notesArray) {
           [ 0, 0, 0, 0 ],
           [ 0, 0, 0, 0 ] ]
     ];
+
     let noteRot = [ [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0] ];
     let noteTyp = [0, 0, 0, 0];
 
@@ -427,6 +429,9 @@ function getStats(notes = notesArray) {
     }
     
     let out = document.getElementById('statsbox');
+    for (let i = out.childNodes.length - 1; i >= 0; i--) {
+        out.removeChild(out.childNodes[i]);
+    }
 
     let line = document.createElement('div');
     
@@ -453,14 +458,15 @@ function getStats(notes = notesArray) {
             notePos[j][i].forEach(item => {
                 let tile = document.createElement('span');
                 tile.classList.add('tile');
-                tile.classList.add(['all', 'red', 'blue', 'bomb'][j]);
+                tile.classList.add(blockType[j]);
                 let max = Math.max(...notePos[j][0], ...notePos[j][1], ...notePos[j][2]);
                 let opacity = (noteTyp[j] == 0) ? 0.05 : (0.05 + 0.9 * Math.pow(item/max, 0.75)) // convert to percentages of largest value
                 tile.style = '--opacity: ' + opacity + ';';
                 let title = item + ' ';
-                title += ['note', 'red note', 'blue note', 'bomb block'][j];
+                title += blockName[j];
                 title += (item == 1) ? '' :'s';
                 title += ' in this position';
+                if (noteTyp[j] != 0) title += ' (' + (100*item/noteTyp[j]).toFixed(1) + '% of ' + blockName[j] + 's)';
                 tile.title = title;
                 line.append(tile);
             });
@@ -478,12 +484,13 @@ function getStats(notes = notesArray) {
                 let item = noteRot[j][rotTransposeInv[3 * i + k]];
                 let tile = document.createElement('span');
                 tile.classList.add('tile');
-                tile.classList.add(['all', 'red', 'blue'][j]);
+                tile.classList.add(blockType[j]);
                 tile.style = '--opacity: '+ (0.05 + 0.9 * Math.pow(item/Math.max(...noteRot[j]), 0.75)) + ';'; // convert to percentages of largest value
                 let title = item + ' ';
-                title += ['', 'red ', 'blue ', 'bomb '][j];
-                title += cutDirections[rotTransposeInv[3 * i + k]];
-                title += (item == 1) ? ' block' :' blocks';
+                title += ['', 'red ', 'blue ', 'bomb '][j]; // while i would love to swap this for blockName, sadly english's fun adjective rules disagree with that idea
+                title += niceCutDirections[rotTransposeInv[3 * i + k]];
+                title += (item == 1) ? ' note' :' notes';
+                if (noteTyp[j] != 0) title += ' (' + (100*item/noteTyp[j]).toFixed(1) + '% of ' + blockName[j] + 's)';
                 tile.title = title;
                 line.append(tile);
             }
