@@ -335,22 +335,20 @@ function randomizeTitle() {
 
 var a = 30, b = 70;
 var canvasDots = function(dotnumber) {
-    var canvas = document.querySelector('canvas'),
-    ctx = canvas.getContext('2d'),
-    colorDot = '#dddddd',
-    color = '#aaaaaa';
+    let canvas = document.querySelector('canvas'),
+    ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    ctx.fillStyle = colorDot;
+    ctx.fillStyle = '#dddddd';
     ctx.lineWidth = .1;
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = '#aaaaaa';
 
-    var mousePosition = {
+    let mousePosition = {
         x: 30 * canvas.width / 100,
         y: 30 * canvas.height / 100
     };
 
-    var dots = {
+    let dots = {
         nb: dotnumber,
         distance: 150,
         d_radius: 100,
@@ -361,8 +359,8 @@ var canvasDots = function(dotnumber) {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
 
-        this.vx = -.5 + Math.random();
-        this.vy = -.5 + Math.random();
+        this.vx = -.25 + Math.random() / 2;
+        this.vy = -.25 + Math.random() / 2;
 
         this.radius = Math.random();
     }
@@ -389,7 +387,7 @@ var canvasDots = function(dotnumber) {
                 if ((dot.x - mousePosition.x) < b && (dot.y - mousePosition.y) < b && (dot.x - mousePosition.x) > - b && (dot.y - mousePosition.y) > - b) {
                     dot.vx *= 1.05;
                     dot.vy *= 1.05;
-                } else if (Math.abs(dot.vx) > 0.5 || Math.abs(dot.vy) > 0.5) {
+                } else if (Math.abs(dot.vx) > 0.25 || Math.abs(dot.vy) > 0.25) {
                     dot.vx *= 0.98;
                     dot.vy *= 0.98;
                 }
@@ -439,6 +437,9 @@ var canvasDots = function(dotnumber) {
     window.onresize = function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        ctx.fillStyle = '#dddddd';
+        ctx.lineWidth = .1;
+        ctx.strokeStyle = '#aaaaaa';
     }
 
     mousePosition.x = window.innerWidth / 2;
