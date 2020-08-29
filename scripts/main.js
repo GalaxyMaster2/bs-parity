@@ -311,7 +311,7 @@ function checkParity(notes = notesArray, bookmarks = bookmarksArray) {
 
         if (bookmarkCount < bookmarks.length) {
             if (note._time > bookmarks[bookmarkCount]._time) { 
-                outputUI(false, bookmarks[bookmarkCount]._time, bookmarks[bookmarkCount]._name, 'bookmark');
+                outputUI(false, bookmarks[bookmarkCount]._time + offset, bookmarks[bookmarkCount]._name, 'bookmark');
                 bookmarkCount++; 
             }
         }
