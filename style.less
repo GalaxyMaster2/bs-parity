@@ -113,6 +113,15 @@ body {
     padding: 0 1rem;
     box-sizing: border-box;
 
+    #background {
+        z-index: -1;
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
     .choose-file {
         flex: 1;
         max-width: 50rem;
