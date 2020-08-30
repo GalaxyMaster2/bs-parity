@@ -122,8 +122,29 @@ function readFile(files) {
  */
 function readQuery() {
     let urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('url')) { readUrl(urlParams.get('url')); }
-    else if (urlParams.has('id')) { readUrl(urlParams.get('id')); }
+    let input;
+    if (urlParams.has('url')) {
+        input = urlParams.get('url');
+    } else if (urlParams.has('id')) {
+        input = urlParams.get('id');
+    } else {
+        return;
+    }
+
+    let error = readUrl(input);
+    switch (error) {
+        case -1:
+            displayLoadError('invalid beatsaver key');
+            break;
+        case -2:
+            displayLoadError('url input is empty');
+            break;
+        case -3:
+            // here we can't distinguish between an invalid url or an invalid id
+            // TODO: split readUrl() into multiple functions to alleviate this
+            displayLoadError('invalid url or beatsaver key');
+            break;
+    }
 }
 readQuery();
 
