@@ -56,9 +56,29 @@ document.addEventListener('dragenter', function () {
 
 urlInput.addEventListener('keydown', function (event) {
     if (event.key == 'Enter') {
-        readUrl();
+        parseUrlInput(urlInput.value);
     }
 });
+
+/**
+ * parses and validates a given string as either a url or beatsaver key and downloads the map if the input is valid
+ * @param {String} input - user input entered in the url input box
+ */
+function parseUrlInput(input) {
+    let result = validateUrl(input); // try validating url
+    if (typeof result === 'string') {
+        downloadFromUrl(result); // valid url
+    } else {
+        if (result === -3) {
+            // url is link to beatsaver map
+            input = input.match(/([^\/]*)\/*$/)[1]; // extract beatsaver key
+        }
+        result = validateMapKey(input); // try validating map key
+        if (typeof result === 'string') {
+            downloadFromKey(result); // valid key
+        }
+    }
+}
 
 /**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
@@ -72,7 +92,7 @@ function handleDrop(e) {
     if (files.length != 0) {
         readFile(files);
     } else {
-        readUrl(dt.getData("Text"));
+        parseUrlInput(dt.getData('Text'));
     }
 }
 
@@ -122,84 +142,83 @@ function readFile(files) {
  */
 function readQuery() {
     let urlParams = new URLSearchParams(window.location.search);
-    let input;
+    let id;
+
     if (urlParams.has('url')) {
-        input = urlParams.get('url');
-    } else if (urlParams.has('id')) {
-        input = urlParams.get('id');
-    } else {
-        return;
+        let url = urlParams.get('url');
+        let result = validateUrl(url);
+        switch (result) {
+            case -1:
+                displayLoadError('url input is empty');
+                return;
+            case -2:
+                displayLoadError('invalid url');
+                return;
+            case -3:
+                id = url.match(/([^\/]*)\/*$/)[1];
+                break;
+            default:
+                downloadFromUrl(result);
+                return;
+        }
     }
 
-    let error = readUrl(input);
-    switch (error) {
-        case -1:
-            displayLoadError('invalid beatsaver key');
-            break;
-        case -2:
-            displayLoadError('url input is empty');
-            break;
-        case -3:
-            // here we can't distinguish between an invalid url or an invalid id
-            // TODO: split readUrl() into multiple functions to alleviate this
-            displayLoadError('invalid url or beatsaver key');
-            break;
+    if (urlParams.has('id')) {
+        id = urlParams.get('id');
+    }
+
+    if (id !== undefined) {
+        let result = validateMapKey(id);
+        switch (result) {
+            case -1:
+                displayLoadError('beatsaver key input is empty');
+                break;
+            case -2:
+                displayLoadError('invalid beatsaver key');
+                break;
+            default:
+                downloadFromKey(result);
+                break;
+        }
     }
 }
 readQuery();
 
 /**
- * fetches a zip file from a url or beatsaver link and extracts
- * @param {String} inUrl - the url or id to be loaded
- * @returns {Number} - error code, if needed
+ * attempts to download a map from beatsaver with the given key
+ * @param {String} key - a beatsaver key of a map to download
  */
-function readUrl(inUrl = urlInput.value) {
-    let _url = inUrl.trim();
-    let isBeatsaver = false;
+function downloadFromKey(key) {
+    console.log('downloading map #' + key);
+    let url = 'https://beatsaver.com/api/download/key/' + key;
 
+    setIntroDivStatus('downloading');
+    JSZipUtils.getBinaryContent(url, function (err, data) {
+        if (err) {
+            console.error(err);
+            displayLoadError('unable to download map ' + key + ' from beatsaver');
+        } else {
+            extractZip(data);
+        }
+    });
+}
+
+/**
+ * attempts to download a map from the given url
+ * @param {String} url - a url from which to download a map
+ */
+function downloadFromUrl(url) {
+    console.log('downloading map from url: ' + url);
     const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
 
-    const validurl = new RegExp('^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-    const validhex = /^[0-9a-fA-F]+$/; // string only made of 0-9, a-f and A-F
-
-    _url = _url.replace(/^(!bsr\s+)/, ''); // remove !bsr prefix if it exists
-
-    if (_url === '') {
-        return -2; // url is empty
-    }
-
-    if (validhex.test(_url)) {
-        _url = 'https://beatsaver.com/beatmap/' + _url; // if it's just a hex key, it could be a beatSaver id? try that
-    } else if (!validurl.test(_url)) {
-        return -3; // no valid url or key was entered
-    }
-
-    let songID;
-    if (_url.includes('beatsaver.com/beatmap/') || _url.includes('bsaber.com/songs/')) {
-        songID = _url.match(/([^\/]*)\/*$/)[1]; // extract last part of url, for some reason this doesn't like quotes
-        if (!validhex.test(songID)) {
-            return -1; // key must be valid hex
-        }
-        console.log("downloading map #" + songID);
-        _url = 'https://beatsaver.com/api/download/key/' + songID;
-        isBeatsaver = true;
-    }
-
     function attemptDownload(currentProxy = -1) {
-        let url = (corsProxies[currentProxy] || '') + _url; // prepend proxy if it exists in corsProxies
-        JSZipUtils.getBinaryContent(url, function (err, data) {
+        let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
+        JSZipUtils.getBinaryContent(currentUrl, function (err, data) {
             if (err) {
                 // it's impossible to tell a CORS error apart from other network errors
                 // so we have to try all proxies in either case
                 console.error(err);
-                if (isBeatsaver) { // no need to try proxies for beatsaver
-                    displayLoadError('unable to download map ' + songID + ' from beatsaver');
-                } else if (currentProxy === (corsProxies.length - 1)) {
+                if (currentProxy === (corsProxies.length - 1)) {
                     displayLoadError('error downloading map, try manually uploading it instead');
                 } else {
                     console.log('download failed, trying next CORS proxy');
@@ -217,6 +236,54 @@ function readUrl(inUrl = urlInput.value) {
 
     setIntroDivStatus('downloading');
     attemptDownload();
+}
+
+/**
+ * validates a given url
+ * @param {String} url - the url to be validated
+ * @returns {String|Number} - a validated url or an error code
+ */
+function validateUrl(url) {
+    const validurl = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+
+    url = url.trim();
+
+    if (url === '') {
+        return -1; // url is empty
+    }
+    if (!validurl.test(url)) {
+        return -2; // url is invalid
+    }
+    if (url.includes('beatsaver.com/beatmap/') || url.includes('bsaber.com/songs/') || url.includes('beatsaver.com/api/download/key/')) {
+        return -3; // should be downloaded using map key
+    }
+
+    return url;
+}
+
+/**
+ * validates a given map id and returns a validated beatsaver key
+ * @param {String} id - a map id to be validated
+ * @returns {String|Number} - a validated beatsaver key or an error code
+ */
+function validateMapKey(id) {
+    const validhex = /^[0-9a-fA-F]+$/; // non-empty string only made of 0-9, a-f and A-F
+
+    id = id.trim().replace(/^(!bsr\s+)/, ''); // remove !bsr prefix if it exists
+
+    if (id === '') {
+        return -1; // id is empty
+    }
+    if (!validhex.test(id)) {
+        return -2; // id is invalid
+    }
+
+    return id.toLowerCase();
 }
 
 /**
