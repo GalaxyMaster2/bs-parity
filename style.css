@@ -96,28 +96,37 @@ body.light {
   left: 0;
   transition: transform 1s var(--trans);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 0 1rem;
   box-sizing: border-box;
 }
+.intro .choose-file,
+.intro .url-input {
+  width: 100%;
+  max-width: 45rem;
+  font-size: 1.25rem;
+  box-sizing: border-box;
+}
 .intro .choose-file {
   flex: 1;
-  max-width: 50rem;
-  height: 100%;
   max-height: 20rem;
+  margin: 1rem;
   background-color: var(--text);
   border-radius: 0.375rem;
   outline: 0.125rem dashed var(--bg);
   outline-offset: -1rem;
   color: var(--bg);
-  font-size: 1.25rem;
   text-align: center;
   transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.intro .choose-file > * {
+  padding: 2rem;
+  box-sizing: border-box;
 }
 .intro .choose-file input {
   display: none;
@@ -126,8 +135,6 @@ body.light {
   display: inline-block;
   width: 100%;
   height: 100%;
-  padding: 1rem;
-  box-sizing: border-box;
   text-align: center;
   cursor: pointer;
   display: flex;
@@ -140,8 +147,54 @@ body.light {
 }
 .intro .choose-file .uploading-text,
 .intro .choose-file .done-text,
-.intro .choose-file .load-error {
+.intro .choose-file .load-error,
+.intro .choose-file .downloading-text {
   display: none;
+  margin: 1rem 0rem;
+}
+.intro .choose-file .uploading-text:after,
+.intro .choose-file .downloading-text:after {
+  display: inline-block;
+  text-align: left;
+  animation: dotty steps(1, end) 1.2s infinite;
+  content: '';
+  width: 2ch;
+}
+@keyframes dotty {
+  0% {
+    content: '...';
+  }
+  25% {
+    content: '';
+  }
+  50% {
+    content: '.';
+  }
+  75% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+.intro .url-input {
+  display: block;
+  background-color: var(--text);
+  border-radius: 0.375rem;
+  color: var(--bg);
+  text-align: center;
+  transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+  border: none;
+  outline: none;
+  margin: 0rem 1rem 1rem 1rem;
+  padding: 1rem;
+  text-overflow: ellipsis;
+}
+.intro .url-input:active,
+.intro .url-input:focus {
+  background-color: var(--etext);
+  box-shadow: inset 0 0 0 0.125rem var(--blue);
+  color: var(--dbg);
 }
 .intro #drop-overlay {
   position: fixed;
@@ -162,15 +215,18 @@ body.light {
 }
 .intro.uploading label,
 .intro.done label,
-.intro.error label {
+.intro.error label,
+.intro.downloading label {
   display: none;
 }
 .intro.uploading #drop-overlay,
 .intro.done #drop-overlay,
-.intro.error #drop-overlay {
+.intro.error #drop-overlay,
+.intro.downloading #drop-overlay {
   display: none;
 }
-.intro.uploading .uploading-text {
+.intro.uploading .uploading-text,
+.intro.downloading .downloading-text {
   display: inline;
 }
 .intro.done {

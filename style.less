@@ -112,29 +112,40 @@ body {
     transition: transform 1s var(--trans);
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 0 1rem;
     box-sizing: border-box;
 
+    .choose-file, .url-input {
+        width: 100%;
+        max-width: 45rem;
+        font-size: 1.25rem;
+        box-sizing: border-box;
+    }
+
     .choose-file {
         flex: 1;
-        max-width: 50rem;
-        height: 100%;
         max-height: 20rem;
+        margin: 1rem;
+
         background-color: var(--text);
         border-radius: 0.375rem;
         outline: 0.125rem dashed var(--bg);
         outline-offset: -1rem;
         color: var(--bg);
-        font-size: 1.25rem;
         text-align: center;
         transition: background-color 0.3s var(--trans), color 0.3s var(--trans), outline 0.3s var(--trans);
 
         display: flex;
         justify-content: center;
         align-items: center;
+
+        & > * {
+            padding: 2rem;
+            box-sizing: border-box;
+        }
 
         input {
             display: none;
@@ -144,8 +155,6 @@ body {
             display: inline-block;
             width: 100%;
             height: 100%;
-            padding: 1rem;
-            box-sizing: border-box;
             text-align: center;
             cursor: pointer;
 
@@ -159,8 +168,46 @@ body {
             }
         }
 
-        .uploading-text, .done-text, .load-error {
+        .uploading-text, .done-text, .load-error, .downloading-text {
             display: none;
+            margin: 1rem 0rem;
+        }
+        .uploading-text, .downloading-text {
+            &:after {
+                display: inline-block;
+                text-align: left;
+                animation: dotty steps(1,end) 1.2s infinite;
+                content: '';
+                width: 2ch;
+              
+                @keyframes dotty {
+                    0%   { content: '...'; }
+                    25%  { content: ''; }
+                    50%  { content: '.'; }
+                    75%  { content: '..'; }
+                    100% { content: '...'; }
+                }
+            }
+        }
+    }
+
+    .url-input {
+        display: block;
+        background-color: var(--text);
+        border-radius: 0.375rem;
+        color: var(--bg);
+        text-align: center;
+        transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
+        border: none;
+        outline: none;
+        margin: 0rem 1rem 1rem 1rem;
+        padding: 1rem;
+        text-overflow: ellipsis;
+
+        &:active, &:focus {
+            background-color: var(--etext);
+            box-shadow: inset 0 0 0 0.125rem var(--blue);
+            color: var(--dbg);
         }
     }
 
@@ -184,7 +231,7 @@ body {
         transform: translateX(-100%);
     }
 
-    &.uploading, &.done, &.error {
+    &.uploading, &.done, &.error, &.downloading {
         label {
             display: none;
         }
@@ -194,10 +241,8 @@ body {
         }
     }
 
-    &.uploading {
-        .uploading-text {
-            display: inline;
-        }
+    &.uploading .uploading-text, &.downloading .downloading-text {
+        display: inline;
     }
 
     &.done {

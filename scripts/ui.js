@@ -19,6 +19,7 @@ const output = document.getElementById('output');
 const diffSelect = document.getElementById('diff-select');
 const sliderPrecisionInput = document.getElementById('slider-precision');
 const fileInput = document.getElementById('file');
+const urlInput = document.getElementById('url');
 
 const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
@@ -53,6 +54,32 @@ document.addEventListener('dragenter', function () {
     }, false);
 });
 
+urlInput.addEventListener('keydown', function (event) {
+    if (event.key == 'Enter') {
+        parseUrlInput(urlInput.value);
+    }
+});
+
+/**
+ * parses and validates a given string as either a url or beatsaver key and downloads the map if the input is valid
+ * @param {String} input - user input entered in the url input box
+ */
+function parseUrlInput(input) {
+    let result = validateUrl(input); // try validating url
+    if (typeof result === 'string') {
+        downloadFromUrl(result); // valid url
+    } else {
+        if (result === -3) {
+            // url is link to beatsaver map
+            input = input.match(/([^\/]*)\/*$/)[1]; // extract beatsaver key
+        }
+        result = validateMapKey(input); // try validating map key
+        if (typeof result === 'string') {
+            downloadFromKey(result); // valid key
+        }
+    }
+}
+
 /**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
@@ -62,7 +89,11 @@ document.addEventListener('dragenter', function () {
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
-    readFile(files);
+    if (files.length != 0) {
+        readFile(files);
+    } else {
+        parseUrlInput(dt.getData('Text'));
+    }
 }
 
 /**
@@ -80,7 +111,7 @@ function handleFileInput(e) {
  * @returns {void} - will lead to parity/render calls
  */
 function readFile(files) {
-    introDiv.classList.add('uploading');
+    setIntroDivStatus('uploading');
     let file = files[0];
     const fr = new FileReader();
     if (file.name.substr(-4) === '.dat') {
@@ -97,7 +128,9 @@ function readFile(files) {
         });
     } else if (file.name.substr(-4) === '.zip') {
         fr.readAsArrayBuffer(file);
-        fr.addEventListener('load', extractZip);
+        fr.addEventListener('load', function (e) {
+            extractZip(e.target.result);
+        });
     } else {
         // an unsupported file was selected
         displayLoadError('unsupported file format');
@@ -105,13 +138,162 @@ function readFile(files) {
 }
 
 /**
+ * if beatsaver id or zip url in query, load the file
+ */
+function readQuery() {
+    let urlParams = new URLSearchParams(window.location.search);
+    let id;
+
+    if (urlParams.has('url')) {
+        let url = urlParams.get('url');
+        let result = validateUrl(url);
+        switch (result) {
+            case -1:
+                displayLoadError('url input is empty');
+                return;
+            case -2:
+                displayLoadError('invalid url');
+                return;
+            case -3:
+                id = url.match(/([^\/]*)\/*$/)[1];
+                break;
+            default:
+                downloadFromUrl(result);
+                return;
+        }
+    }
+
+    if (urlParams.has('id')) {
+        id = urlParams.get('id');
+    }
+
+    if (id !== undefined) {
+        let result = validateMapKey(id);
+        switch (result) {
+            case -1:
+                displayLoadError('beatsaver key input is empty');
+                break;
+            case -2:
+                displayLoadError('invalid beatsaver key');
+                break;
+            default:
+                downloadFromKey(result);
+                break;
+        }
+    }
+}
+readQuery();
+
+/**
+ * attempts to download a map from beatsaver with the given key
+ * @param {String} key - a beatsaver key of a map to download
+ */
+function downloadFromKey(key) {
+    console.log('downloading map #' + key);
+    let url = 'https://beatsaver.com/api/download/key/' + key;
+
+    setIntroDivStatus('downloading');
+    JSZipUtils.getBinaryContent(url, function (err, data) {
+        if (err) {
+            console.error(err);
+            displayLoadError('unable to download map ' + key + ' from beatsaver');
+        } else {
+            extractZip(data);
+        }
+    });
+}
+
+/**
+ * attempts to download a map from the given url
+ * @param {String} url - a url from which to download a map
+ */
+function downloadFromUrl(url) {
+    console.log('downloading map from url: ' + url);
+    const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
+
+    function attemptDownload(currentProxy = -1) {
+        let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
+        JSZipUtils.getBinaryContent(currentUrl, function (err, data) {
+            if (err) {
+                // it's impossible to tell a CORS error apart from other network errors
+                // so we have to try all proxies in either case
+                console.error(err);
+                if (currentProxy === (corsProxies.length - 1)) {
+                    displayLoadError('error downloading map, try manually uploading it instead');
+                } else {
+                    console.log('download failed, trying next CORS proxy');
+                    attemptDownload(currentProxy + 1);
+                }
+            } else {
+                if (data.byteLength === 0) {
+                    displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
+                } else {
+                    extractZip(data);
+                }
+            }
+        });
+    }
+
+    setIntroDivStatus('downloading');
+    attemptDownload();
+}
+
+/**
+ * validates a given url
+ * @param {String} url - the url to be validated
+ * @returns {String|Number} - a validated url or an error code
+ */
+function validateUrl(url) {
+    const validurl = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+
+    url = url.trim();
+
+    if (url === '') {
+        return -1; // url is empty
+    }
+    if (!validurl.test(url)) {
+        return -2; // url is invalid
+    }
+    if (url.includes('beatsaver.com/beatmap/') || url.includes('bsaber.com/songs/') || url.includes('beatsaver.com/api/download/key/')) {
+        return -3; // should be downloaded using map key
+    }
+
+    return url;
+}
+
+/**
+ * validates a given map id and returns a validated beatsaver key
+ * @param {String} id - a map id to be validated
+ * @returns {String|Number} - a validated beatsaver key or an error code
+ */
+function validateMapKey(id) {
+    const validhex = /^[0-9a-fA-F]+$/; // non-empty string only made of 0-9, a-f and A-F
+
+    id = id.trim().replace(/^(!bsr\s+)/, ''); // remove !bsr prefix if it exists
+
+    if (id === '') {
+        return -1; // id is empty
+    }
+    if (!validhex.test(id)) {
+        return -2; // id is invalid
+    }
+
+    return id.toLowerCase();
+}
+
+/**
  * extracts a map zip and attempts to load all present difficulties
- * @param {ProgressEvent} e
+ * @param {ArrayBuffer} e - data of the zip
  */
 async function extractZip(e) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(e.target.result);
+        zip = await JSZip.loadAsync(e);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
@@ -166,8 +348,7 @@ async function extractZip(e) {
  */
 function displayLoadError(message) {
     loadError.textContent = message;
-    introDiv.classList.remove('uploading');
-    introDiv.classList.add('error');
+    setIntroDivStatus('error');
 }
 
 /**
@@ -258,8 +439,7 @@ function getSelectedDiff(input = diffSelect) {
  * should be called when the selected files have been loaded successfully
  */
 function fileLoaded() {
-    introDiv.classList.remove('uploading');
-    introDiv.classList.add('done');
+    setIntroDivStatus('done');
     pageTitle.parentElement.classList.add('done');
     console.log('successful read!');
 
@@ -268,6 +448,17 @@ function fileLoaded() {
     setTimeout(function () {
         introDiv.style.setProperty('display', 'none');
     }, 1000);
+}
+
+/**
+ * sets the status of the intro screen
+ * @param {String} [status] - (optional) the status to be set, should be one of 'uploading', 'downloading', 'error', 'done'
+ */
+function setIntroDivStatus(status) {
+    introDiv.classList.remove('uploading', 'downloading', 'error');
+    if (status) {
+        introDiv.classList.add(status);
+    }
 }
 
 function getRenderContainerHeight() {

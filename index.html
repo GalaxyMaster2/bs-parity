@@ -23,10 +23,12 @@
                 <label for="file">
                     <span><strong>choose a difficulty.dat / map.zip</strong> or drag it here</span>
                 </label>
-                <span class="uploading-text">uploading&hellip;</span>
+                <span class="uploading-text">uploading map</span>
+                <span class="downloading-text">downloading map</span>
                 <span class="done-text">done!</span>
                 <span class="load-error"><strong>error: </strong><span id="load-error-text"></span></span>
             </div>
+            <input type="text" name="url" id="url" class="url-input" placeholder="or enter a link to a map zip / beatsaver key and press enter">
             <span class="madeby">made by GalaxyMaster and infinityio</span>
             <div id="drop-overlay"></div>
         </div>
@@ -87,6 +89,7 @@
 
     <script src="scripts/libs/ola.min.js" defer></script>
     <script src="scripts/libs/jszip.min.js" defer></script>
+    <script src="scripts/libs/jszip-utils.min.js" defer></script>
     <script src="scripts/main.js" defer></script>
     <script src="scripts/ui.js" defer></script>
     <script src="scripts/input.js" defer></script>
