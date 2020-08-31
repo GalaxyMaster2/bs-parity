@@ -128,7 +128,6 @@ function getNotes(obj, extensions = []) {
             }
         }
     }
-    console.log(notes);
 
     return notes;
 }
@@ -147,9 +146,33 @@ function getWalls(obj, extensions = []) {
 
     // filter out invalid/fake wall types
     walls = walls.filter(function (wall) {
-        return (wall._width >= 1 && wall._duration >= 0);
+        return (wall._width > 0 && wall._duration >= 0);
     });
 
+    if (extensions.includes('Mapping Extensions')) {
+        for (let i = 0; i < walls.length; i++) {
+            let wall = walls[i];
+
+            if (wall._lineIndex <= -1000) { wall._lineIndex = (wall._lineIndex + 1000) / 1000; }
+            else if (wall._lineIndex >= 1000) { wall._lineIndex = (wall._lineIndex - 1000) / 1000; }
+
+            if (wall._width >= 1000) { wall._width = (wall._width - 1000) / 1000; }
+            if (wall._type >= 1000 && wall._type <= 4000) { wall._height = (wall._type - 1000) / 1000; }
+
+            else if (wall._type > 4000) {
+                wall._type -= 4001;
+                wall._height = Math.floor(wall._type / 1000) / 1000;
+                wall._lineLayer = mod(wall._type, 1000) / 250;
+            }
+        }
+    } else {
+        for (let i = 0; i < walls.length; i++) {
+            let wall = walls[i];
+            wall._height = (wall._type == 0) ? 1 : 0.5;
+            wall._lineLayer = (wall._type == 0) ? 0 : 1.5;
+        }
+    }
+    console.log(walls);
     return walls;
 }
 

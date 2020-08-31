@@ -300,6 +300,7 @@ function render(notes = notesArray, walls = wallsArray) {
             let relTime = wall._time + offset - centerBeat;
             let relEnd = relTime + wall._duration;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+
             let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime) * timeScale * (gridHeight * 4 / 3);
             let translucent = relEnd < -2 * comparisonTolerance;
 
@@ -307,8 +308,10 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer = presentWalls[i];
             } else {
                 let posX = (gridHeight / 3) * wall._lineIndex;
+                let posY = (gridHeight / 3) * (-3 + wall._lineLayer + (3 * wall._height)) - (noteSize / 2);
+
                 let width = wall._width;
-                let height = (wall._type == 0) ? 1 : 0.5
+                let height = wall._height;
 
                 if (recycledWalls.length > 0) {
                     wallContainer = recycledWalls.shift();
@@ -330,6 +333,8 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer.style.setProperty('--width', width);
                 wallContainer.style.setProperty('--height', height);
                 wallContainer.style.setProperty('left', posX + 'px');
+                wallContainer.style.setProperty('bottom', posY + 'px');
+
                 wallContainer.dataset.wall_id = i;
             }
 
