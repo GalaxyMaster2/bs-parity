@@ -148,7 +148,7 @@ async function extractZip(event) {
 
         if (mapDifficultySets.length > 0) {
             populateDiffSelect();
-            loadDifficultyDat(getSelectedDiff().mapString);
+            loadDifficultyDat(getSelectedDiff().mapString, getSelectedDiff()._customData._requirements);
             fileLoaded();
         } else {
             // no available difficulties
@@ -205,13 +205,14 @@ function getLocalOffset(songInfo) {
 
 /**
  * parses and loads a difficulty.dat string
- * @param {Object} datString - the parsed contents of a difficulty.dat file
+ * @param {Object} datString - the unparsed contents of a difficulty.dat file
+ * @param {Array} extensions - all map extensions required, defaults to none
  */
-function loadDifficultyDat(datString) {
+function loadDifficultyDat(datString, extensions = []) {
     ready = false;
     let parsed = JSON.parse(datString);
-    notesArray = getNotes(parsed);
-    wallsArray = getWalls(parsed);
+    notesArray = getNotes(parsed, extensions);
+    wallsArray = getWalls(parsed, extensions);
     getLocalOffset();
 
     ready = true;

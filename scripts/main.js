@@ -95,9 +95,10 @@ var ready = false;
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
  * @param {Object} obj - A beat saber JSON array of notes
+ * @param {Array} extensions - all map extensions required, defaults to none
  * @returns {Array} - filtered, tagged & sorted notes
  */
-function getNotes(obj) {
+function getNotes(obj, extensions = []) {
     let notes = obj._notes;
     notes.sort(function (a, b) {
         return a._time - b._time;
@@ -108,15 +109,37 @@ function getNotes(obj) {
         return types[note._type] !== undefined;
     });
 
+    if (extensions.includes('Mapping Extensions')) {
+        const invCutAngles = [1, 6, 2, 4, 0, 5, 3, 7, 1];
+        for (let i = 0; i < notes.length; i++) {
+            let note = notes[i];
+
+            if (note._lineIndex <= -1000) { note._lineIndex = (note._lineIndex + 1000) / 1000; }
+            else if (note._lineIndex >= 1000) { note._lineIndex = (note._lineIndex - 1000) / 1000; }
+
+            if (note._lineLayer <= -1000) { note._lineLayer = (note._lineLayer + 1000) / 1000; }
+            else if (note._lineLayer >= 1000) { note._lineLayer = (note._lineLayer - 1000) / 1000; }
+
+            if (note._cutDirection >= 1000 && note._cutDirection <= 1360) {
+                note._cutDirectionFine = note._cutDirection - 1000 // for renderer
+                note._cutDirection = invCutAngles[Math.round(note._cutDirectionFine / 45)]; // for parity algorithm
+                note._cutDirectionFine -= cutAngles[note._cutDirection]; // relative offset
+                note._cutDirectionFine = (note._cutDirectionFine > 180) ? (-360 + note._cutDirectionFine) : note._cutDirectionFine; // convert to [-180, 180) because it's nicer
+            }
+        }
+    }
+    console.log(notes);
+
     return notes;
 }
 
 /**
  * Filters and sorts walls to ensure all walls in array are valid, and assigns an index to each
  * @param {Object} obj - A beat saber JSON array of notes
+ * @param {Array} extensions - all map extensions required, defaults to none
  * @returns {Array} - filtered, tagged & sorted notes
  */
-function getWalls(obj) {
+function getWalls(obj, extensions = []) {
     let walls = obj._obstacles;
     walls.sort(function (a, b) {
         return a._time - b._time;

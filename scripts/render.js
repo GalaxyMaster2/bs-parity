@@ -180,6 +180,7 @@ function render(notes = notesArray, walls = wallsArray) {
         let relTime = note._time + offset - centerBeat;
         let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
         let noteAngle = cutAngles[note._cutDirection];
+        if (note._cutDirectionFine !== undefined) noteAngle += note._cutDirectionFine; // support for mapping extensions note rotation
         let translucent = relTime < -2 * comparisonTolerance;
         if (presentNotes[i] !== undefined) {
             noteContainer = presentNotes[i];
