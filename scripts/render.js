@@ -10,6 +10,7 @@ var renderDistance = parseFloat(renderDistanceSlider.value);
 var divisionValue = parseFloat(divisionValueSlider.value);
 var timeScale = parseFloat(timeScaleSlider.value);
 
+var localOffset = 0, globalOffset = 0, offset = 0, bpm = 120, songTitle = '';
 var centerBeat = 0; // changed to match values in html
 var olaPosition = Ola(0);
 
@@ -121,7 +122,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // assumes notesArray is sorted by time
     let firstRenderedNote, lastRenderedNote;
     for (let i = 0; i < notes.length; i++) {
-        if (renderNote(notes[i]._time)) {
+        if (renderNote(notes[i]._time + offset)) {
             firstRenderedNote = i;
             break;
         }
@@ -129,7 +130,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // no need to find last note if no notes are rendered
     if (firstRenderedNote !== undefined) {
         for (let i = notes.length - 1; i >= 0; i--) {
-            if (renderNote(notes[i]._time)) {
+            if (renderNote(notes[i]._time + offset)) {
                 lastRenderedNote = i;
                 break;
             }
@@ -168,7 +169,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // TODO: set grid-container CSS dimensions here
     let gridHeight = renderContainerHeight / 2;
 
-    let noteSize = gridHeight / 3 / 1.41;
+    let noteSize = gridHeight / 3 / Math.SQRT2; // since both are floating point operations, they take the same time to accomplish and sqrt2 is more accurate
 
     // calculate note position, make note element and add to the container
     // firstRenderedNote == undefined is handled because undefined <= undefined evaluates to false
@@ -176,9 +177,10 @@ function render(notes = notesArray, walls = wallsArray) {
         let note = notes[i];
         let noteContainer;
 
-        let relTime = note._time - centerBeat;
+        let relTime = note._time + offset - centerBeat;
         let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
         let noteAngle = cutAngles[note._cutDirection];
+        if (note._cutDirectionFine !== undefined) noteAngle += note._cutDirectionFine; // support for mapping extensions note rotation
         let translucent = relTime < -2 * comparisonTolerance;
         if (presentNotes[i] !== undefined) {
             noteContainer = presentNotes[i];
@@ -210,10 +212,9 @@ function render(notes = notesArray, walls = wallsArray) {
                     if (types[note._type] === 'bomb') {
                         imgClass = 'bomb';
                     } else {
-                        imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                            (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                        imgClass = (dot) ? 'dot' : 'note';
                     }
-                    noteFace.classList.add('note-face', face, imgClass);
+                    noteFace.classList.add('note-face', face, imgClass, types[note._type]);
                     noteContainer.appendChild(noteFace);
                 }
 
@@ -222,7 +223,7 @@ function render(notes = notesArray, walls = wallsArray) {
 
             noteContainer.style.setProperty('left', posX + 'px');
             noteContainer.style.setProperty('top', posY + 'px');
-            noteContainer.onclick = function () { scrollTo(note._time); };
+            noteContainer.onclick = function () { scrollTo(note._time + offset); };
             noteContainer.dataset.note_id = i;
         }
 
@@ -248,8 +249,8 @@ function render(notes = notesArray, walls = wallsArray) {
 
     if (gridContainer.classList.contains('showWalls')) {
         function renderWall(wall) {
-            let start = wall._time;
-            let end = wall._time + wall._duration;
+            let start = wall._time + offset;
+            let end = start + wall._duration;
             let rStart = centerBeat + firstViewableNote;
             let rEnd = centerBeat + renderDistance + 0.5;
             return (start <= rEnd && end >= rStart);
@@ -295,9 +296,10 @@ function render(notes = notesArray, walls = wallsArray) {
             let wall = walls[i];
             let wallContainer;
 
-            let relTime = wall._time - centerBeat;
+            let relTime = wall._time + offset - centerBeat;
             let relEnd = relTime + wall._duration;
             let posZ = relTime * timeScale * (gridHeight * 4 / 3) * -1;
+
             let depth = Math.min(wall._duration, renderDistance + 0.5 - relTime) * timeScale * (gridHeight * 4 / 3);
             let translucent = relEnd < -2 * comparisonTolerance;
 
@@ -305,8 +307,10 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer = presentWalls[i];
             } else {
                 let posX = (gridHeight / 3) * wall._lineIndex;
+                let posY = (gridHeight / 3) * (-3 + wall._lineLayer + (3 * wall._height)) - (noteSize / 2);
+
                 let width = wall._width;
-                let height = (wall._type == 0) ? 1 : 0.5
+                let height = wall._height;
 
                 if (recycledWalls.length > 0) {
                     wallContainer = recycledWalls.shift();
@@ -328,6 +332,8 @@ function render(notes = notesArray, walls = wallsArray) {
                 wallContainer.style.setProperty('--width', width);
                 wallContainer.style.setProperty('--height', height);
                 wallContainer.style.setProperty('left', posX + 'px');
+                wallContainer.style.setProperty('bottom', posY + 'px');
+
                 wallContainer.dataset.wall_id = i;
             }
 

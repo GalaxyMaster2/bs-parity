@@ -94,10 +94,11 @@ var ready = false;
 
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
- * @param {Array} obj - A beat saber JSON array of notes
+ * @param {Object} obj - A beat saber JSON array of notes
+ * @param {Array} extensions - all map extensions required, defaults to none
  * @returns {Array} - filtered, tagged & sorted notes
  */
-function getNotes(obj) {
+function getNotes(obj, extensions = []) {
     let notes = obj._notes;
     notes.sort(function (a, b) {
         return a._time - b._time;
@@ -108,10 +109,36 @@ function getNotes(obj) {
         return types[note._type] !== undefined;
     });
 
+    if (extensions.includes('Mapping Extensions')) {
+        const invCutAngles = [1, 6, 2, 4, 0, 5, 3, 7, 1];
+        for (let i = 0; i < notes.length; i++) {
+            let note = notes[i];
+
+            if (note._lineIndex <= -1000) { note._lineIndex = (note._lineIndex + 1000) / 1000; }
+            else if (note._lineIndex >= 1000) { note._lineIndex = (note._lineIndex - 1000) / 1000; }
+
+            if (note._lineLayer <= -1000) { note._lineLayer = (note._lineLayer + 1000) / 1000; }
+            else if (note._lineLayer >= 1000) { note._lineLayer = (note._lineLayer - 1000) / 1000; }
+
+            if (note._cutDirection >= 1000 && note._cutDirection <= 1360) {
+                note._cutDirectionFine = note._cutDirection - 1000 // for renderer
+                note._cutDirection = invCutAngles[Math.round(note._cutDirectionFine / 45)]; // for parity algorithm
+                note._cutDirectionFine -= cutAngles[note._cutDirection]; // relative offset
+                note._cutDirectionFine = (note._cutDirectionFine > 180) ? (-360 + note._cutDirectionFine) : note._cutDirectionFine; // convert to [-180, 180) because it's nicer
+            }
+        }
+    }
+
     return notes;
 }
 
-function getWalls(obj) {
+/**
+ * Filters and sorts walls to ensure all walls in array are valid, and assigns an index to each
+ * @param {Object} obj - A beat saber JSON array of notes
+ * @param {Array} extensions - all map extensions required, defaults to none
+ * @returns {Array} - filtered, tagged & sorted notes
+ */
+function getWalls(obj, extensions = []) {
     let walls = obj._obstacles;
     walls.sort(function (a, b) {
         return a._time - b._time;
@@ -119,9 +146,32 @@ function getWalls(obj) {
 
     // filter out invalid/fake wall types
     walls = walls.filter(function (wall) {
-        return (wall._width >= 1 && wall._duration >= 0);
+        return (wall._width > 0 && wall._duration >= 0);
     });
 
+    if (extensions.includes('Mapping Extensions')) {
+        for (let i = 0; i < walls.length; i++) {
+            let wall = walls[i];
+
+            if (wall._lineIndex <= -1000) { wall._lineIndex = (wall._lineIndex + 1000) / 1000; }
+            else if (wall._lineIndex >= 1000) { wall._lineIndex = (wall._lineIndex - 1000) / 1000; }
+
+            if (wall._width >= 1000) { wall._width = (wall._width - 1000) / 1000; }
+            if (wall._type >= 1000 && wall._type <= 4000) { wall._height = (wall._type - 1000) / 1000; }
+
+            else if (wall._type > 4000) {
+                wall._type -= 4001;
+                wall._height = Math.floor(wall._type / 1000) / 1000;
+                wall._lineLayer = mod(wall._type, 1000) / 250;
+            }
+        }
+    } else {
+        for (let i = 0; i < walls.length; i++) {
+            let wall = walls[i];
+            wall._height = (wall._type == 0) ? 1 : 0.5;
+            wall._lineLayer = (wall._type == 0) ? 0 : 1.5;
+        }
+    }
     return walls;
 }
 
@@ -173,10 +223,10 @@ function outputUI(note, parity, message, messageType, persistent = false) {
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
 
-    let time, imgSrc, infoString;
+    let time, type, imgSrc, infoString;
     if (note != false) { // if note passed in note function
-        time = note._time;
-        let type = types[note._type];
+        time = note._time + offset;
+        type = types[note._type];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
@@ -186,7 +236,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
             infoString = 'Bomb at beat ' + time.toFixed(3) + ':';
             message = message[0].toUpperCase() + message.slice(1) + ' parity set to ' + parity; // ugly, but it works
         } else {
-            imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
+            imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front';
             infoString = (parity === 'forehand') ? 'Forehand (' : 'Backhand ('; // capitalisation
             infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
@@ -212,6 +262,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
     img.src = imgSrc;
     if (note != false) {
         img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
+        img.classList.add(type);
     }
 
     let text = document.createElement('div');
