@@ -40,12 +40,33 @@ body {
     }
 
     &.light {
-        --dbg:  #e0e0e0;
+        --dbg:  #d0d0d0;
         --bg:   #eeeeee;
-        --mbg:  #f6f6f6;
-        --ebg:  #ffffff;
-        --text: #111111;
-        --etext:#000000;
+        --ebg:  #d5d5d5;
+        --mbg:  #e5e5e5;
+        --text: #000000;
+        --etext:#222222;
+        .intro {
+            --bg:   #000000;
+            --dbg:  #000000;
+            --ebg:  #555555;
+            --text: #e5e5e5;
+            --etext:#d5d5d5;
+            --blue: var(--red);
+            #drop-overlay {
+                --etext: #000;
+            }
+        }
+        #render-container {
+            --ebg: #555555;
+            --etext: #ffffff;
+        }
+        #output {
+            --ebg: #555555;
+            div {
+                --ebg: #d5d5d5;
+            }
+        }
     }
 }
 

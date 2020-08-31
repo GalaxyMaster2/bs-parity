@@ -33,12 +33,38 @@ body.dark {
 }
 html.light,
 body.light {
-  --dbg: #e0e0e0;
+  --dbg: #d0d0d0;
   --bg: #eeeeee;
-  --mbg: #f6f6f6;
-  --ebg: #ffffff;
-  --text: #111111;
-  --etext: #000000;
+  --ebg: #d5d5d5;
+  --mbg: #e5e5e5;
+  --text: #000000;
+  --etext: #222222;
+}
+html.light .intro,
+body.light .intro {
+  --bg: #000000;
+  --dbg: #000000;
+  --ebg: #555555;
+  --text: #e5e5e5;
+  --etext: #d5d5d5;
+  --blue: var(--red);
+}
+html.light .intro #drop-overlay,
+body.light .intro #drop-overlay {
+  --etext: #000;
+}
+html.light #render-container,
+body.light #render-container {
+  --ebg: #555555;
+  --etext: #ffffff;
+}
+html.light #output,
+body.light #output {
+  --ebg: #555555;
+}
+html.light #output div,
+body.light #output div {
+  --ebg: #d5d5d5;
 }
 .topbar {
   position: relative;
