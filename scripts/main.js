@@ -172,7 +172,6 @@ function getWalls(obj, extensions = []) {
             wall._lineLayer = (wall._type == 0) ? 0 : 1.5;
         }
     }
-    console.log(walls);
     return walls;
 }
 
@@ -224,10 +223,10 @@ function outputUI(note, parity, message, messageType, persistent = false) {
     let element = document.createElement('div');
     element.classList.add('parent', messageType);
 
-    let time, imgSrc, infoString;
+    let time, type, imgSrc, infoString;
     if (note != false) { // if note passed in note function
         time = note._time + offset;
-        let type = types[note._type];
+        type = types[note._type];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
 
@@ -237,7 +236,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
             infoString = 'Bomb at beat ' + time.toFixed(3) + ':';
             message = message[0].toUpperCase() + message.slice(1) + ' parity set to ' + parity; // ugly, but it works
         } else {
-            imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front_' + type;
+            imgSrc += ((cutDirections[note._cutDirection] === 'dot') ? 'dot_' : 'note_') + 'front';
             infoString = (parity === 'forehand') ? 'Forehand (' : 'Backhand ('; // capitalisation
             infoString += (column === 'middleLeft') ? 'centre-left' : (column === 'middleRight') ? 'centre-right' : (column + ' side');
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
@@ -263,6 +262,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
     img.src = imgSrc;
     if (note != false) {
         img.style.setProperty('transform', 'rotate(' + cutAngles[note._cutDirection] + 'deg)');
+        img.classList.add(type);
     }
 
     let text = document.createElement('div');

@@ -148,7 +148,7 @@ async function extractZip(event) {
 
         if (mapDifficultySets.length > 0) {
             populateDiffSelect();
-            loadDifficultyDat(getSelectedDiff().mapString, getSelectedDiff()._customData._requirements);
+            loadDifficultyDat(getSelectedDiff().mapString, getSelectedDiff()._customData);
             fileLoaded();
         } else {
             // no available difficulties
@@ -206,15 +206,22 @@ function getLocalOffset(songInfo) {
 /**
  * parses and loads a difficulty.dat string
  * @param {Object} datString - the unparsed contents of a difficulty.dat file
- * @param {Array} extensions - all map extensions required, defaults to none
+ * @param {Object} customData - all custom data present in map files
  */
-function loadDifficultyDat(datString, extensions = []) {
+function loadDifficultyDat(datString, customData = []) {
+    let extensions = customData._requirements;
+
     ready = false;
     let parsed = JSON.parse(datString);
     notesArray = getNotes(parsed, extensions);
     wallsArray = getWalls(parsed, extensions);
     getLocalOffset();
 
+    let colors = [customData._colorLeft, customData._colorRight, customData._obstacleColor];
+    if (colors[0] !== undefined) document.getElementsByTagName('body')[0].style.setProperty('--redcol', toHex(colors[0]));
+    if (colors[1] !== undefined) document.getElementsByTagName('body')[0].style.setProperty('--bluecol', toHex(colors[1]));
+    if (colors[2] !== undefined) document.getElementsByTagName('body')[0].style.setProperty('--wallcol', 'rgba(' + Math.round(255 * colors[2].r) + ', ' + Math.round(255 * colors[2].g) + ', ' + Math.round(255 * colors[2].b) + ', 0.7)');
+    
     ready = true;
     centerBeat = 0;
     olaPosition = Ola(0);
@@ -223,6 +230,17 @@ function loadDifficultyDat(datString, extensions = []) {
     render();
 }
 
+/**
+ * 
+ * @param {Object} color - three element colour thing, float rgb values
+ */
+function toHex(color) { 
+    let r = Math.round(color.r * 255).toString(16).padStart(2, '0');
+    let g = Math.round(color.g * 255).toString(16).padStart(2, '0');
+    let b = Math.round(color.b * 255).toString(16).padStart(2, '0');
+
+    return '#' + r + g + b;
+}
 /**
  * populates the difficulty selection input with all difficulties in the active set
  */

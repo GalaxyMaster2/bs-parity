@@ -9,6 +9,9 @@ body {
   --warning: #ffca00;
   --error: #ee0000;
   --trans: cubic-bezier(0.58, 0.11, 0.51, 0.97);
+  --bluecol: var(--blue);
+  --redcol: var(--red);
+  --wallcol: rgba(221, 48, 48, 0.8);
   margin: 0;
   background-color: var(--bg);
   color: var(--text);
@@ -275,7 +278,7 @@ body.light {
           backface-visibility: hidden;
   position: absolute;
   display: block;
-  background-color: rgba(221, 48, 48, 0.8);
+  background-color: var(--wallcol);
   outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
   outline-offset: -0.0625rem;
 }
@@ -309,7 +312,7 @@ body.light {
   height: var(--depth);
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.translucent .wall-face {
-  background-color: rgba(221, 48, 48, 0.6);
+  opacity: 0.8;
 }
 .main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.recycled {
   opacity: 0;
@@ -374,23 +377,17 @@ body.light {
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.dot_front_blue {
-  background-image: url('assets/dot_front_blue.svg');
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.dot.front {
+  background-image: url('assets/dot_front.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.dot_front_red {
-  background-image: url('assets/dot_front_red.svg');
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note.front {
+  background-image: url('assets/note_front.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_front_blue {
-  background-image: url('assets/note_front_blue.svg');
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.blue {
+  background-color: var(--bluecol);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_front_red {
-  background-image: url('assets/note_front_red.svg');
-}
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_side_blue {
-  background-image: url('assets/note_side_blue.svg');
-}
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_side_red {
-  background-image: url('assets/note_side_red.svg');
+.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.red {
+  background-color: var(--redcol);
 }
 .main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingWarn .note-face {
   outline: black solid var(--border-size);
@@ -616,6 +613,12 @@ body.light {
   height: 2rem;
   margin: 0.7rem;
   border-radius: 23%;
+}
+.main .outputbox .outputwrapper #output .parent img.blue {
+  background-color: var(--bluecol);
+}
+.main .outputbox .outputwrapper #output .parent img.red {
+  background-color: var(--redcol);
 }
 .main .outputbox .outputwrapper #output .parent.warning img {
   box-shadow: 0 0 0 0.125rem var(--warning);

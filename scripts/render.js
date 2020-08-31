@@ -212,10 +212,9 @@ function render(notes = notesArray, walls = wallsArray) {
                     if (types[note._type] === 'bomb') {
                         imgClass = 'bomb';
                     } else {
-                        imgClass = (dot && face === 'front' ? 'dot_' : 'note_') +
-                            (face === 'front' ? 'front_' : 'side_') + types[note._type];
+                        imgClass = (dot) ? 'dot' : 'note';
                     }
-                    noteFace.classList.add('note-face', face, imgClass);
+                    noteFace.classList.add('note-face', face, imgClass, types[note._type]);
                     noteContainer.appendChild(noteFace);
                 }
 
