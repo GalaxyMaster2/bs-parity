@@ -42,9 +42,7 @@ document.getElementsByClassName('close-error')[0].addEventListener('click', setI
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
 
-document.addEventListener('dragenter', function () {
-    dropArea.classList.add('visible');
-});
+document.addEventListener('dragenter', function () { dropArea.classList.add('visible'); });
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);

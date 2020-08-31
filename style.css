@@ -253,12 +253,12 @@ body.light #output div {
   background-color: var(--etext);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s var(--trans), background-color 0s 1s;
+  transition: opacity 0.3s var(--trans), background-color 0s 0.5s;
 }
 .intro #drop-overlay.visible {
   opacity: 0.3;
   pointer-events: auto;
-  transition: opacity 0.2s var(--trans);
+  transition: opacity 0.1s var(--trans);
 }
 .intro .madeby {
   position: absolute;
