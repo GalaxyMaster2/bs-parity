@@ -42,6 +42,7 @@ errorToggle.addEventListener('change', function () { output.classList.toggle('sh
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('change', changeTheme);
+helpToggle.addEventListener('click', function() { this.classList.toggle('active'); });
 
 /**
  * reads the value of the input sliderPrecision and sets the variable sliderPrecision

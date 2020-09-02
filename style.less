@@ -99,6 +99,32 @@ body {
             cursor: pointer;
             line-height: 2rem;
         }
+
+        #help {
+            padding-left: 0rem;
+            margin-left: 0rem;
+
+            float: right; // sorry
+
+            display: block;
+            width: 0rem;
+            height: 2rem;
+
+            text-align: center;
+            line-height: 2rem;
+
+            border-radius: 1rem;
+            color: var(--bg);
+            background-color: var(--text);
+
+            cursor: pointer;
+            transition: background-color 0.2s var(--trans), width 1s var(--trans), margin-left 1s var(--trans);
+            
+            &:hover {
+                background-color: var(--etext);
+            }
+            &::after { content: '?'; }
+        }
     }
 
     @media screen and (max-width: 75rem) {
@@ -121,6 +147,10 @@ body {
 
 .topbar.done {
     max-width: calc(50vw + 96rem / 2 + 1rem);
+    div #help {
+        width: 2rem;
+        margin-left: 1rem;
+    }
 }
 
 // intro screen
