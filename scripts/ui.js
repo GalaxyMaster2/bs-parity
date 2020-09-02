@@ -8,6 +8,7 @@ console.log('ui js loaded');
 const pageTitle = document.getElementById('title');
 
 const loadError = document.getElementById('load-error-text');
+const closeError = document.getElementById('close-error');
 
 const renderContainer = document.getElementById('render-container');
 const markerContainer = document.getElementById('marker-container');
@@ -36,8 +37,6 @@ const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
 
 const wallsToggle = document.getElementById('toggleWalls');
-
-document.getElementsByClassName('close-error')[0].addEventListener('click', setIntroDivStatus);
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
