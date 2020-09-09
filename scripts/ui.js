@@ -506,15 +506,14 @@ function highlightElements(time) {
  * @param {Number} time - the (float) time at which to round & highlight
  * @returns {void} - outputs to DOM
  */
-function setTransitionDelays(toChange = '') {
+function setTransitionDelays(toChange = '', edge = true) {
     let query = '.parent.' + toChange;
     let visible = Array.from(output.querySelectorAll(query)); // convert nodelist to array so .includes can be used
     let count = visible.length;
 
-    let divisor = Math.max(10, Math.min(60, count));
-
-    for (let i = 0; i < Math.min(count, 60); i++) { // 
-        visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (i/divisor + 0.1).toFixed(3) + 's, ' + (i/divisor).toFixed(3) + 's';
+    for (let i = 0; i < count; i++) { // you'd hope that there'd be a better way to iteratively assign transition delays in 2020 but no
+        let delay = 0.5 * i / count;
+        visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (delay).toFixed(3) + 's, ' + delay.toFixed(3) + 's';
     }
 }
 
