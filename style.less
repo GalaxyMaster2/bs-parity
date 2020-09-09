@@ -721,11 +721,13 @@ body {
                     margin-right: 1rem; // to prevent width from changing when selected
                     border-radius: 1rem;
                     cursor: pointer;
+                    overflow: hidden;
                     background-color: var(--bg);
                     color: var(--text);
                     --time: 0.3s;
                     transition: background-color var(--time) var(--trans), color 0.3s var(--trans),
-                                margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+                                margin 0.3s var(--trans), border-radius 0.3s var(--trans),
+                                height 0.333s var(--trans), opacity 1s var(--trans);
 
                     &:hover, &:focus {
                         background-color: var(--mbg);
@@ -752,7 +754,8 @@ body {
                     }
 
                     &.info, &.warning, &.error {
-                        display: none;
+                        height: 0rem;
+                        opacity: 0;
                     }
 
                     img {
@@ -780,7 +783,8 @@ body {
                 &.showInfo .info,
                 &.showWarnings .warning,
                 &.showErrors .error {
-                    display: flex;
+                    height: 3.5rem;
+                    opacity: 1;
                 }
             }
         }

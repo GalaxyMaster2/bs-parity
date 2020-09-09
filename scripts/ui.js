@@ -475,15 +475,15 @@ function getRenderContainerHeight() {
 function highlightElements(time) {
     timeInd = time.toFixed(3);
 
-    document.querySelectorAll('.selected').forEach(
+    output.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
     let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error';
-    let QScount = document.querySelectorAll(selector).length;
+    let QScount = output.querySelectorAll(selector).length;
     let i = 0;
 
-    document.querySelectorAll(selector).forEach(
+    output.querySelectorAll(selector).forEach(
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
@@ -499,6 +499,23 @@ function highlightElements(time) {
             }
         }
     );
+}
+
+/**
+ * adds a little animation when items get hidden or shown, limited to under 60 items for now for performance reasons
+ * @param {Number} time - the (float) time at which to round & highlight
+ * @returns {void} - outputs to DOM
+ */
+function setTransitionDelays(toChange = '') {
+    let query = '.parent.' + toChange;
+    let visible = Array.from(output.querySelectorAll(query)); // convert nodelist to array so .includes can be used
+    let count = visible.length;
+
+    let divisor = Math.max(10, Math.min(60, count));
+
+    for (let i = 0; i < Math.min(count, 60); i++) { // 
+        visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (i/divisor + 0.1).toFixed(3) + 's, ' + (i/divisor).toFixed(3) + 's';
+    }
 }
 
 pageTitle.addEventListener('click', randomizeTitle);

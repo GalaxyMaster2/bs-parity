@@ -37,8 +37,16 @@ diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });
 
-warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
-errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+warningToggle.addEventListener('change', function () {
+    setTransitionDelays('warning');
+    output.classList.toggle('showWarnings'); 
+    highlightElements(centerBeat);
+});
+errorToggle.addEventListener('change', function () {
+    setTransitionDelays('error');
+    output.classList.toggle('showErrors'); 
+    highlightElements(centerBeat);
+});
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('change', changeTheme);

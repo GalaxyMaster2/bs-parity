@@ -693,10 +693,11 @@ body.light #output div {
   margin-right: 1rem;
   border-radius: 1rem;
   cursor: pointer;
+  overflow: hidden;
   background-color: var(--bg);
   color: var(--text);
   --time: 0.3s;
-  transition: background-color var(--time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+  transition: background-color var(--time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans), height 0.333s var(--trans), opacity 1s var(--trans);
 }
 .main .outputbox .outputwrapper #output .parent:hover,
 .main .outputbox .outputwrapper #output .parent:focus {
@@ -722,7 +723,8 @@ body.light #output div {
 .main .outputbox .outputwrapper #output .parent.info,
 .main .outputbox .outputwrapper #output .parent.warning,
 .main .outputbox .outputwrapper #output .parent.error {
-  display: none;
+  height: 0rem;
+  opacity: 0;
 }
 .main .outputbox .outputwrapper #output .parent img {
   height: 2rem;
@@ -745,7 +747,8 @@ body.light #output div {
 .main .outputbox .outputwrapper #output.showInfo .info,
 .main .outputbox .outputwrapper #output.showWarnings .warning,
 .main .outputbox .outputwrapper #output.showErrors .error {
-  display: flex;
+  height: 3.5rem;
+  opacity: 1;
 }
 @media screen and (max-width: 75rem) {
   .main {
