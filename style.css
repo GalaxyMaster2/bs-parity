@@ -270,17 +270,22 @@ body.light #output div {
   background-color: var(--bg);
 }
 .intro #load-error #close-error {
-  text-align: right;
-  font-size: 1.5rem;
-  line-height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
   position: absolute;
   right: 0.75rem;
-  top: 0.5rem;
+  top: 0.75rem;
   cursor: pointer;
-  color: var(--etext);
+  background-color: var(--etext);
+  -webkit-mask-image: url(assets/x.svg);
+          mask-image: url(assets/x.svg);
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
 }
 .intro #load-error #close-error:hover {
-  color: var(--red);
+  background-color: var(--red);
 }
 .intro .madeby {
   position: absolute;
