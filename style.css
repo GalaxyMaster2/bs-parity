@@ -348,31 +348,23 @@ body.light #output div {
   max-width: 50rem;
   flex: 10;
 }
-.main .renderbox #render-wrapper {
-  overflow: hidden;
-  margin-bottom: var(--gap);
-  border-radius: 1rem;
-}
-@-moz-document url-prefix() {
-  .main .renderbox #render-wrapper {
-    border-radius: 0;
-  }
-}
-.main .renderbox #render-wrapper #render-container {
+.main .renderbox #render-container {
   position: relative;
   width: 100%;
   height: 20rem;
   background-color: var(--ebg);
   transition: background-color 0.3s var(--trans);
   border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
-.main .renderbox #render-wrapper #render-container.rotating {
+.main .renderbox #render-container.rotating {
   cursor: all-scroll;
 }
-.main .renderbox #render-wrapper #render-container.scrolling {
+.main .renderbox #render-container.scrolling {
   cursor: s-resize;
 }
-.main .renderbox #render-wrapper #render-container #grid-container {
+.main .renderbox #render-container #grid-container {
   position: absolute;
   --width: calc(10rem * 4 / 3);
   --height: 10rem;
@@ -383,27 +375,27 @@ body.light #output div {
   transform-style: preserve-3d;
   pointer-events: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container {
+.main .renderbox #render-container #grid-container #marker-container {
   transform-style: preserve-3d;
   pointer-events: auto;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker {
+.main .renderbox #render-container #grid-container #marker-container .marker {
   display: flex;
   align-items: center;
   position: absolute;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker.decimalTime .marker-number {
+.main .renderbox #render-container #grid-container #marker-container .marker.decimalTime .marker-number {
   opacity: 0;
   cursor: default;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker.translucent {
+.main .renderbox #render-container #grid-container #marker-container .marker.translucent {
   opacity: 0.5;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker .marker-line {
+.main .renderbox #render-container #grid-container #marker-container .marker .marker-line {
   background-color: var(--etext);
   transition: background-color 0.3s var(--trans);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #marker-container .marker .marker-number {
+.main .renderbox #render-container #grid-container #marker-container .marker .marker-number {
   color: var(--etext);
   margin-left: 0.3rem;
   font-size: 1.8rem;
@@ -411,19 +403,19 @@ body.light #output div {
   transition: color 0.3s var(--trans);
   cursor: pointer;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container {
+.main .renderbox #render-container #grid-container #wall-container {
   display: none;
   transform-style: preserve-3d;
   pointer-events: auto;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall {
+.main .renderbox #render-container #grid-container #wall-container .wall {
   --size: calc(10rem / 3);
   position: absolute;
   transform-style: preserve-3d;
   pointer-events: none;
   top: 0;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face {
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
   position: absolute;
@@ -432,46 +424,46 @@ body.light #output div {
   outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
   outline-offset: -0.0625rem;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.front {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.front {
   width: calc(var(--size) * var(--width));
   height: calc(var(--size) * 3 * var(--height));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.back {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.back {
   transform: rotateY(180deg) translateZ(var(--depth));
   width: calc(var(--size) * var(--width));
   height: calc(var(--size) * 3 * var(--height));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.left {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.left {
   transform: rotateY(-90deg) translate3d(calc(var(--depth) / -2), 0, calc(var(--depth) / 2));
   width: var(--depth);
   height: calc(var(--size) * 3 * var(--height));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.right {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.right {
   transform: rotateY(90deg) translate3d(calc(var(--depth) / 2), 0, calc(var(--depth) / -2 + var(--size) * var(--width)));
   width: var(--depth);
   height: calc(var(--size) * 3 * var(--height));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.top {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.top {
   transform: rotateX(90deg) translate3d(0, calc(var(--depth) / -2), calc(var(--depth) / 2));
   width: calc(var(--size) * var(--width));
   height: var(--depth);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall .wall-face.bottom {
+.main .renderbox #render-container #grid-container #wall-container .wall .wall-face.bottom {
   transform: rotateX(-90deg) translate3d(0, calc(var(--depth) / 2), calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
   width: calc(var(--size) * var(--width));
   height: var(--depth);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.translucent .wall-face {
+.main .renderbox #render-container #grid-container #wall-container .wall.translucent .wall-face {
   background-color: rgba(221, 48, 48, 0.6);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #wall-container .wall.recycled {
+.main .renderbox #render-container #grid-container #wall-container .wall.recycled {
   opacity: 0;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container {
+.main .renderbox #render-container #grid-container #note-container {
   transform-style: preserve-3d;
   pointer-events: auto;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note {
+.main .renderbox #render-container #grid-container #note-container .note {
   --size: calc(10rem / 3 / 1.41);
   width: var(--size);
   height: var(--size);
@@ -479,7 +471,7 @@ body.light #output div {
   transform-style: preserve-3d;
   cursor: pointer;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face {
+.main .renderbox #render-container #grid-container #note-container .note .note-face {
   --border-size: 0.125rem;
   position: absolute;
   display: block;
@@ -488,111 +480,111 @@ body.light #output div {
   border-radius: 0.125rem;
   outline-offset: calc(var(--border-size) * -1);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.front {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.front {
   transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.back {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.back {
   transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.left {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.left {
   transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.right {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.right {
   transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.top {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.top {
   transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bottom {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.front {
   transform: rotateY(0deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.back {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.back {
   transform: rotateY(45deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.left {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.left {
   transform: rotateY(90deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.right {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.right {
   transform: rotateZ(135deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.top {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.top {
   transform: rotateX(-45deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb.bottom {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb.bottom {
   transform: rotateX(45deg) translateZ(0);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.bomb {
   background-image: url('assets/bomb.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.dot_front_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.dot_front_blue {
   background-image: url('assets/dot_front_blue.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.dot_front_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.dot_front_red {
   background-image: url('assets/dot_front_red.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_front_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_front_blue {
   background-image: url('assets/note_front_blue.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_front_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_front_red {
   background-image: url('assets/note_front_red.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_side_blue {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_side_blue {
   background-image: url('assets/note_side_blue.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note .note-face.note_side_red {
+.main .renderbox #render-container #grid-container #note-container .note .note-face.note_side_red {
   background-image: url('assets/note_side_red.svg');
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingWarn .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face {
   outline: black solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.precedingWarn .note-face.bomb.front {
   outline: black solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingError .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face {
   outline: black solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingError .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.precedingError .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.precedingError .note-face.bomb.front {
   outline: black solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.warn .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face {
   outline: var(--warning) solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.warn .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.warn .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.warn .note-face.bomb.front {
   outline: var(--warning) solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face {
   outline: var(--error) solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb {
   border-radius: 0.75rem;
   outline: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.error .note-face.bomb.front {
+.main .renderbox #render-container #grid-container #note-container .note.error .note-face.bomb.front {
   outline: var(--error) solid var(--border-size);
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.translucent .note-face {
+.main .renderbox #render-container #grid-container #note-container .note.translucent .note-face {
   opacity: 0.3;
 }
-.main .renderbox #render-wrapper #render-container #grid-container #note-container .note.recycled {
+.main .renderbox #render-container #grid-container #note-container .note.recycled {
   opacity: 0;
   pointer-events: none;
 }
-.main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
+.main .renderbox #render-container #grid-container.showWalls #wall-container {
   display: block;
 }
 .main .renderbox .sliders-container {
