@@ -156,7 +156,7 @@ body {
 // intro screen
 .intro {
     position: absolute;
-    z-index: 0;
+    z-index: 2;
     width: 100%;
     height: 100%;
     left: 0;
@@ -219,7 +219,7 @@ body {
             }
         }
 
-        .uploading-text, .done-text, .load-error, .downloading-text {
+        .uploading-text, .done-text, .downloading-text {
             display: none;
             margin: 1rem 0rem;
         }
@@ -262,14 +262,55 @@ body {
         }
     }
 
-    #drop-overlay {
+    .overlay {
         position: fixed;
+        z-index: 3;
         width: 100%;
         height: 100%;
-        background-color: var(--etext);
         opacity: 0;
-        pointer-events: none;
         transition: opacity 0.3s var(--trans);
+        pointer-events: none;
+
+        &.visible {
+            pointer-events: auto;
+        }
+    }
+
+    #drop-overlay {
+        background-color: var(--etext);
+
+        &.visible {
+            opacity: 0.3;
+            transition: opacity 0.1s var(--trans);
+        }
+    }
+
+    #error-overlay {
+        background-color: black;
+    }
+
+    #load-error {
+        display: none;
+        position: absolute;
+        z-index: 4;
+        padding: 5rem;
+        border-radius: 0.375rem;
+        background-color: var(--bg);
+
+        #close-error {
+            width: 1rem;
+            height: 1rem;
+            position: absolute;
+            right: 0.75rem;
+            top: 0.75rem;
+            cursor: pointer;
+            background-color: var(--etext);
+            mask-image: url(assets/x.svg);
+            mask-size: contain;
+            mask-repeat: no-repeat;
+
+            &:hover { background-color: var(--red); }
+        }
     }
 
     .madeby {
@@ -282,7 +323,7 @@ body {
         transform: translateX(-100%);
     }
 
-    &.uploading, &.done, &.error, &.downloading {
+    &.uploading, &.done, &.downloading {
         label {
             display: none;
         }
@@ -310,8 +351,14 @@ body {
     }
 
     &.error {
-        .load-error {
-            display: inline;
+        #error-overlay {
+            opacity: 0.6;
+            transition: opacity 0s var(--trans);
+            pointer-events: auto;
+        }
+
+        #load-error {
+            display: block;
         }
     }
 }

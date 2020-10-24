@@ -3,6 +3,10 @@
 
 console.log('input js loaded');
 
+closeError.addEventListener('click', function () {
+    setIntroDivStatus();
+});
+
 renderContainer.addEventListener('wheel', scroll);
 renderContainer.addEventListener('mousedown', handleMouseDown);
 document.addEventListener('keydown', handleKeyDown);

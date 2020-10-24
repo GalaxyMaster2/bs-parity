@@ -141,7 +141,7 @@ body.light #output div {
 }
 .intro {
   position: absolute;
-  z-index: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   left: 0;
@@ -198,7 +198,6 @@ body.light #output div {
 }
 .intro .choose-file .uploading-text,
 .intro .choose-file .done-text,
-.intro .choose-file .load-error,
 .intro .choose-file .downloading-text {
   display: none;
   margin: 1rem 0rem;
@@ -247,14 +246,53 @@ body.light #output div {
   box-shadow: inset 0 0 0 0.125rem var(--blue);
   color: var(--dbg);
 }
-.intro #drop-overlay {
+.intro .overlay {
   position: fixed;
+  z-index: 3;
   width: 100%;
   height: 100%;
-  background-color: var(--etext);
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.3s var(--trans);
+  pointer-events: none;
+}
+.intro .overlay.visible {
+  pointer-events: auto;
+}
+.intro #drop-overlay {
+  background-color: var(--etext);
+}
+.intro #drop-overlay.visible {
+  opacity: 0.3;
+  transition: opacity 0.1s var(--trans);
+}
+.intro #error-overlay {
+  background-color: black;
+}
+.intro #load-error {
+  display: none;
+  position: absolute;
+  z-index: 4;
+  padding: 5rem;
+  border-radius: 0.375rem;
+  background-color: var(--bg);
+}
+.intro #load-error #close-error {
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  cursor: pointer;
+  background-color: var(--etext);
+  -webkit-mask-image: url(assets/x.svg);
+          mask-image: url(assets/x.svg);
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+.intro #load-error #close-error:hover {
+  background-color: var(--red);
 }
 .intro .madeby {
   position: absolute;
@@ -266,13 +304,11 @@ body.light #output div {
 }
 .intro.uploading label,
 .intro.done label,
-.intro.error label,
 .intro.downloading label {
   display: none;
 }
 .intro.uploading #drop-overlay,
 .intro.done #drop-overlay,
-.intro.error #drop-overlay,
 .intro.downloading #drop-overlay {
   display: none;
 }
@@ -290,8 +326,13 @@ body.light #output div {
   transition: transform 1s var(--trans);
   transform: translateX(0%);
 }
-.intro.error .load-error {
-  display: inline;
+.intro.error #error-overlay {
+  opacity: 0.6;
+  transition: opacity 0s var(--trans);
+  pointer-events: auto;
+}
+.intro.error #load-error {
+  display: block;
 }
 .main {
   position: relative;
