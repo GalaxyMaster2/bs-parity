@@ -246,20 +246,27 @@ body.light #output div {
   box-shadow: inset 0 0 0 0.125rem var(--blue);
   color: var(--dbg);
 }
-.intro #drop-overlay {
+.intro .overlay {
   position: fixed;
   z-index: 3;
   width: 100%;
   height: 100%;
-  background-color: var(--etext);
   opacity: 0;
+  transition: opacity 0.3s var(--trans);
   pointer-events: none;
-  transition: opacity 0.3s var(--trans), background-color 0s 0.5s;
+}
+.intro .overlay.visible {
+  pointer-events: auto;
+}
+.intro #drop-overlay {
+  background-color: var(--etext);
 }
 .intro #drop-overlay.visible {
   opacity: 0.3;
-  pointer-events: auto;
   transition: opacity 0.1s var(--trans);
+}
+.intro #error-overlay {
+  background-color: black;
 }
 .intro #load-error {
   display: none;
@@ -319,11 +326,10 @@ body.light #output div {
   transition: transform 1s var(--trans);
   transform: translateX(0%);
 }
-.intro.error #drop-overlay {
-  transition: opacity 0.4s var(--trans), background-color 0s 0s;
-  background-color: black;
+.intro.error #error-overlay {
   opacity: 0.6;
-  pointer-events: all;
+  transition: opacity 0s var(--trans);
+  pointer-events: auto;
 }
 .intro.error #load-error {
   display: block;

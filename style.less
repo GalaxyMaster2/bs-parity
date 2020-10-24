@@ -262,21 +262,31 @@ body {
         }
     }
 
-    #drop-overlay {
+    .overlay {
         position: fixed;
         z-index: 3;
         width: 100%;
         height: 100%;
-        background-color: var(--etext);
         opacity: 0;
+        transition: opacity 0.3s var(--trans);
         pointer-events: none;
-        transition: opacity 0.3s var(--trans), background-color 0s 0.5s;
+
+        &.visible {
+            pointer-events: auto;
+        }
+    }
+
+    #drop-overlay {
+        background-color: var(--etext);
 
         &.visible {
             opacity: 0.3;
-            pointer-events: auto;
             transition: opacity 0.1s var(--trans);
         }
+    }
+
+    #error-overlay {
+        background-color: black;
     }
 
     #load-error {
@@ -341,11 +351,10 @@ body {
     }
 
     &.error {
-        #drop-overlay {
-            transition: opacity 0.4s var(--trans), background-color 0s 0s;
-            background-color: black;
+        #error-overlay {
             opacity: 0.6;
-            pointer-events: all;
+            transition: opacity 0s var(--trans);
+            pointer-events: auto;
         }
 
         #load-error {
