@@ -83,6 +83,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding: 1rem;
 
     #title {
@@ -91,39 +92,35 @@ body {
     }
 
     div {
+        align-self: flex-start;
         padding-left: 1rem;
+        white-space: nowrap;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
         label, input {
-            white-space: nowrap;
-            vertical-align: middle;
+            display: block;
             cursor: pointer;
-            line-height: 2rem;
         }
 
         #help {
-            padding-left: 0rem;
-            margin-left: 0rem;
-
-            float: right; // sorry
-
             display: block;
-            width: 0rem;
-            height: 2rem;
-
-            text-align: center;
-            line-height: 2rem;
-
-            border-radius: 1rem;
-            color: var(--bg);
+            width: 1.75rem;
+            height: 1.75rem;
+            margin-left: 0.5rem;
             background-color: var(--text);
+            color: var(--bg);
+            text-decoration: none;
+            text-align: center;
+            line-height: 1.75rem;
+            border-radius: 50%;
+            transition: background-color 0.3s var(--trans), color 0.3s var(--trans);
 
-            cursor: pointer;
-            transition: background-color 0.2s var(--trans), width 1s var(--trans), margin-left 1s var(--trans);
-            
             &:hover {
                 background-color: var(--etext);
+                transition-duration: 0.1s;
             }
-            &::after { content: '?'; }
         }
     }
 
@@ -131,26 +128,16 @@ body {
         #title {
             font-size: 1.5rem;
         }
-        label, input {
-            line-height: 1.5rem !important;
-        }
     }
-    @media screen and (max-width: 30rem) {
+    @media screen and (max-width: 31.5rem) {
         #title {
             font-size: 1.25rem;
-        }
-        label, input {
-            line-height: 1.25rem !important;
         }
     }
 }
 
 .topbar.done {
     max-width: calc(50vw + 96rem / 2 + 1rem);
-    div #help {
-        width: 2rem;
-        margin-left: 1rem;
-    }
 }
 
 // intro screen

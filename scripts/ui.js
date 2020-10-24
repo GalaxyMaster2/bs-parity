@@ -25,7 +25,6 @@ const urlInput = document.getElementById('url');
 const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
 const themeToggle = document.getElementById('theme');
-const helpToggle = document.getElementById('help');
 
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
