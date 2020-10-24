@@ -5,7 +5,9 @@
 
 console.log('ui js loaded');
 
+const topbar = document.getElementById('topbar');
 const pageTitle = document.getElementById('title');
+const themeToggle = document.getElementById('theme');
 
 const loadError = document.getElementById('load-error-text');
 const closeError = document.getElementById('close-error');
@@ -24,7 +26,6 @@ const urlInput = document.getElementById('url');
 
 const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
-const themeToggle = document.getElementById('theme');
 
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
@@ -435,13 +436,14 @@ function getSelectedDiff(input = diffSelect) {
  */
 function fileLoaded() {
     setIntroDivStatus('done');
-    pageTitle.parentElement.classList.add('done');
+    topbar.classList.add('done');
     console.log('successful read!');
 
-    // disable the intro screen after animation
-    // unfortunately this doesn't seem to be possible in pure CSS
+    // set properties after transition is over
+    // for things that are not possible with pure CSS
     setTimeout(function () {
         introDiv.style.setProperty('display', 'none');
+        topbar.style.setProperty('transition', 'none');
     }, 1000);
 }
 
