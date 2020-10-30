@@ -522,3 +522,11 @@ const easterEggTitles = [
 function randomizeTitle() {
     pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
 }
+
+// read all toggles on page load
+window.addEventListener('load', function () {
+    readToggle(wallsToggle, gridContainer, 'showWalls');
+    readToggle(warningToggle, output, 'showWarnings');
+    readToggle(errorToggle, output, 'showErrors');
+    readToggle(themeToggle, document.body, 'dark', 'light');
+});

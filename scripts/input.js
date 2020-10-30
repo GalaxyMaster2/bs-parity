@@ -32,7 +32,7 @@ perspectiveSlider.addEventListener('input', function () {
 });
 
 wallsToggle.addEventListener('change', function () {
-    gridContainer.classList.toggle('showWalls');
+    readToggle(wallsToggle, gridContainer, 'showWalls');
     render();
 });
 
@@ -40,11 +40,40 @@ diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });
 
-warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
-errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+warningToggle.addEventListener('change', function () {
+    readToggle(warningToggle, output, 'showWarnings');
+    highlightElements(centerBeat);
+});
+errorToggle.addEventListener('change', function () {
+    readToggle(errorToggle, output, 'showErrors');
+    highlightElements(centerBeat);
+});
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
-themeToggle.addEventListener('change', changeTheme);
+themeToggle.addEventListener('change', function () {
+    readToggle(themeToggle, document.body, 'dark', 'light');
+});
+
+/**
+ * sets or unsets a CSS class on an element based on a checkbox input state
+ * @param {HTMLInputElement} toggle - the checkbox input to read
+ * @param {HTMLElement} element - the element to apply the styleClass to
+ * @param {String} styleClass - the class to be applied to the element
+ * @param {String} [styleClass2] - (optional) the second class to be applied, inverted
+ */
+function readToggle(toggle, element, styleClass, styleClass2) {
+    if (toggle.checked) {
+        element.classList.add(styleClass);
+        if (styleClass2) {
+            element.classList.remove(styleClass2);
+        }
+    } else {
+        element.classList.remove(styleClass);
+        if (styleClass2) {
+            element.classList.add(styleClass2);
+        }
+    }
+}
 
 /**
  * reads the value of the input sliderPrecision and sets the variable sliderPrecision
@@ -56,15 +85,6 @@ function readSliderPrecision() {
     sliderPrecision = (sliderPrecision == Infinity) ? 0 : sliderPrecision;
     checkParity();
     render();
-}
-
-/**
- * swaps classes of dark and light theme, colour change logic lies in css
- */
-function changeTheme() {
-    let body = document.getElementsByTagName('body')[0];
-    body.classList.toggle('dark');
-    body.classList.toggle('light');
 }
 
 // fancy click handler
