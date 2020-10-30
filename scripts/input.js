@@ -9,7 +9,6 @@ closeError.addEventListener('click', function () {
 
 renderContainer.addEventListener('wheel', scroll);
 renderContainer.addEventListener('mousedown', handleMouseDown);
-document.addEventListener('keydown', handleKeyDown);
 
 renderDistanceSlider.addEventListener('input', function () {
     renderDistance = parseFloat(renderDistanceSlider.value);

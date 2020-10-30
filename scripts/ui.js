@@ -437,6 +437,7 @@ function getSelectedDiff(input = diffSelect) {
 function fileLoaded() {
     setIntroDivStatus('done');
     topbar.classList.add('done');
+    document.addEventListener('keydown', handleKeyDown);
     console.log('successful read!');
 
     // set properties after transition is over
