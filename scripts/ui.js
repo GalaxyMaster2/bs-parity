@@ -195,7 +195,19 @@ async function downloadFromKey(key) {
         extractZip(response);
     } catch (e) {
         console.error(e);
-        displayLoadError('unable to download map ' + key + ' from beatsaver');
+        let errorMessage = 'unable to download map ' + key + ' from beatsaver';
+        if (typeof e === 'string') {
+            if (e.includes('response')) {
+                let status = e.replace('response ', '');
+                switch (status) {
+                    case '404':
+                        errorMessage = 'map ' + key + ' does not exist on beatsaver';
+                }
+            } else if (e.includes('connection timeout')) {
+                errorMessage = 'connection timeout';
+            }
+        }
+        displayLoadError(errorMessage);
     }
 }
 
@@ -220,8 +232,23 @@ async function downloadFromUrl(url) {
             // it's impossible to tell a CORS error apart from other network errors
             // so we have to try all proxies in either case
             console.error(e);
+            let errorMessage;
             if (currentProxy === (corsProxies.length - 1)) {
-                displayLoadError('error downloading map, try manually uploading it instead');
+                errorMessage = 'error downloading map, try manually uploading it instead';
+            }
+            if (typeof e === 'string') {
+                if (e.includes('response')) {
+                    let status = e.replace('response ', '');
+                    switch (status) {
+                        case '404':
+                            errorMessage = 'map zip at url does not exist (404)';
+                    }
+                } else if (e.includes('connection timeout')) {
+                    errorMessage = 'connection timeout';
+                }
+            }
+            if (errorMessage) {
+                displayLoadError(errorMessage);
             } else {
                 console.log('download failed, trying next CORS proxy');
                 attemptDownload(currentProxy + 1);
@@ -258,7 +285,7 @@ function download(url) {
         });
         xhr.addEventListener('load', function () {
             if (xhr.status !== 200) {
-                reject('response ' + xhr.status + ' not ok');
+                reject('response ' + xhr.status);
             } else {
                 resolve(xhr.response);
             }
