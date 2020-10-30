@@ -184,54 +184,90 @@ readQuery();
  * attempts to download a map from beatsaver with the given key
  * @param {String} key - a beatsaver key of a map to download
  */
-function downloadFromKey(key) {
+async function downloadFromKey(key) {
     console.log('downloading map #' + key);
     let url = 'https://beatsaver.com/api/download/key/' + key;
 
     setIntroDivStatus('downloading');
-    JSZipUtils.getBinaryContent(url, function (err, data) {
-        if (err) {
-            console.error(err);
-            displayLoadError('unable to download map ' + key + ' from beatsaver');
-        } else {
-            extractZip(data);
-        }
-    });
+    try {
+        let response = await download(url);
+        extractZip(response);
+    } catch (e) {
+        console.error(e);
+        displayLoadError('unable to download map ' + key + ' from beatsaver');
+    }
 }
 
 /**
  * attempts to download a map from the given url
  * @param {String} url - a url from which to download a map
  */
-function downloadFromUrl(url) {
+async function downloadFromUrl(url) {
     console.log('downloading map from url: ' + url);
     const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
 
-    function attemptDownload(currentProxy = -1) {
+    async function attemptDownload(currentProxy = -1) {
         let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
-        JSZipUtils.getBinaryContent(currentUrl, function (err, data) {
-            if (err) {
-                // it's impossible to tell a CORS error apart from other network errors
-                // so we have to try all proxies in either case
-                console.error(err);
-                if (currentProxy === (corsProxies.length - 1)) {
-                    displayLoadError('error downloading map, try manually uploading it instead');
-                } else {
-                    console.log('download failed, trying next CORS proxy');
-                    attemptDownload(currentProxy + 1);
-                }
+        try {
+            let response = await download(currentUrl);
+            if (response.byteLength === 0) {
+                displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
             } else {
-                if (data.byteLength === 0) {
-                    displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
-                } else {
-                    extractZip(data);
-                }
+                extractZip(response);
             }
-        });
+        } catch (e) {
+            // it's impossible to tell a CORS error apart from other network errors
+            // so we have to try all proxies in either case
+            console.error(e);
+            if (currentProxy === (corsProxies.length - 1)) {
+                displayLoadError('error downloading map, try manually uploading it instead');
+            } else {
+                console.log('download failed, trying next CORS proxy');
+                attemptDownload(currentProxy + 1);
+            }
+        }
     }
 
     setIntroDivStatus('downloading');
     attemptDownload();
+}
+
+/**
+ * downloads from the given url, returning a promise that resolves to an ArrayBuffer
+ * @param {String} url - the url from which to download
+ * @returns {Promise} - returns a promise that resolves to the fetched data as an ArrayBuffer, or rejects on error
+ */
+function download(url) {
+    return new Promise(function (resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.responseType = 'arraybuffer';
+        xhr.timeout = 5000;
+        xhr.addEventListener('progress', updateProgress);
+        xhr.addEventListener('error', function () {
+            reject('error downloading map');
+        });
+        xhr.addEventListener('timeout', function () {
+            reject('connection timeout');
+        });
+        xhr.addEventListener('load', function () {
+            if (xhr.status !== 200) {
+                reject('response ' + xhr.status + ' not ok');
+            } else {
+                resolve(xhr.response);
+            }
+        });
+        xhr.send();
+    });
+}
+
+/**
+ * updates the progress indicator from the given ProgressEvent
+ * @param {ProgressEvent} e - ProgressEvent from XMLHttpRequest
+ */
+function updateProgress(e) {
+    // TODO: make a progress indicator and update it here
+    console.log('progress: ' + (e.loaded / 1024 / 1024) + '/' + (e.total / 1024 / 1024));
 }
 
 /**
