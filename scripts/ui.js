@@ -26,6 +26,7 @@ const urlInput = document.getElementById('url');
 
 const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
+const downloadProgress = document.getElementById('download-progress');
 
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
@@ -239,6 +240,7 @@ async function downloadFromUrl(url) {
  */
 function download(url) {
     return new Promise(function (resolve, reject) {
+        clearProgress();
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url);
         xhr.responseType = 'arraybuffer';
@@ -266,8 +268,14 @@ function download(url) {
  * @param {ProgressEvent} e - ProgressEvent from XMLHttpRequest
  */
 function updateProgress(e) {
-    // TODO: make a progress indicator and update it here
-    console.log('progress: ' + (e.loaded / 1024 / 1024) + '/' + (e.total / 1024 / 1024));
+    downloadProgress.textContent = ': ' + (e.loaded / 1024 / 1024).toFixed(1) + '/' + (e.total / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+/**
+ * clears the progress indicator
+ */
+function clearProgress() {
+    downloadProgress.textContent = '';
 }
 
 /**
