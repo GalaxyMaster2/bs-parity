@@ -260,6 +260,8 @@ body.light #output div {
   position: absolute;
   z-index: 4;
   padding: 5rem;
+  margin: 1rem;
+  max-width: 30rem;
   border-radius: 0.375rem;
   background-color: var(--bg);
 }
