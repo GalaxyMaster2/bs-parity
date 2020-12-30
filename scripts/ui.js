@@ -332,3 +332,19 @@ const easterEggTitles = [
 function randomizeTitle() {
     pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
 }
+
+async function getFileFromUrl(url){
+    introDiv.classList.add('uploading');
+    const response = await fetch(url);
+    if (response.status == 200) {
+        const data = await response.blob();
+        readFile([new File([data], 'map.zip', {
+            type: response.headers.get('content-type') || 'application/octet-stream',
+        })]);
+    } else {
+        displayLoadError('Got error ' + response.status + ' while fetching zip');
+    }
+}
+
+const params = new URLSearchParams(location.search);
+if (params.has('url')) getFileFromUrl(params.get('url'));
