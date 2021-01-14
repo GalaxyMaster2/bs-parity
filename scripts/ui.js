@@ -62,17 +62,24 @@ urlInput.addEventListener('keydown', function (event) {
  * @param {String} input - user input entered in the url input box
  */
 function parseUrlInput(input) {
-    let result = validateUrl(input); // try validating url
+    let result = validateMapKey(input); // try validating map key
+    
     if (typeof result === 'string') {
-        downloadFromUrl(result); // valid url
+        downloadFromKey(result); // valid key
     } else {
+        result = validateUrl(input); // try validating url
+
+        if (typeof result === 'string') {
+            downloadFromUrl(result); // valid url
+        }
+
         if (result === -3) {
             // url is link to beatsaver map
             input = input.match(/([^\/]*)\/*$/)[1]; // extract beatsaver key
-        }
-        result = validateMapKey(input); // try validating map key
-        if (typeof result === 'string') {
-            downloadFromKey(result); // valid key
+            result = validateMapKey(input);
+            if (typeof result === 'string') {
+                downloadFromKey(result);
+            }
         }
     }
 }
