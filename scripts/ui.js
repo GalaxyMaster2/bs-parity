@@ -63,7 +63,7 @@ urlInput.addEventListener('keydown', function (event) {
  */
 function parseUrlInput(input) {
     let result = validateMapKey(input); // try validating map key
-    
+
     if (typeof result === 'string') {
         downloadFromKey(result); // valid key
     } else {
@@ -240,7 +240,8 @@ async function downloadFromUrl(url) {
             // so we have to try all proxies in either case
             console.error(e);
             let errorMessage;
-            if (currentProxy === (corsProxies.length - 1)) {
+            let lastProxy = (currentProxy === (corsProxies.length - 1));
+            if (lastProxy) {
                 errorMessage = 'error downloading map, try manually uploading it instead';
             }
             if (typeof e === 'string') {
@@ -250,7 +251,7 @@ async function downloadFromUrl(url) {
                         case '404':
                             errorMessage = 'map zip at url does not exist (404)';
                     }
-                } else if (e.includes('connection timeout')) {
+                } else if (e.includes('connection timeout') && lastProxy) {
                     errorMessage = 'connection timeout';
                 }
             }
