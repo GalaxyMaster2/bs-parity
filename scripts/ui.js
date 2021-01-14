@@ -283,7 +283,12 @@ function download(url) {
         let startTime = Date.now();
         xhr.addEventListener('progress', function (e) {
             xhr.timeout += Date.now() - startTime; // reset timeout on progress
-            updateProgress(e.loaded, e.total);
+
+            if (e.lengthComputable) {
+                updateProgress(e.loaded, e.total);
+            } else {
+                updateProgress(e.loaded, 0);
+            }
         });
         xhr.addEventListener('error', function () {
             reject('error downloading map');
@@ -308,7 +313,9 @@ function download(url) {
  * @param {Number} total - the total bytes being downloaded
  */
 function updateProgress(loaded, total) {
-    downloadProgress.textContent = ': ' + (loaded / 1024 / 1024).toFixed(1) + '/' + (total / 1024 / 1024).toFixed(1) + ' MB';
+    let loadedText = (loaded / 1024 / 1024).toFixed(1);
+    let totalText = ((total === 0) ? '' : ('/' + (total / 1024 / 1024).toFixed(1)));
+    downloadProgress.textContent = ': ' + loadedText + totalText + ' MB';
 }
 
 /**
