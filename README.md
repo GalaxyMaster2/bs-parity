@@ -25,7 +25,7 @@ In most cases you won't have to adjust this setting from the default value of 1/
 - Doesn't work when the minimum slider precision is less than or equal to the minimum non-slider precision for a given color (e.g. 1/8th slider and 1/16th burst stream in the same map)
 - Doesn't work reliably with dot spam
 - Doesn't work reliably with bomb tunnels (spirals are fine)
-- Might not work with unconventional (e.g. horizontal, corner) bomb resets
+- Might not work with unconventional bomb usage
 
 # Goal of this project
 The end goal of this project is to provide a tool to easily check a map for common errors, such as parity errors and vision blocks.
@@ -39,11 +39,11 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Map zip support
 - [x] Downloading map from url
 - [x] Downloading map from beatsaver id
+- [x] Help page
 
 # Planned for future
 - [ ] Arm rotation support in parity algorithm
 - [ ] Vision block detection
-- [ ] Help page
 
 # Under consideration
 - [ ] Detection of improper stacks/windows/sliders etc.
@@ -60,4 +60,3 @@ The end goal of this project is to provide a tool to easily check a map for comm
 
 # Known issues
 - Due to a bug in Chromium (used in Chrome, Edge, Opera, etc.) walls can render incorrectly for some camera angles, especially with higher perspective intensity settings. Due to this, wall rendering is disabled by default.
-- A bug in Firefox causes rendering problems when hiding overflowed elements in a container with rounded corners. As a result of a workaround rendered elements will overflow the rounded corners in Firefox.
