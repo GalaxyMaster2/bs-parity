@@ -18,7 +18,7 @@ const lineLayers = ['bottom', 'middle', 'top'];
 
 // the minimum time between the last note or bomb for a bomb to be considered for each saber
 // make user configurable?
-const bombMinTime = 0.25;
+const bombMinTime = 1 / 4;
 
 // the tolerance when making float comparisons
 // needed because different editors round in different ways
@@ -48,36 +48,31 @@ const cuts = {
 };
 
 class Parity {
-    constructor() {
-        this.red = 'forehand';
-        this.blue = 'forehand';
+    constructor(type) {
+        this.parity = 'forehand';
+        this.lastInvertTime;
+        this.type = type;
     }
 
-    invert(color) {
-        this[color] === 'forehand' ? this[color] = 'backhand' : this[color] = 'forehand';
+    invert(time) {
+        this.parity === 'forehand' ? this.parity = 'backhand' : this.parity = 'forehand';
+        this.lastInvertTime = time;
     }
 
     init(notes) {
-        let firstRed;
-        let firstBlue;
+        let firstNote;
         for (let note of notes) {
-            if (!(firstRed) && types[note._type] === 'red') {
-                firstRed = note;
-            } else if (!(firstBlue) && types[note._type] === 'blue') {
-                firstBlue = note;
+            if (types[note._type] === this.type) {
+                firstNote = note;
+                console.log('found first note for ' + this.type);
+                break;
             }
         }
 
-        if (firstRed && cuts.red.good.forehand.includes(cutDirections[firstRed._cutDirection])) {
-            this.red = 'forehand';
+        if (firstNote && cuts[this.type].good.forehand.includes(cutDirections[firstNote._cutDirection])) {
+            this.parity = 'forehand';
         } else {
-            this.red = 'backhand';
-        }
-
-        if (firstBlue && cuts.blue.good.forehand.includes(cutDirections[firstBlue._cutDirection])) {
-            this.blue = 'forehand';
-        } else {
-            this.blue = 'backhand';
+            this.parity = 'backhand';
         }
     }
 }
@@ -268,8 +263,12 @@ function checkParity(notes = notesArray) {
     let warnCount = 0;
     let summary = document.getElementById('summary');
 
-    let parity = new Parity();
-    parity.init(notes);
+    let parity = {
+        red: new Parity('red'),
+        blue: new Parity('blue')
+    };
+    parity.red.init(notes);
+    parity.blue.init(notes);
 
     for (let i = 0; i < notes.length; i++) {
         let note = notes[i];
@@ -289,48 +288,59 @@ function checkParity(notes = notesArray) {
                 continue;
             }
 
-            // for each saber: ignore the bomb if it's within bombMinTime after a note or own-side bomb that says otherwise
+            let suggestedParity = (row === 'bottom' ? 'forehand' : 'backhand');
             let setParity = {
                 red: true,
                 blue: true
             };
-            let offset = -1;
-            let offsetNote = notes[i + offset];
-            while ((i + offset) >= 0 &&
-                (note._time - offsetNote._time - bombMinTime) <= comparisonTolerance) {
-                switch (types[offsetNote._type]) {
-                    case 'bomb':
-                        if (lineIndices[offsetNote._lineIndex] === 'middleLeft') {
-                            setParity.red = false;
-                        } else if (lineIndices[offsetNote._lineIndex] === 'middleRight') {
-                            setParity.blue = false;
-                        }
+            for (let color in parity) {
+                // look ahead for bombMinTime and skip setting parity if it would be set by a note, or inverted back by another bomb
+                let targetColumn = (color === 'red' ? 'middleLeft' : 'middleRight');
+                let targetRow = (row === 'bottom' ? 'top' : 'bottom');
+                for (let offsetNote of notes.slice(i + 1)) {
+                    if (offsetNote._time - note._time - bombMinTime > comparisonTolerance) {
                         break;
-                    case 'red':
-                        setParity.red = false;
+                    }
+
+                    if (types[offsetNote._type] === color
+                        && !(cuts[color].good[suggestedParity].includes(cutDirections[offsetNote._cutDirection]))) {
+                        setParity[color] = false;
                         break;
-                    case 'blue':
-                        setParity.blue = false;
+                    }
+
+                    if (types[offsetNote._type] === 'bomb'
+                        && lineIndices[offsetNote._lineIndex] === targetColumn
+                        && lineLayers[offsetNote._lineLayer] === targetRow) {
+                        setParity[color] = false;
                         break;
+                    }
                 }
-                offset--;
-                offsetNote = notes[i + offset];
+
+                // if it's been less than bombMinTime since the last parity invert, ignore bomb
+                if (note._time - parity[color].lastInvertTime - bombMinTime <= comparisonTolerance) {
+                    setParity[color] = false;
+
+                    // if bomb wouldn't set parity anyway, reset lastInvertTime
+                    if (suggestedParity === parity[color].parity) {
+                        parity[color].lastInvertTime = note._time;
+                    }
+                }
             }
 
             // invert parity if needed and log the bomb if so
             for (let color in setParity) {
                 if (setParity[color]) {
-                    if ((row === 'bottom' && parity[color] === 'backhand') || (row === 'top' && parity[color] === 'forehand')) {
-                        parity.invert(color);
-                        outputUI(note, parity[color], color, 'info');
+                    if (suggestedParity !== parity[color].parity) {
+                        parity[color].invert(note._time);
+                        outputUI(note, parity[color].parity, color, 'info');
                         infCount++;
                     }
                 }
             }
         } else {
-            if (cuts[type].good[parity[type]].includes(cutDirection)) {
-                parity.invert(type);
-            } else if (cuts[type].borderline[parity[type]].includes(cutDirection)) {
+            if (cuts[type].good[parity[type].parity].includes(cutDirection)) {
+                parity[type].invert(note._time);
+            } else if (cuts[type].borderline[parity[type].parity].includes(cutDirection)) {
                 note.warn = true;
 
                 try {
@@ -341,8 +351,8 @@ function checkParity(notes = notesArray) {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity[type], Strings.getBorderlineHitText(), 'warning');
-                parity.invert(type);
+                outputUI(note, parity[type].parity, Strings.getBorderlineHitText(), 'warning');
+                parity[type].invert(note._time);
                 warnCount++;
             } else {
                 note.error = true;
@@ -356,7 +366,7 @@ function checkParity(notes = notesArray) {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity[type], Strings.getParityBreakText(deltaTime), 'error');
+                outputUI(note, parity[type].parity, Strings.getParityBreakText(deltaTime), 'error');
                 errCount++;
             }
 
@@ -366,7 +376,7 @@ function checkParity(notes = notesArray) {
             while ((i + offset) < notes.length &&
                 (offsetNote._time - note._time - sliderPrecision) <= comparisonTolerance) {
                 if (note._type === offsetNote._type) {
-                    parity.invert(type);
+                    parity[type].invert(note._time);
                     break;
                 }
                 offset++;
