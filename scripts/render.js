@@ -100,7 +100,7 @@ let recycledWalls = [];
  */
 function render(notes = notesArray, walls = wallsArray) {
     if (!ready) {
-        outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
+        outputUI(false, 0, Strings.getNotReadyText(), 'error');
         return;
     }
 

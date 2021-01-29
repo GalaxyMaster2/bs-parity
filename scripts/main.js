@@ -47,9 +47,6 @@ const cuts = {
     }
 };
 
-const badHitText = 'Parity break, reset is necessary in ';
-const borderlineHitText = 'Borderline hit, not all players might read or be able to play this correctly';
-
 class Parity {
     constructor() {
         this.red = 'forehand';
@@ -262,7 +259,7 @@ function findCol(jsonData, type, lastVal) {
 function checkParity(notes = notesArray) {
     clearOutput();
     if (!ready) {
-        outputUI(false, 0, 'File loading not ready:|Please try again', 'error');
+        outputUI(false, 0, Strings.getNotReadyText(), 'error');
         return;
     }
 
@@ -344,7 +341,7 @@ function checkParity(notes = notesArray) {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity[type], borderlineHitText, 'warning');
+                outputUI(note, parity[type], Strings.getBorderlineHitText(), 'warning');
                 parity.invert(type);
                 warnCount++;
             } else {
@@ -352,15 +349,14 @@ function checkParity(notes = notesArray) {
                 let deltaTime = 0;
                 try {
                     let last = notes[findCol(notes, type, i - 1)];
-                    deltaTime = (note._time - last._time).toFixed(3);
-                    deltaTime += (deltaTime == 1) ? ' beat' : ' beats';
+                    deltaTime = (note._time - last._time);
                     last.precedingError = true;
                 }
                 catch {
                     console.log('error finding note!');
                 }
 
-                outputUI(note, parity[type], badHitText + deltaTime, 'error');
+                outputUI(note, parity[type], Strings.getParityBreakText(deltaTime), 'error');
                 errCount++;
             }
 
