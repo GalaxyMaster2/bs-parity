@@ -317,13 +317,14 @@ function checkParity(notes = notesArray) {
                 }
 
                 // if it's been less than bombMinTime since the last parity invert, ignore bomb
-                if (note._time - parity[color].lastInvertTime - bombMinTime <= comparisonTolerance) {
+                if (parity[color].lastInvertTime !== undefined
+                    && (note._time - parity[color].lastInvertTime - bombMinTime <= comparisonTolerance)) {
                     setParity[color] = false;
+                }
 
-                    // if bomb wouldn't set parity anyway, reset lastInvertTime
-                    if (suggestedParity === parity[color].parity) {
-                        parity[color].lastInvertTime = note._time;
-                    }
+                // if bomb wouldn't set parity anyway, reset lastInvertTime
+                if (suggestedParity === parity[color].parity) {
+                    parity[color].lastInvertTime = note._time;
                 }
             }
 
