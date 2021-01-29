@@ -47,7 +47,7 @@ const cuts = {
     }
 };
 
-const badHitText = 'Bad hit, wrist reset is necessary in ';
+const badHitText = 'Parity break, reset is necessary in ';
 const borderlineHitText = 'Borderline hit, not all players might read or be able to play this correctly';
 
 class Parity {
