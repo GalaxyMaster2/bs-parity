@@ -356,10 +356,9 @@ function checkParity(notes = notesArray) {
                 warnCount++;
             } else {
                 note.error = true;
-                let deltaTime = 0;
+                let deltaTime = note._time - (parity[type].lastInvertTime ?? 0);
                 try {
                     let last = notes[findCol(notes, type, i - 1)];
-                    deltaTime = (note._time - last._time);
                     last.precedingError = true;
                 }
                 catch {
