@@ -224,7 +224,7 @@ async function downloadFromKey(key) {
  */
 async function downloadFromUrl(url) {
     console.log('downloading map from url: ' + url);
-    const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
+    const corsProxies = ['https://api.allorigins.win/raw?url=', 'https://cors-anywhere.herokuapp.com/'];
 
     async function attemptDownload(currentProxy = -1) {
         let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
