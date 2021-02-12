@@ -200,6 +200,7 @@ async function downloadFromKey(key) {
     try {
         let response = await download(url);
         extractZip(response);
+        setUrlParam('id', key);
     } catch (e) {
         console.error(e);
         let errorMessage = 'unable to download map ' + key + ' from beatsaver';
@@ -234,6 +235,7 @@ async function downloadFromUrl(url) {
                 displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
             } else {
                 extractZip(response);
+                setUrlParam('url', url);
             }
         } catch (e) {
             // it's impossible to tell a CORS error apart from other network errors
@@ -305,6 +307,17 @@ function download(url) {
         });
         xhr.send();
     });
+}
+
+/**
+ * sets the current search params to the given param and value, discarding everything else
+ * @param {String} param - the url param to set
+ * @param {String} value - the value to set it to
+ */
+function setUrlParam(param, value) {
+    let params = new URLSearchParams();
+    params.set(param, value);
+    history.replaceState(null, '', `?${params.toString()}`);
 }
 
 /**
