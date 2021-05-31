@@ -273,8 +273,9 @@ body.light #output div {
   top: 0.75rem;
   cursor: pointer;
   background-color: var(--etext);
-  -webkit-mask-image: url(assets/x.svg);
-          mask-image: url(assets/x.svg);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+          mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+  /* assets/x.svg, converted to a URI to prevent CORS errors when hosted locally*/
   -webkit-mask-size: contain;
           mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -573,61 +574,6 @@ body.light #output div {
 }
 .main .renderbox #render-container #grid-container.showWalls #wall-container {
   display: block;
-}
-.main .renderbox #render-container #grid-container #playback {
-  position: relative;
-  top: 0.625rem;
-  left: 0.75rem;
-  -webkit-user-select: none;
-          user-select: none;
-  cursor: pointer;
-}
-.main .renderbox #render-container #grid-container #playback.playing {
-  color: var(--blue);
-}
-.main .renderbox #render-container #playback {
-  position: relative;
-  top: 0.625rem;
-  left: 0.75rem;
-  -webkit-user-select: none;
-          user-select: none;
-  cursor: pointer;
-}
-.main .renderbox #render-container #playback.playing {
-  color: var(--blue);
-}
-.main .renderbox #render-container #playback {
-  position: relative;
-  top: 0.625rem;
-  left: 0.75rem;
-  -webkit-user-select: none;
-          user-select: none;
-  cursor: pointer;
-}
-.main .renderbox #render-container #playback.playing {
-  color: var(--blue);
-}
-.main .renderbox #render-container #playback {
-  position: relative;
-  top: 0.625rem;
-  left: 0.75rem;
-  -webkit-user-select: none;
-          user-select: none;
-  cursor: pointer;
-}
-.main .renderbox #render-container #playback.playing {
-  color: var(--blue);
-}
-.main .renderbox #render-container #playback {
-  position: relative;
-  top: 0.625rem;
-  left: 0.75rem;
-  -webkit-user-select: none;
-          user-select: none;
-  cursor: pointer;
-}
-.main .renderbox #render-container #playback.playing {
-  color: var(--blue);
 }
 .main .renderbox #render-container #playback {
   position: relative;

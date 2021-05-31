@@ -293,7 +293,8 @@ body {
             top: 0.75rem;
             cursor: pointer;
             background-color: var(--etext);
-            mask-image: url(assets/x.svg);
+            mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+            /* assets/x.svg, converted to a URI to prevent CORS errors when hosted locally*/
             mask-size: contain;
             mask-repeat: no-repeat;
 
@@ -579,46 +580,22 @@ body {
                             pointer-events: none;
                         }
                     }
-
-            #playback {
-                position: relative;
-                top: 0.625rem;
-                left: 0.75rem;
-                user-select: none;
-                cursor: pointer;
-
-                &.playing {
-                    color: var(--blue);
-                }
-            }
-
-            #playback {
-                position: relative;
-                top: 0.625rem;
-                left: 0.75rem;
-                user-select: none;
-                cursor: pointer;
-
-                &.playing {
-                    color: var(--blue);
-                }
-            }
                 }
 
                 &.showWalls #wall-container {
                     display: block;
                 }
+            }
 
-                #playback {
-                    position: relative;
-                    top: 0.625rem;
-                    left: 0.75rem;
-                    user-select: none;
-                    cursor: pointer;
+            #playback {
+                position: relative;
+                top: 0.625rem;
+                left: 0.75rem;
+                user-select: none;
+                cursor: pointer;
 
-                    &.playing {
-                        color: var(--blue);
-                    }
+                &.playing {
+                    color: var(--blue);
                 }
             }
         }
