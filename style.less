@@ -826,6 +826,36 @@ body {
                 }
             }
         }
+
+        .statsbox {
+            &.hide { height: 0; }
+            width: 36rem;
+            height: 5.875rem;
+            overflow: hidden;
+            position: relative;
+            transition: height 0.6s var(--trans);
+            .line {
+                line-height: 0.7rem;
+                .tile {
+                    display: inline-block;
+                    width: 1rem;
+                    height: 1rem;
+                    padding: 0;
+                    background-color: var(--etext);
+                    opacity: var(--opacity);
+                    transition: background-color 0.3s var(--trans);
+    
+                    &.red { background-color: var(--red); }
+                    &.blue { background-color: var(--blue); }
+                }
+            }
+            :not(.line) {
+                :nth-child(2) {
+                    position: absolute;
+                    left: 20rem;
+                }
+            }
+        }
     }
 
     // neither flexbox nor grid support the desired behaviour, so @media query it is

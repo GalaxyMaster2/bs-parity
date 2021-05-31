@@ -31,6 +31,7 @@ const downloadProgress = document.getElementById('download-progress');
 const bookmarksToggle = document.getElementById('bookmarks');
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
+const statsToggle = document.getElementById('stats');
 const infoToggle = document.getElementById('info');
 
 const perspectiveSlider = document.getElementById('perspectiveIntensity');
@@ -523,6 +524,7 @@ function loadDifficultyDat(datString) {
     olaPosition = Ola(0);
     clearRenderedElements();
     checkParity();
+    getStats();
     render();
 }
 
