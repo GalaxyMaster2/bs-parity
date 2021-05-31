@@ -655,8 +655,8 @@ body {
                 cursor: pointer;
             }
     
-            #errors {
-                margin-right: 1rem;
+            label:not(:first-child) {
+                margin-left: 1rem;
             }
 
             &#summary {
@@ -754,6 +754,12 @@ body {
                         --time: 0.001s; // not 0s to avoid issue with re-selecting
                     }
 
+                    &.bookmark {
+                        img { 
+                            height: 1rem;
+                         }
+                    }
+
                     &.selected {
                         background-color: var(--ebg);
                         color: var(--etext);
@@ -773,7 +779,7 @@ body {
                         }
                     }
 
-                    &.info, &.warning, &.error {
+                    &.info, &.warning, &.error, &.bookmark {
                         display: none;
                     }
 
@@ -799,9 +805,10 @@ body {
                     }
                 }
 
-                &.showInfo .info,
+                &.showBookmarks .bookmark,
                 &.showWarnings .warning,
-                &.showErrors .error {
+                &.showErrors .error,
+                &.showInfo .info {
                     display: flex;
                 }
             }

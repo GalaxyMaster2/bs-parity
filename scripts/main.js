@@ -80,13 +80,13 @@ class Parity {
 const scrollLineHeight = getScrollLineHeight();
 
 var mapDifficultySets;
-var notesArray, wallsArray;
+var notesArray, wallsArray, bookmarksArray;
 var sliderPrecision = 1 / 8;
 var ready = false;
 
 /**
  * Filters and sorts notes to ensure all notes in array are valid, and assigns an index to each
- * @param {Array} obj - A beat saber JSON array of notes
+ * @param {Object} obj - A beat saber JSON array of notes
  * @returns {Array} - filtered, tagged & sorted notes
  */
 function getNotes(obj) {
@@ -103,6 +103,11 @@ function getNotes(obj) {
     return notes;
 }
 
+/**
+ * Filters and sorts walls to ensure all walls in array are valid, and assigns an index to each
+ * @param {Object} obj - A beat saber JSON array of notes
+ * @returns {Array} - filtered, tagged & sorted notes
+ */
 function getWalls(obj) {
     let walls = obj._obstacles;
     walls.sort(function (a, b) {
@@ -115,6 +120,29 @@ function getWalls(obj) {
     });
 
     return walls;
+}
+
+/**
+ * Filters and sorts bookmarks
+ * @param {Array} obj - A beat saber map data JSON array
+ * @returns {Array} - filtered / sorted bookmarks
+ */
+function getBookmarks(obj) {
+    try {
+        let bookmarks = obj._customData._bookmarks;
+        bookmarks.sort(function (a, b) {
+            return a._time - b._time;
+        })
+
+        // filter out invalid note types
+        bookmarks = bookmarks.filter(function (bookmark) {
+            return bookmark._name !== "";
+        });
+
+        return bookmarks;
+    } catch (error) {
+        return [];
+    }
 }
 
 /**
@@ -167,7 +195,7 @@ function outputUI(note, parity, message, messageType, persistent = false) {
 
     let time, imgSrc, infoString;
     if (note != false) { // if note passed in note function
-        time = note._time;
+        time = note._time + offset;
         let type = types[note._type];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
@@ -184,19 +212,16 @@ function outputUI(note, parity, message, messageType, persistent = false) {
             infoString += ', ' + row + ' row) at beat ' + time.toFixed(3) + ':';
         }
         imgSrc += '.svg';
-
-        element.dataset.time = time.toFixed(3);
-        element.addEventListener('click', function () { scrollTo(time); });
     } else { // message output mode
         imgSrc = 'assets/' + messageType + '.svg';
-        if (message.includes('|')) {
+        if (message.includes('|') && messageType != 'bookmark') { // prevent unintentional splitting for user-generated bookmarks
             infoString = message.split('|')[0];
             message = message.split('|')[1];
         } else {
             infoString = message;
             message = '';
         }
-        element.dataset.time = parity.toFixed(3);
+        time = parity;
         element.classList.add('noHighlight');
     }
 
@@ -211,6 +236,8 @@ function outputUI(note, parity, message, messageType, persistent = false) {
 
     text.append(infoString, document.createElement('br'), message);
     element.append(img, text);
+    element.dataset.time = time.toFixed(3); // this may be overwritten by infoDat support or extraWarnings, which is completely fine
+    element.addEventListener('click', function () { scrollTo(time); });
     wrapper.appendChild(element);
 
     if (persistent) {
@@ -251,7 +278,7 @@ function findCol(jsonData, type, lastVal) {
  * @param notes - the array of notes to scan for errors
  * @returns {void} - outputs error messages through outputUI
  */
-function checkParity(notes = notesArray) {
+function checkParity(notes = notesArray, bookmarks = bookmarksArray) {
     clearOutput();
     if (!ready) {
         outputUI(false, 0, Strings.getNotReadyText(), 'error');
@@ -261,6 +288,7 @@ function checkParity(notes = notesArray) {
     let infCount = 0;
     let errCount = 0;
     let warnCount = 0;
+    let bookmarkCount = 0; // this isn't a great way of doing this to be completely honest, but it'll do for now
     let summary = document.getElementById('summary');
 
     let parity = {
@@ -276,6 +304,13 @@ function checkParity(notes = notesArray) {
         let cutDirection = cutDirections[note._cutDirection];
         let column = lineIndices[note._lineIndex];
         let row = lineLayers[note._lineLayer];
+
+        if (bookmarkCount < bookmarks.length) {
+            if (note._time > bookmarks[bookmarkCount]._time) { 
+                outputUI(false, bookmarks[bookmarkCount]._time + offset, bookmarks[bookmarkCount]._name, 'bookmark');
+                bookmarkCount++; 
+            }
+        }
 
         note.error = false;
         note.warn = false;
