@@ -381,7 +381,7 @@ function validateMapKey(id) {
 async function extractZip(event) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(event.target.result);
+        zip = await JSZip.loadAsync(event);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
