@@ -574,6 +574,72 @@ body.light #output div {
 .main .renderbox #render-container #grid-container.showWalls #wall-container {
   display: block;
 }
+.main .renderbox #render-container #grid-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #grid-container #playback.playing {
+  color: var(--blue);
+}
+.main .renderbox #render-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #playback.playing {
+  color: var(--blue);
+}
+.main .renderbox #render-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #playback.playing {
+  color: var(--blue);
+}
+.main .renderbox #render-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #playback.playing {
+  color: var(--blue);
+}
+.main .renderbox #render-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #playback.playing {
+  color: var(--blue);
+}
+.main .renderbox #render-container #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-container #playback.playing {
+  color: var(--blue);
+}
 .main .renderbox .sliders-container {
   display: grid;
   grid-template-columns: auto;
@@ -808,10 +874,9 @@ body.light #output div {
     grid-template-columns: auto;
   }
 }
-@supports ((-webkit-appearance: none) or (-moz-appearance: none) or (appearance: none)) {
+@supports ((-webkit-appearance: none) or (appearance: none)) {
   input[type='checkbox'] {
     -webkit-appearance: none;
-       -moz-appearance: none;
             appearance: none;
     height: 1.25rem;
     width: 2.5rem;

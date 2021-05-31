@@ -42,6 +42,22 @@ function renderTransition(timestamp) {
 }
 
 /**
+ * when music is playing, attempt to keep preview in line with song
+ * @param {Number} timeoffset 
+ */
+function syncPlayback(timeoffset = 0.0167) { // default timeoffset assumes 60fps rendering
+    centerBeat = ((audio.currentTime + timeoffset) * bpm / 60) + offset;
+    render();
+
+    if (!audio.paused) {
+        olaPosition.set({ value: centerBeat }, 0); // technically ola will be off when it stops by ~1/100 of a beat because it is async, but that should be fine
+        requestAnimationFrame(function() {
+            syncPlayback();
+        });
+    }
+}
+
+/**
  * smooth scrolls to any given point in the song using requestAnimationFrame/Ola
  * calculates animation time proportional to log of distance
  * @param {Number} target - the beat to scroll to
@@ -50,6 +66,10 @@ function renderTransition(timestamp) {
 function scrollTo(target) {
     wheelScrolling = false;
     highlightElements(target);
+
+    if (audio != null && !audio.paused) { // pause music and stop scrolling when the user intervenes
+        playbackToggle.click();
+    }
 
     let distance = target - olaPosition.value;
 
@@ -346,7 +366,7 @@ function render(notes = notesArray, walls = wallsArray) {
     // generate all valid beats within the range
     let bmCountOld = markerContainer.childNodes.length;
     let beatMarkers = [];
-    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.floor(divisionValue * (centerBeat + renderDistance + 1)); i++) {
+    for (let i = Math.max(0, Math.ceil(divisionValue * (centerBeat + firstViewableNote))); i <= Math.min((duration == null) ? Infinity : divisionValue * duration, Math.floor(divisionValue * (centerBeat + renderDistance + 1))); i++) {
         beatMarkers.push(i / divisionValue);
     }
     let deltaMarkers = beatMarkers.length - bmCountOld;

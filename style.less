@@ -579,10 +579,46 @@ body {
                             pointer-events: none;
                         }
                     }
+
+            #playback {
+                position: relative;
+                top: 0.625rem;
+                left: 0.75rem;
+                user-select: none;
+                cursor: pointer;
+
+                &.playing {
+                    color: var(--blue);
+                }
+            }
+
+            #playback {
+                position: relative;
+                top: 0.625rem;
+                left: 0.75rem;
+                user-select: none;
+                cursor: pointer;
+
+                &.playing {
+                    color: var(--blue);
+                }
+            }
                 }
 
                 &.showWalls #wall-container {
                     display: block;
+                }
+
+                #playback {
+                    position: relative;
+                    top: 0.625rem;
+                    left: 0.75rem;
+                    user-select: none;
+                    cursor: pointer;
+
+                    &.playing {
+                        color: var(--blue);
+                    }
                 }
             }
         }

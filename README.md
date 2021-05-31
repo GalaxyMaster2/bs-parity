@@ -40,6 +40,7 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [x] Downloading map from url
 - [x] Downloading map from beatsaver id
 - [x] Help page
+- [x] Audio playback for map visualizer
 
 # Planned for future
 - [ ] Arm rotation support in parity algorithm
@@ -51,7 +52,6 @@ The end goal of this project is to provide a tool to easily check a map for comm
 - [ ] Handclap detection
 - [ ] Hammer hit detection
 - [ ] 3-wide wall detection
-- [ ] Audio playback for map visualizer
 - [ ] Support for BPM changes
 
 # Currently not planned
