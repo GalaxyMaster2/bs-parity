@@ -442,30 +442,7 @@ async function extractZip(event) {
 
         if (songFilename != '') {
             try {
-                zip.file(songFilename).async('blob').then(function (content) {
-                    audio = new Audio(window.URL.createObjectURL(content));
-                    audio.preload = true;
-
-                    playbackToggle.append(' \u25B6');
-                
-                    playbackToggle.addEventListener('click', function() {
-                        if (audio.paused) {
-                            audio.currentTime = centerBeat * 60 / bpm;
-                            audio.play(); 
-                            highlightElements(-1); // un-highlight elements
-                            playbackToggle.classList.add('playing');
-                            syncPlayback();
-                        }
-                        else {
-                            audio.pause(); 
-                            playbackToggle.classList.remove('playing');
-                        }
-                    });
-
-                    audio.onloadedmetadata = function () {
-                        duration = audio.duration * bpm / 60;
-                    }
-                });
+                zip.file(songFilename).async('blob').then(createPlayback);
             } catch (error) {
                 outputUI(false, -1, 'error loading song file, playback will not be available', 'error', true);
             }
@@ -483,6 +460,35 @@ async function extractZip(event) {
 function displayLoadError(message) {
     loadError.textContent = message;
     setIntroDivStatus('error');
+}
+
+/**
+ * creates a playback button and associated components
+ * @param {*} audioBlob - unzipped audio file
+ */
+function createPlayback(audioBlob) {
+    audio = new Audio(window.URL.createObjectURL(audioBlob));
+    audio.preload = true;
+
+    playbackToggle.append(' \u25B6');
+
+    playbackToggle.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.currentTime = centerBeat * 60 / bpm;
+            audio.play(); 
+            highlightElements(-1); // un-highlight elements
+            playbackToggle.classList.add('playing');
+            syncPlayback();
+        }
+        else {
+            audio.pause(); 
+            playbackToggle.classList.remove('playing');
+        }
+    });
+
+    audio.onloadedmetadata = function () {
+        duration = audio.duration * bpm / 60;
+    }
 }
 
 /**
@@ -769,7 +775,7 @@ function setTransitionDelays(toChange = '', edge = true) {
     let count = visible.length;
 
     for (let i = 0; i < count; i++) { // you'd hope that there'd be a better way to iteratively assign transition delays in 2020 but no
-        let delay = 0.4 * i / count;
+        let delay = 0.5 * i / count;
         visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (delay).toFixed(3) + 's, ' + delay.toFixed(3) + 's';
     }
 }
