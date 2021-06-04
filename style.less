@@ -368,222 +368,237 @@ body {
         max-width: 50rem;
         flex: 10; // to keep at max-width until constrained by outputbox min-width
 
-        #render-container {
-            position: relative;
-            width: 100%;
-            height: 20rem;
-            background-color: var(--ebg);
-            transition: background-color 0.3s var(--trans);
-            border-radius: 1rem;
+        // wrapper needed to work around firefox rendering bug
+        #render-wrapper {
             overflow: hidden;
+            border-radius: 1rem;
             margin-bottom: 1rem;
 
-            &.rotating {
-                cursor: all-scroll;
+            // needed to work around firefox rendering bug until WebRender is rolled out everywhere (and stable)
+            // caused by overflow: hidden combined with border-radius
+            // - will cause some overflow at the corners of the render container
+            // - might break in the future
+            @-moz-document url-prefix() {
+                border-radius: 0rem;
             }
-            &.scrolling {
-                cursor: s-resize;
-            }
 
-            #grid-container {
-                position: absolute;
-                --width: calc(10rem * 4 / 3);
-                --height: 10rem;
-                left: calc(50% - (var(--width) / 2));
-                top: calc(50% - (var(--height) / 2));
-                width: var(--width);
-                height: var(--height);
-                transform-style: preserve-3d;
-                pointer-events: none;
+            #render-container {
+                position: relative;
+                width: 100%;
+                height: 20rem;
+                background-color: var(--ebg);
+                transition: background-color 0.3s var(--trans);
+                border-radius: 1rem;
+                // overflow: hidden;
+                // margin-bottom: 1rem;
 
-                #marker-container {
-                    transform-style: preserve-3d;
-                    pointer-events: auto;
-
-                    .marker {
-                        display: flex;
-                        align-items: center;
-                        position: absolute;
-
-                        &.decimalTime .marker-number {
-                            opacity: 0;
-                            cursor: default;
-                        }
-                        &.translucent { opacity: 0.5; }
-                        .marker-line {
-                            background-color: var(--etext);
-                            transition: background-color 0.3s var(--trans);
-                        }
-
-                        .marker-number {
-                            color: var(--etext);
-                            margin-left: 0.3rem;
-                            font-size: 1.8rem;
-                            font-weight: bold;
-                            transition: color 0.3s var(--trans);
-                            cursor: pointer;
-                        }
-                    }
+                &.rotating {
+                    cursor: all-scroll;
+                }
+                &.scrolling {
+                    cursor: s-resize;
                 }
 
-                #wall-container {
-                    display: none;
+                #grid-container {
+                    position: absolute;
+                    --width: calc(10rem * 4 / 3);
+                    --height: 10rem;
+                    left: calc(50% - (var(--width) / 2));
+                    top: calc(50% - (var(--height) / 2));
+                    width: var(--width);
+                    height: var(--height);
                     transform-style: preserve-3d;
-                    pointer-events: auto;
+                    pointer-events: none;
 
-                    .wall {
-                        --size: calc(10rem / 3);
-                        position: absolute;
+                    #marker-container {
                         transform-style: preserve-3d;
-                        pointer-events: none;
-                        top: 0; // walls always touch the top of the grid
+                        pointer-events: auto;
 
-                        .wall-face {
-                            // backface-visibility: hidden; // free performance boost!
+                        .marker {
+                            display: flex;
+                            align-items: center;
                             position: absolute;
-                            display: block;
-                            background-color: rgba(221, 48, 48, 0.65);
-                            outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
-                            outline-offset: -0.0625rem;
 
-                            &.front {
-                                width: calc(var(--size) * var(--width));
-                                height: calc(var(--size) * 3 * var(--height));
+                            &.decimalTime .marker-number {
+                                opacity: 0;
+                                cursor: default;
                             }
-                            &.back {
-                                transform: rotateY(180deg) translateZ(var(--depth));
-                                width: calc(var(--size) * var(--width));
-                                height: calc(var(--size) * 3 * var(--height));
+                            &.translucent { opacity: 0.5; }
+                            .marker-line {
+                                background-color: var(--etext);
+                                transition: background-color 0.3s var(--trans);
                             }
-                            &.left {
-                                transform: rotateY(-90deg)
-                                    translate3d(calc(var(--depth) / -2),
-                                                0,
-                                                calc(var(--depth) / 2));
-                                width: var(--depth);
-                                height: calc(var(--size) * 3 * var(--height));
-                            }
-                            &.right {
-                                transform: rotateY(90deg)
-                                    translate3d(calc(var(--depth) / 2),
-                                                0,
-                                                calc(var(--depth) / -2 + var(--size) * var(--width)));
-                                width: var(--depth);
-                                height: calc(var(--size) * 3 * var(--height));
-                            }
-                            &.top {
-                                transform: rotateX(90deg)
-                                    translate3d(0,
-                                                calc(var(--depth) / -2),
-                                                calc(var(--depth) / 2));
-                                width: calc(var(--size) * var(--width));
-                                height: var(--depth);
-                            }
-                            &.bottom {
-                                transform: rotateX(-90deg)
-                                    translate3d(0,
-                                                calc(var(--depth) / 2),
-                                                calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
-                                width: calc(var(--size) * var(--width));
-                                height: var(--depth);
-                            }
-                        }
-                        &.translucent .wall-face { background-color: rgba(221, 48, 48, 0.6); }
 
-                        &.recycled {
-                            opacity: 0;
+                            .marker-number {
+                                color: var(--etext);
+                                margin-left: 0.3rem;
+                                font-size: 1.8rem;
+                                font-weight: bold;
+                                transition: color 0.3s var(--trans);
+                                cursor: pointer;
+                            }
                         }
                     }
-                }
 
-                #note-container {
-                    transform-style: preserve-3d;
-                    pointer-events: auto;
-
-                    .note {
-                        --size: calc(10rem / 3 / 1.41);
-                        width: var(--size);
-                        height: var(--size);
-                        position: absolute;
+                    #wall-container {
+                        display: none;
                         transform-style: preserve-3d;
-                        cursor: pointer;
+                        pointer-events: auto;
 
-                        .note-face {
-                            --border-size: 0.125rem;
+                        .wall {
+                            --size: calc(10rem / 3);
                             position: absolute;
-                            display: block;
+                            transform-style: preserve-3d;
+                            pointer-events: none;
+                            top: 0; // walls always touch the top of the grid
+
+                            .wall-face {
+                                // backface-visibility: hidden; // free performance boost!
+                                position: absolute;
+                                display: block;
+                                background-color: rgba(221, 48, 48, 0.65);
+                                outline: 0.0625rem solid rgba(255, 255, 255, 0.75);
+                                outline-offset: -0.0625rem;
+
+                                &.front {
+                                    width: calc(var(--size) * var(--width));
+                                    height: calc(var(--size) * 3 * var(--height));
+                                }
+                                &.back {
+                                    transform: rotateY(180deg) translateZ(var(--depth));
+                                    width: calc(var(--size) * var(--width));
+                                    height: calc(var(--size) * 3 * var(--height));
+                                }
+                                &.left {
+                                    transform: rotateY(-90deg)
+                                        translate3d(calc(var(--depth) / -2),
+                                                    0,
+                                                    calc(var(--depth) / 2));
+                                    width: var(--depth);
+                                    height: calc(var(--size) * 3 * var(--height));
+                                }
+                                &.right {
+                                    transform: rotateY(90deg)
+                                        translate3d(calc(var(--depth) / 2),
+                                                    0,
+                                                    calc(var(--depth) / -2 + var(--size) * var(--width)));
+                                    width: var(--depth);
+                                    height: calc(var(--size) * 3 * var(--height));
+                                }
+                                &.top {
+                                    transform: rotateX(90deg)
+                                        translate3d(0,
+                                                    calc(var(--depth) / -2),
+                                                    calc(var(--depth) / 2));
+                                    width: calc(var(--size) * var(--width));
+                                    height: var(--depth);
+                                }
+                                &.bottom {
+                                    transform: rotateX(-90deg)
+                                        translate3d(0,
+                                                    calc(var(--depth) / 2),
+                                                    calc(var(--depth) / -2 + var(--size) * 3 * var(--height)));
+                                    width: calc(var(--size) * var(--width));
+                                    height: var(--depth);
+                                }
+                            }
+                            &.translucent .wall-face { background-color: rgba(221, 48, 48, 0.6); }
+
+                            &.recycled {
+                                opacity: 0;
+                            }
+                        }
+                    }
+
+                    #note-container {
+                        transform-style: preserve-3d;
+                        pointer-events: auto;
+
+                        .note {
+                            --size: calc(10rem / 3 / 1.41);
                             width: var(--size);
                             height: var(--size);
-                            border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
-                            outline-offset: calc(var(--border-size) * -1);
+                            position: absolute;
+                            transform-style: preserve-3d;
+                            cursor: pointer;
 
-                            &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
-                            &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
-                            &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
-                            &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
-                            &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
-                            &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
+                            .note-face {
+                                --border-size: 0.125rem;
+                                position: absolute;
+                                display: block;
+                                width: var(--size);
+                                height: var(--size);
+                                border-radius: 0.125rem; // border allows for slight smoothing at edges which makes the outline look better
+                                outline-offset: calc(var(--border-size) * -1);
 
-                            &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
-                            &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
-                            &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
-                            &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
-                            &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
-                            &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
+                                &.front  { transform: rotateY(0deg)   translateZ(calc(var(--size) / 2)); }
+                                &.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
+                                &.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
+                                &.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
+                                &.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
+                                &.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
 
-                            &.bomb            {  background-image: url('assets/bomb.svg');            }
-                            &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
-                            &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
-                            &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
-                            &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
-                            &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
-                            &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
-                        }
+                                &.bomb.front  { transform: rotateY(0deg)   translateZ(0); }
+                                &.bomb.back   { transform: rotateY(45deg)  translateZ(0); }
+                                &.bomb.left   { transform: rotateY(90deg)  translateZ(0); }
+                                &.bomb.right  { transform: rotateZ(135deg) translateZ(0); }
+                                &.bomb.top    { transform: rotateX(-45deg) translateZ(0); }
+                                &.bomb.bottom { transform: rotateX(45deg)  translateZ(0); }
 
-                        &.precedingWarn  .note-face {
-                            outline: black solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: black solid var(--border-size); }
+                                &.bomb            {  background-image: url('assets/bomb.svg');            }
+                                &.dot_front_blue  {  background-image: url('assets/dot_front_blue.svg');  }
+                                &.dot_front_red   {  background-image: url('assets/dot_front_red.svg');   }
+                                &.note_front_blue {  background-image: url('assets/note_front_blue.svg'); }
+                                &.note_front_red  {  background-image: url('assets/note_front_red.svg');  }
+                                &.note_side_blue  {  background-image: url('assets/note_side_blue.svg');  }
+                                &.note_side_red   {  background-image: url('assets/note_side_red.svg');   }
                             }
-                        }
-                        &.precedingError .note-face {
-                            outline: black solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: black solid var(--border-size); }
+
+                            &.precedingWarn  .note-face {
+                                outline: black solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: black solid var(--border-size); }
+                                }
                             }
-                        }
-                        &.warn  .note-face {
-                            outline: var(--warning) solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: var(--warning) solid var(--border-size); }
+                            &.precedingError .note-face {
+                                outline: black solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: black solid var(--border-size); }
+                                }
                             }
-                        }
-                        &.error .note-face {
-                            outline: var(--error) solid var(--border-size);
-                            &.bomb {
-                                border-radius: 0.75rem;
-                                outline: none;
-                                &.front { outline: var(--error) solid var(--border-size); }
+                            &.warn  .note-face {
+                                outline: var(--warning) solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: var(--warning) solid var(--border-size); }
+                                }
                             }
-                        }
-                        &.translucent .note-face {
-                            opacity: 0.3;
-                        }
-                        &.recycled {
-                            opacity: 0;
-                            pointer-events: none;
+                            &.error .note-face {
+                                outline: var(--error) solid var(--border-size);
+                                &.bomb {
+                                    border-radius: 0.75rem;
+                                    outline: none;
+                                    &.front { outline: var(--error) solid var(--border-size); }
+                                }
+                            }
+                            &.translucent .note-face {
+                                opacity: 0.3;
+                            }
+                            &.recycled {
+                                opacity: 0;
+                                pointer-events: none;
+                            }
                         }
                     }
-                }
 
-                &.showWalls #wall-container {
-                    display: block;
+                    &.showWalls #wall-container {
+                        display: block;
+                    }
                 }
             }
 
@@ -675,7 +690,7 @@ body {
             &#summary {
                 padding-bottom: 0.25rem;
             }
-    
+
             input[type=number] {
                 position: relative;
                 cursor: auto;
