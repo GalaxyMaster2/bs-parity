@@ -626,7 +626,7 @@ function getRenderContainerHeight() {
 function highlightElements(time) {
     timeInd = time.toFixed(3);
 
-    document.querySelectorAll('.selected').forEach(
+    output.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
@@ -634,7 +634,7 @@ function highlightElements(time) {
     let QScount = document.querySelectorAll(selector).length;
     let i = 0;
 
-    document.querySelectorAll(selector).forEach(
+    output.querySelectorAll(selector).forEach(
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
@@ -742,6 +742,22 @@ function highlightElements(time) {
         else if (i == 1) { line.append((noteTyp[2] / noteTyp[1]).toFixed(2) + ":1"); }
 
         out.append(line);
+    }
+}
+
+/*
+ * adds a little animation when items get hidden or shown, limited to under 60 items for now for performance reasons
+ * @param {Number} time - the (float) time at which to round & highlight
+ * @returns {void} - outputs to DOM
+ */
+function setTransitionDelays(toChange = '', edge = true) {
+    let query = '.parent.' + toChange;
+    let visible = Array.from(output.querySelectorAll(query)); // convert nodelist to array so .includes can be used
+    let count = visible.length;
+
+    for (let i = 0; i < count; i++) { // you'd hope that there'd be a better way to iteratively assign transition delays in 2020 but no
+        let delay = 0.4 * i / count;
+        visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (delay).toFixed(3) + 's, ' + delay.toFixed(3) + 's';
     }
 }
 

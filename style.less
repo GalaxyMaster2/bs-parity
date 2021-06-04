@@ -756,11 +756,13 @@ body {
                     margin-right: 1rem; // to prevent width from changing when selected
                     border-radius: 1rem;
                     cursor: pointer;
+                    overflow: hidden;
                     background-color: var(--bg);
                     color: var(--text);
                     --time: 0.3s;
                     transition: background-color var(--time) var(--trans), color 0.3s var(--trans),
-                                margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+                                margin 0.3s var(--trans), border-radius 0.3s var(--trans),
+                                height 0.1s var(--trans), opacity 0.1s var(--trans);
 
                     &:hover, &:focus {
                         background-color: var(--mbg);
@@ -770,7 +772,7 @@ body {
                     &.bookmark {
                         img { 
                             height: 1rem;
-                         }
+                        }
                     }
 
                     &.selected {
@@ -793,7 +795,8 @@ body {
                     }
 
                     &.info, &.warning, &.error, &.bookmark {
-                        display: none;
+                        height: 0rem;
+                        opacity: 0;
                     }
 
                     img {
@@ -818,11 +821,16 @@ body {
                     }
                 }
 
-                &.showBookmarks .bookmark,
+                &.showBookmarks .bookmark {
+                    height: 2rem;
+                    opacity: 1;
+                }
+
                 &.showWarnings .warning,
                 &.showErrors .error,
                 &.showInfo .info {
-                    display: flex;
+                    height: 3.5rem;
+                    opacity: 1;
                 }
             }
         }

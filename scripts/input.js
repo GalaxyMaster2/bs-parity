@@ -40,9 +40,9 @@ diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });
 
-bookmarksToggle.addEventListener('change', function () { output.classList.toggle('showBookmarks'); highlightElements(centerBeat); });
-warningToggle.addEventListener('change', function () { output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
-errorToggle.addEventListener('change', function () { output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+bookmarksToggle.addEventListener('change', function () { setTransitionDelays('bookmark'); output.classList.toggle('showBookmarks'); highlightElements(centerBeat); });
+warningToggle.addEventListener('change', function () { setTransitionDelays('warning'); output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
+errorToggle.addEventListener('change', function () { setTransitionDelays('error'); output.classList.toggle('showErrors'); highlightElements(centerBeat); });
 statsToggle.addEventListener('change', function () { document.getElementById('statsbox').classList.toggle('hide'); });
 
 
