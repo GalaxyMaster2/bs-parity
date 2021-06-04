@@ -317,7 +317,7 @@ function download(url) {
  */
 function updateProgress(loaded, total) {
     let loadedText = (loaded / 1024 / 1024).toFixed(1);
-    let totalText = ((total === 0) ? '' : ('/' + (total / 1024 / 1024).toFixed(1)));
+    let totalText = ((total === 0) ? '' : (' / ' + (total / 1024 / 1024).toFixed(1)));
     downloadProgress.textContent = ': ' + loadedText + totalText + ' MB';
 }
 
@@ -485,7 +485,7 @@ function loadMapInfo(datString) {
     songTitle = ' - ' + parsed._songName;
     if (songTitle != ' - ') {
         pageTitle.textContent += songTitle;
-        document.getElementsByTagName('title')[0].textContent = "map inspector" + songTitle;
+        document.getElementsByTagName('title')[0].textContent = 'map inspector' + songTitle;
     }
 }
 
@@ -496,7 +496,7 @@ function loadMapInfo(datString) {
 function getLocalOffset(songInfo) {
     try {
         songInfo = getSelectedDiff();
-        localOffset = songInfo["_customData"]._editorOffset;
+        localOffset = songInfo['_customData']._editorOffset;
     } catch {
         localOffset = 0;
     } // not all files have this defined
@@ -559,7 +559,7 @@ function populateDiffSelect() {
         }
         let gap = document.createElement('option');
         gap.disabled = true;
-        gap.textContent = "---------";
+        gap.textContent = '---------';
         diffSelect.appendChild(gap);
     }
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
@@ -639,17 +639,110 @@ function highlightElements(time) {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+                    element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+                element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
                 element.classList.add('selected');
             }
         }
     );
+}
+
+/**
+ * checks for errors in parity within the notes
+ * @param {Array} notePos - number of notes in a given position, separated by note type
+ * @param {Array} noteRot - number of notes in a given rotation, separated by note type
+ * @param {Array} noteTyp - number of notes, separated by note type
+ * @returns {void} - outputs to DOM
+ */
+ function printStats(notePos, noteRot, noteTyp) {
+    const rotTransposeInv = [4, 0, 5, 2, 8, 3, 6, 1, 7];
+
+    const blockType = ['all', 'red', 'blue', 'bomb'];
+    const blockName = ['', 'red ', 'blue ', 'bomb'];
+    const blockNameAppend = ['note', 'note', 'note', '']
+    const niceCutDirections = ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right', 'dot']; // while aB works well for class names it looks a bit off in text
+
+    let out = document.getElementById('statsbox');
+    for (let i = out.childNodes.length - 1; i >= 0; i--) { // empty current statsbox, if present
+        out.removeChild(out.childNodes[i]);
+    }
+
+    // create top line
+    let line = document.createElement('div');
+
+    let label = document.createElement('span');
+    label.append('block positioning');
+    let label2 = document.createElement('span');
+    label2.append('note rotation');
+
+    line.append(label, label2);
+    out.append(line);
+
+    function createTile(count, blockTypeID, rotationMode=null) {
+        let tile = document.createElement('span');
+        tile.classList.add('tile');
+        tile.classList.add(blockType[blockTypeID]); // determines tile colour
+        let max = Math.max(...notePos[blockTypeID][0], ...notePos[blockTypeID][1], ...notePos[blockTypeID][2]); // get most common direction/rotation for colour reference 
+        let opacity = (noteTyp[blockTypeID] == 0) ? 0.05 : (0.05 + 0.95 * Math.pow(count / max, 0.75)) // convert to percentages of largest value, capped 5% and up
+        tile.style = '--opacity: ' + opacity + ';';
+        let title = count + ' '; // mouseover text
+        if (rotationMode != null) {
+            title += blockName[blockTypeID]
+            title += niceCutDirections[rotationMode];
+            title += (count == 1) ? ' note' :' notes';
+        } else {
+            title += blockName[blockTypeID] + blockNameAppend[blockTypeID];
+            title += (count == 1) ? '' :'s';
+            title += ' in this position';
+        }
+
+        if (noteTyp[blockTypeID] != 0) title += ' (' + (100*count/noteTyp[blockTypeID]).toFixed(1) + '% of ' + blockName[blockTypeID] + blockNameAppend[blockTypeID] + 's)';
+        tile.title = title;
+        return tile;
+    }
+
+    // create additional elements to show statistics
+    for (let i = 0; i < 3; i++) {
+        let line = document.createElement('div');
+        
+        line.classList.add('line');
+
+        for (let j = 0; j < 4; j++) { // position
+            notePos[j][i].forEach(item => {
+                line.append(createTile(item, j));
+            });
+
+            // template spacer
+            let spacer = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+            line.append(spacer);
+        }
+
+        for (let j = 0; j < 3; j++) { // rotation
+            if (noteTyp[j] == 0) continue;
+            
+            let spacer = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+
+            for (let k = 0; k < 3; k++) {
+                direction = rotTransposeInv[3 * i + k] // map bsaber positions to html positions
+                line.append(createTile(noteRot[j][direction], j, direction));
+            }
+            line.append(spacer);
+        }
+
+        if (i == 0) { line.append('red:blue:'); } // note ratio
+        else if (i == 1) { line.append((noteTyp[2] / noteTyp[1]).toFixed(2) + ":1"); }
+
+        out.append(line);
+    }
 }
 
 pageTitle.addEventListener('click', randomizeTitle);

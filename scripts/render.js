@@ -10,7 +10,9 @@ var renderDistance = parseFloat(renderDistanceSlider.value);
 var divisionValue = parseFloat(divisionValueSlider.value);
 var timeScale = parseFloat(timeScaleSlider.value);
 
-var localOffset = 0, globalOffset = 0, offset = 0, bpm = 120, songTitle = '';
+var localOffset = 0, globalOffset = 0, offset = 0;
+var bpm = 120;
+var songTitle = '';
 var centerBeat = 0; // changed to match values in html
 var olaPosition = Ola(0);
 
