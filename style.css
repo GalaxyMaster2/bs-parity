@@ -49,8 +49,8 @@ body.light .intro {
   --etext: #d5d5d5;
   --blue: var(--red);
 }
-html.light .intro #drop-overlay,
-body.light .intro #drop-overlay {
+html.light #drop-overlay,
+body.light #drop-overlay {
   --etext: #000;
 }
 html.light #render-container,
@@ -233,25 +233,6 @@ body.light #output div {
   box-shadow: inset 0 0 0 0.125rem var(--blue);
   color: var(--dbg);
 }
-.intro .overlay {
-  position: fixed;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.3s var(--trans);
-  pointer-events: none;
-}
-.intro .overlay.visible {
-  pointer-events: auto;
-}
-.intro #drop-overlay {
-  background-color: var(--etext);
-}
-.intro #drop-overlay.visible {
-  opacity: 0.3;
-  transition: opacity 0.1s var(--trans);
-}
 .intro #error-overlay {
   background-color: black;
 }
@@ -297,11 +278,6 @@ body.light #output div {
 .intro.downloading label {
   display: none;
 }
-.intro.uploading #drop-overlay,
-.intro.done #drop-overlay,
-.intro.downloading #drop-overlay {
-  display: none;
-}
 .intro.uploading .uploading-text,
 .intro.downloading .downloading-text {
   display: inline;
@@ -323,6 +299,21 @@ body.light #output div {
 }
 .intro.error #load-error {
   display: block;
+}
+#drop-overlay {
+  position: fixed;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s var(--trans);
+  pointer-events: none;
+  background-color: var(--etext);
+}
+#drop-overlay.visible {
+  pointer-events: auto;
+  opacity: 0.3;
+  transition: opacity 0.1s var(--trans);
 }
 .main {
   position: relative;
@@ -591,7 +582,7 @@ body.light #output div {
           user-select: none;
   cursor: pointer;
 }
-.main .renderbox #render-wrapper #playback.playing {
+.main .renderbox #render-wrapper #playback span.playing {
   color: var(--blue);
 }
 .main .renderbox .sliders-container {

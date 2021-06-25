@@ -88,6 +88,26 @@ function parseUrlInput(input) {
 }
 
 /**
+ * resets enviroment back to default state to prepare for new file to be loaded in
+ */
+function resetUI() {
+    while (playbackToggle.lastChild) {
+        playbackToggle.removeChild(playbackToggle.lastChild)
+    }
+    notesArray = undefined;
+    wallsArray = undefined;
+    bookmarksArray = undefined;
+    mapDifficultySets = undefined;
+    songFilename = undefined;
+    sliderPrecision = 1 / 8;
+    if (audio !== undefined && !audio.paused) {
+        audio.pause()
+    }
+    audio = undefined;
+    duration = undefined;
+}
+
+/**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
  * todo: feature detection for drag and drop? (although tbf the overlap between transform 3d and drag/drop is probably pretty big)
@@ -96,6 +116,10 @@ function parseUrlInput(input) {
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
+    if (ready == true) { // file has already been loaded
+        scrollTo(0)
+        resetUI()
+    }
     if (files.length != 0) {
         readFile(files);
     } else {
@@ -470,21 +494,25 @@ function createPlayback(audioBlob) {
     audio = new Audio(window.URL.createObjectURL(audioBlob));
     audio.preload = true;
 
-    playbackToggle.append(' \u25B6');
+    let playbackElement = document.createElement('span');
+    playbackElement.innerHTML = ' \u25B6';
 
-    playbackToggle.addEventListener('click', function() {
+    function playbackToggleFunction() {
         if (audio.paused) {
             audio.currentTime = centerBeat * 60 / bpm;
             audio.play(); 
             highlightElements(-1); // un-highlight elements
-            playbackToggle.classList.add('playing');
+            playbackElement.classList.add('playing');
             syncPlayback();
         }
         else {
             audio.pause(); 
-            playbackToggle.classList.remove('playing');
+            playbackElement.classList.remove('playing');
         }
-    });
+    }
+
+    playbackElement.addEventListener('click', playbackToggleFunction);
+    playbackToggle.appendChild(playbackElement);
 
     audio.onloadedmetadata = function () {
         duration = audio.duration * bpm / 60;
@@ -501,9 +529,9 @@ function loadMapInfo(datString) {
     globalOffset = parsed._songTimeOffset;
     songFilename = parsed._songFilename;
     bpm = parsed._beatsPerMinute;
-    songTitle = ' - ' + parsed._songName;
-    if (songTitle != ' - ') {
-        pageTitle.textContent += songTitle;
+    songTitle = parsed._songName;
+    if (songTitle != '' && songTitle !== undefined && songTitle !== null) {
+        pageTitle.textContent = "beat saber map inspector - " + songTitle;
         document.getElementsByTagName('title')[0].textContent = 'map inspector' + songTitle;
     }
 }
