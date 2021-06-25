@@ -532,7 +532,7 @@ function loadMapInfo(datString) {
     songTitle = parsed._songName;
     if (songTitle != '' && songTitle !== undefined && songTitle !== null) {
         pageTitle.textContent = "beat saber map inspector - " + songTitle;
-        document.getElementsByTagName('title')[0].textContent = 'map inspector' + songTitle;
+        document.getElementsByTagName('title')[0].textContent = 'map inspector - ' + songTitle;
     }
 }
 
