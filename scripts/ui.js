@@ -85,6 +85,15 @@ function parseUrlInput(input) {
 }
 
 /**
+ * resets enviroment back to default state to prepare for new file to be loaded in
+ */
+ function resetUI() {
+    notesArray = undefined;
+    wallsArray = undefined;
+    mapDifficultySets = undefined;
+}
+
+/**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
  * todo: feature detection for drag and drop? (although tbf the overlap between transform 3d and drag/drop is probably pretty big)
