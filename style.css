@@ -49,8 +49,8 @@ body.light .intro {
   --etext: #d5d5d5;
   --blue: var(--red);
 }
-html.light .intro #drop-overlay,
-body.light .intro #drop-overlay {
+html.light #drop-overlay,
+body.light #drop-overlay {
   --etext: #000;
 }
 html.light #render-container,
@@ -233,25 +233,6 @@ body.light #output div {
   box-shadow: inset 0 0 0 0.125rem var(--blue);
   color: var(--dbg);
 }
-.intro .overlay {
-  position: fixed;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.3s var(--trans);
-  pointer-events: none;
-}
-.intro .overlay.visible {
-  pointer-events: auto;
-}
-.intro #drop-overlay {
-  background-color: var(--etext);
-}
-.intro #drop-overlay.visible {
-  opacity: 0.3;
-  transition: opacity 0.1s var(--trans);
-}
 .intro #error-overlay {
   background-color: black;
 }
@@ -273,8 +254,9 @@ body.light #output div {
   top: 0.75rem;
   cursor: pointer;
   background-color: var(--etext);
-  -webkit-mask-image: url(assets/x.svg);
-          mask-image: url(assets/x.svg);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+          mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+  /* assets/x.svg, converted to a URI to prevent CORS errors when hosted locally*/
   -webkit-mask-size: contain;
           mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -294,11 +276,6 @@ body.light #output div {
 .intro.uploading label,
 .intro.done label,
 .intro.downloading label {
-  display: none;
-}
-.intro.uploading #drop-overlay,
-.intro.done #drop-overlay,
-.intro.downloading #drop-overlay {
   display: none;
 }
 .intro.uploading .uploading-text,
@@ -322,6 +299,21 @@ body.light #output div {
 }
 .intro.error #load-error {
   display: block;
+}
+#drop-overlay {
+  position: fixed;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s var(--trans);
+  pointer-events: none;
+  background-color: var(--etext);
+}
+#drop-overlay.visible {
+  pointer-events: auto;
+  opacity: 0.3;
+  transition: opacity 0.1s var(--trans);
 }
 .main {
   position: relative;
@@ -582,6 +574,17 @@ body.light #output div {
 .main .renderbox #render-wrapper #render-container #grid-container.showWalls #wall-container {
   display: block;
 }
+.main .renderbox #render-wrapper #playback {
+  position: relative;
+  top: 0.625rem;
+  left: 0.75rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.main .renderbox #render-wrapper #playback span.playing {
+  color: var(--blue);
+}
 .main .renderbox .sliders-container {
   display: grid;
   grid-template-columns: auto;
@@ -643,8 +646,8 @@ body.light #output div {
   vertical-align: middle;
   cursor: pointer;
 }
-.main .outputbox .outboxline #errors {
-  margin-right: 1rem;
+.main .outputbox .outboxline label:not(:first-child) {
+  margin-left: 1rem;
 }
 .main .outputbox .outboxline#summary {
   padding-bottom: 0.25rem;
@@ -721,15 +724,19 @@ body.light #output div {
   margin-right: 1rem;
   border-radius: 1rem;
   cursor: pointer;
+  overflow: hidden;
   background-color: var(--bg);
   color: var(--text);
   --time: 0.3s;
-  transition: background-color var(--time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+  transition: background-color var(--time) var(--trans), color 0.3s var(--trans), margin 0.3s var(--trans), border-radius 0.3s var(--trans), height 0.1s var(--trans), opacity 0.1s var(--trans);
 }
 .main .outputbox .outputwrapper #output .parent:hover,
 .main .outputbox .outputwrapper #output .parent:focus {
   background-color: var(--mbg);
   --time: 0.001s;
+}
+.main .outputbox .outputwrapper #output .parent.bookmark img {
+  height: 1rem;
 }
 .main .outputbox .outputwrapper #output .parent.selected {
   background-color: var(--ebg);
@@ -749,8 +756,10 @@ body.light #output div {
 }
 .main .outputbox .outputwrapper #output .parent.info,
 .main .outputbox .outputwrapper #output .parent.warning,
-.main .outputbox .outputwrapper #output .parent.error {
-  display: none;
+.main .outputbox .outputwrapper #output .parent.error,
+.main .outputbox .outputwrapper #output .parent.bookmark {
+  height: 0rem;
+  opacity: 0;
 }
 .main .outputbox .outputwrapper #output .parent img {
   height: 2rem;
@@ -770,10 +779,47 @@ body.light #output div {
   flex: 1;
   white-space: nowrap;
 }
-.main .outputbox .outputwrapper #output.showInfo .info,
+.main .outputbox .outputwrapper #output.showBookmarks .bookmark {
+  height: 2rem;
+  opacity: 1;
+}
 .main .outputbox .outputwrapper #output.showWarnings .warning,
-.main .outputbox .outputwrapper #output.showErrors .error {
-  display: flex;
+.main .outputbox .outputwrapper #output.showErrors .error,
+.main .outputbox .outputwrapper #output.showInfo .info {
+  height: 3.5rem;
+  opacity: 1;
+}
+.main .outputbox .statsbox {
+  width: 36rem;
+  height: 5.875rem;
+  overflow: hidden;
+  position: relative;
+  transition: height 0.6s var(--trans);
+}
+.main .outputbox .statsbox.hide {
+  height: 0;
+}
+.main .outputbox .statsbox .line {
+  line-height: 0.7rem;
+}
+.main .outputbox .statsbox .line .tile {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  background-color: var(--etext);
+  opacity: var(--opacity);
+  transition: background-color 0.3s var(--trans);
+}
+.main .outputbox .statsbox .line .tile.red {
+  background-color: var(--red);
+}
+.main .outputbox .statsbox .line .tile.blue {
+  background-color: var(--blue);
+}
+.main .outputbox .statsbox :not(.line) :nth-child(2) {
+  position: absolute;
+  left: 20rem;
 }
 @media screen and (max-width: 75rem) {
   .main {

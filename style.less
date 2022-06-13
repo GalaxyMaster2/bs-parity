@@ -53,9 +53,9 @@ body {
             --text: #e5e5e5;
             --etext:#d5d5d5;
             --blue: var(--red);
-            #drop-overlay {
-                --etext: #000;
-            }
+        }
+        #drop-overlay {
+            --etext: #000;
         }
         #render-container {
             --ebg: #555555;
@@ -248,29 +248,6 @@ body {
         }
     }
 
-    .overlay {
-        position: fixed;
-        z-index: 3;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.3s var(--trans);
-        pointer-events: none;
-
-        &.visible {
-            pointer-events: auto;
-        }
-    }
-
-    #drop-overlay {
-        background-color: var(--etext);
-
-        &.visible {
-            opacity: 0.3;
-            transition: opacity 0.1s var(--trans);
-        }
-    }
-
     #error-overlay {
         background-color: black;
     }
@@ -293,7 +270,8 @@ body {
             top: 0.75rem;
             cursor: pointer;
             background-color: var(--etext);
-            mask-image: url(assets/x.svg);
+            mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjMuNSAzLjUgOS4wNCA5LjA0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTMuNzIgMy43MmEuNzUuNzUgMCAwMTEuMDYgMEw4IDYuOTRsMy4yMi0zLjIyYS43NS43NSAwIDExMS4wNiAxLjA2TDkuMDYgOGwzLjIyIDMuMjJhLjc1Ljc1IDAgMTEtMS4wNiAxLjA2TDggOS4wNmwtMy4yMiAzLjIyYS43NS43NSAwIDAxLTEuMDYtMS4wNkw2Ljk0IDggMy43MiA0Ljc4YS43NS43NSAwIDAxMC0xLjA2eiI+PC9wYXRoPjwvc3ZnPg0K);
+            /* assets/x.svg, converted to a URI to prevent CORS errors when hosted locally*/
             mask-size: contain;
             mask-repeat: no-repeat;
 
@@ -316,9 +294,9 @@ body {
             display: none;
         }
 
-        #drop-overlay {
-            display: none;
-        }
+        // #drop-overlay {
+        //     display: none;
+        // }
     }
 
     &.uploading .uploading-text, &.downloading .downloading-text {
@@ -348,6 +326,23 @@ body {
         #load-error {
             display: block;
         }
+    }
+}
+
+#drop-overlay {
+    position: fixed;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s var(--trans);
+    pointer-events: none;
+    background-color: var(--etext);
+
+    &.visible {
+        pointer-events: auto;
+        opacity: 0.3;
+        transition: opacity 0.1s var(--trans);
     }
 }
 
@@ -600,6 +595,18 @@ body {
                     }
                 }
             }
+
+            #playback {
+                position: relative;
+                top: 0.625rem;
+                left: 0.75rem;
+                user-select: none;
+                cursor: pointer;
+
+                span.playing {
+                    color: var(--blue);
+                }
+            }
         }
 
         .sliders-container {
@@ -669,9 +676,9 @@ body {
                 vertical-align: middle;
                 cursor: pointer;
             }
-
-            #errors {
-                margin-right: 1rem;
+    
+            label:not(:first-child) {
+                margin-left: 1rem;
             }
 
             &#summary {
@@ -758,15 +765,23 @@ body {
                     margin-right: 1rem; // to prevent width from changing when selected
                     border-radius: 1rem;
                     cursor: pointer;
+                    overflow: hidden;
                     background-color: var(--bg);
                     color: var(--text);
                     --time: 0.3s;
                     transition: background-color var(--time) var(--trans), color 0.3s var(--trans),
-                                margin 0.3s var(--trans), border-radius 0.3s var(--trans);
+                                margin 0.3s var(--trans), border-radius 0.3s var(--trans),
+                                height 0.1s var(--trans), opacity 0.1s var(--trans);
 
                     &:hover, &:focus {
                         background-color: var(--mbg);
                         --time: 0.001s; // not 0s to avoid issue with re-selecting
+                    }
+
+                    &.bookmark {
+                        img { 
+                            height: 1rem;
+                        }
                     }
 
                     &.selected {
@@ -788,8 +803,9 @@ body {
                         }
                     }
 
-                    &.info, &.warning, &.error {
-                        display: none;
+                    &.info, &.warning, &.error, &.bookmark {
+                        height: 0rem;
+                        opacity: 0;
                     }
 
                     img {
@@ -814,10 +830,46 @@ body {
                     }
                 }
 
-                &.showInfo .info,
+                &.showBookmarks .bookmark {
+                    height: 2rem;
+                    opacity: 1;
+                }
+
                 &.showWarnings .warning,
-                &.showErrors .error {
-                    display: flex;
+                &.showErrors .error,
+                &.showInfo .info {
+                    height: 3.5rem;
+                    opacity: 1;
+                }
+            }
+        }
+
+        .statsbox {
+            &.hide { height: 0; }
+            width: 36rem;
+            height: 5.875rem;
+            overflow: hidden;
+            position: relative;
+            transition: height 0.6s var(--trans);
+            .line {
+                line-height: 0.7rem;
+                .tile {
+                    display: inline-block;
+                    width: 1rem;
+                    height: 1rem;
+                    padding: 0;
+                    background-color: var(--etext);
+                    opacity: var(--opacity);
+                    transition: background-color 0.3s var(--trans);
+    
+                    &.red { background-color: var(--red); }
+                    &.blue { background-color: var(--blue); }
+                }
+            }
+            :not(.line) {
+                :nth-child(2) {
+                    position: absolute;
+                    left: 20rem;
                 }
             }
         }

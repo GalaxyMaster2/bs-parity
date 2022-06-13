@@ -40,14 +40,11 @@ diffSelect.addEventListener('change', function () {
     loadDifficultyDat(getSelectedDiff().mapString);
 });
 
-warningToggle.addEventListener('change', function () {
-    readToggle(warningToggle, output, 'showWarnings');
-    highlightElements(centerBeat);
-});
-errorToggle.addEventListener('change', function () {
-    readToggle(errorToggle, output, 'showErrors');
-    highlightElements(centerBeat);
-});
+bookmarksToggle.addEventListener('change', function () { setTransitionDelays('bookmark'); output.classList.toggle('showBookmarks'); highlightElements(centerBeat); });
+warningToggle.addEventListener('change', function () { setTransitionDelays('warning'); output.classList.toggle('showWarnings'); highlightElements(centerBeat); });
+errorToggle.addEventListener('change', function () { setTransitionDelays('error'); output.classList.toggle('showErrors'); highlightElements(centerBeat); });
+statsToggle.addEventListener('change', function () { document.getElementById('statsbox').classList.toggle('hide'); });
+
 
 sliderPrecisionInput.addEventListener('input', readSliderPrecision);
 themeToggle.addEventListener('change', function () {
@@ -134,7 +131,7 @@ async function handleMouseDown(e) {
             let deltaTime = timestamp - lastTimestamp;
 
             let deltaScroll = (initialY - cursorY) * deltaTime / 10000;
-            centerBeat = Math.max(0, olaPosition.value + deltaScroll);
+            centerBeat = Math.min((duration == null) ? Infinity : duration, Math.max(0, olaPosition.value + deltaScroll));
             olaPosition = Ola(centerBeat);
 
             highlightElements(centerBeat);
@@ -241,6 +238,11 @@ let lastScrollTime = Date.now();
  */
 function scroll(event) {
     preventDefaults(event);
+
+    if (audio != null && !audio.paused) { // pause music and stop scrolling when the user intervenes
+        playbackToggle.click();
+    }
+
     delta = event.deltaY;
     if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
         delta *= scrollLineHeight;
@@ -251,7 +253,7 @@ function scroll(event) {
         wheelScrolling = true;
     }
 
-    let target = Math.max(0, oldTarget + delta / -100);
+    let target = Math.min((duration == null) ? Infinity : duration, Math.max(0, oldTarget + delta / -100));
     oldTarget = target;
     highlightElements(target);
 

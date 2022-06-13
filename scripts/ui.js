@@ -28,8 +28,10 @@ const dropArea = document.getElementById('drop-overlay');
 const introDiv = document.getElementById('intro');
 const downloadProgress = document.getElementById('download-progress');
 
+const bookmarksToggle = document.getElementById('bookmarks');
 const warningToggle = document.getElementById('warnings');
 const errorToggle = document.getElementById('errors');
+const statsToggle = document.getElementById('stats');
 const infoToggle = document.getElementById('info');
 
 const perspectiveSlider = document.getElementById('perspectiveIntensity');
@@ -38,6 +40,7 @@ const divisionValueSlider = document.getElementById('divisionValue');
 const timeScaleSlider = document.getElementById('timeScale');
 
 const wallsToggle = document.getElementById('toggleWalls');
+const playbackToggle = document.getElementById('playback');
 
 fileInput.addEventListener('change', handleFileInput);
 dropArea.addEventListener('drop', handleDrop, false);
@@ -85,6 +88,26 @@ function parseUrlInput(input) {
 }
 
 /**
+ * resets enviroment back to default state to prepare for new file to be loaded in
+ */
+function resetUI() {
+    while (playbackToggle.lastChild) {
+        playbackToggle.removeChild(playbackToggle.lastChild)
+    }
+    notesArray = undefined;
+    wallsArray = undefined;
+    bookmarksArray = undefined;
+    mapDifficultySets = undefined;
+    songFilename = undefined;
+    sliderPrecision = 1 / 8;
+    if (audio !== undefined && !audio.paused) {
+        audio.pause()
+    }
+    audio = undefined;
+    duration = undefined;
+}
+
+/**
  * detects files dropped on start page and changes type so it can be read the same as an uploaded file
  * drop handler based off of bit.ly/37mgISu and mzl.la/2UAdYvA
  * todo: feature detection for drag and drop? (although tbf the overlap between transform 3d and drag/drop is probably pretty big)
@@ -93,6 +116,10 @@ function parseUrlInput(input) {
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
+    if (ready == true) { // file has already been loaded
+        scrollTo(0)
+        resetUI()
+    }
     if (files.length != 0) {
         readFile(files);
     } else {
@@ -225,7 +252,7 @@ async function downloadFromKey(key) {
  */
 async function downloadFromUrl(url) {
     console.log('downloading map from url: ' + url);
-    const corsProxies = ['https://cors-anywhere.herokuapp.com/', 'https://api.allorigins.win/raw?url='];
+    const corsProxies = ['https://api.allorigins.win/raw?url=', 'https://cors-anywhere.herokuapp.com/'];
 
     async function attemptDownload(currentProxy = -1) {
         let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
@@ -327,7 +354,7 @@ function setUrlParam(param, value) {
  */
 function updateProgress(loaded, total) {
     let loadedText = (loaded / 1024 / 1024).toFixed(1);
-    let totalText = ((total === 0) ? '' : ('/' + (total / 1024 / 1024).toFixed(1)));
+    let totalText = ((total === 0) ? '' : (' / ' + (total / 1024 / 1024).toFixed(1)));
     downloadProgress.textContent = ': ' + loadedText + totalText + ' MB';
 }
 
@@ -388,12 +415,12 @@ function validateMapKey(id) {
 
 /**
  * extracts a map zip and attempts to load all present difficulties
- * @param {ArrayBuffer} e - data of the zip
+ * @param {ProgressEvent} event - a load event
  */
-async function extractZip(e) {
+async function extractZip(event) {
     let zip;
     try {
-        zip = await JSZip.loadAsync(e);
+        zip = await JSZip.loadAsync(event);
     } catch (error) {
         displayLoadError('unable to extract zip file');
         console.error(error);
@@ -436,6 +463,14 @@ async function extractZip(e) {
             // no available difficulties
             displayLoadError('no difficulty files available to load');
         }
+
+        if (songFilename != '') {
+            try {
+                zip.file(songFilename).async('blob').then(createPlayback);
+            } catch (error) {
+                outputUI(false, -1, 'error loading song file, playback will not be available', 'error', true);
+            }
+        }
     } else {
         // no info.dat present
         displayLoadError('no Info.dat present in zip, cannot load map');
@@ -452,29 +487,91 @@ function displayLoadError(message) {
 }
 
 /**
+ * creates a playback button and associated components
+ * @param {*} audioBlob - unzipped audio file
+ */
+function createPlayback(audioBlob) {
+    audio = new Audio(window.URL.createObjectURL(audioBlob));
+    audio.preload = true;
+
+    let playbackElement = document.createElement('span');
+    playbackElement.innerHTML = ' \u25B6';
+
+    function playbackToggleFunction() {
+        if (audio.paused) {
+            audio.currentTime = centerBeat * 60 / bpm;
+            audio.play(); 
+            highlightElements(-1); // un-highlight elements
+            playbackElement.classList.add('playing');
+            syncPlayback();
+        }
+        else {
+            audio.pause(); 
+            playbackElement.classList.remove('playing');
+        }
+    }
+
+    playbackElement.addEventListener('click', playbackToggleFunction);
+    playbackToggle.appendChild(playbackElement);
+
+    audio.onloadedmetadata = function () {
+        duration = audio.duration * bpm / 60;
+    }
+}
+
+/**
  * parses an Info.dat string and extracts the useful properties into global variables
- * @param {String} datString - the text contents of an Info.dat file
+ * @param {Object} datString - the parsed contents of an Info.dat file
  */
 function loadMapInfo(datString) {
     let parsed = JSON.parse(datString);
     mapDifficultySets = parsed._difficultyBeatmapSets;
+    globalOffset = parsed._songTimeOffset;
+    songFilename = parsed._songFilename;
+    bpm = parsed._beatsPerMinute;
+    songTitle = parsed._songName;
+    if (songTitle != '' && songTitle !== undefined && songTitle !== null) {
+        pageTitle.textContent = "beat saber map inspector - " + songTitle;
+        document.getElementsByTagName('title')[0].textContent = 'map inspector - ' + songTitle;
+    }
+}
+
+/**
+ * gets the local time offset of the map and converts it to beats
+ * @param {Object} songInfo - the parsed contents of a difficulty.dat file
+ */
+function getLocalOffset(songInfo) {
+    try {
+        songInfo = getSelectedDiff();
+        localOffset = songInfo['_customData']._editorOffset;
+    } catch {
+        localOffset = 0;
+    } // not all files have this defined
+    offset = -0.001 * (localOffset + globalOffset) * bpm / 60;
+    if (Math.abs(notesArray[0] + offset) < comparisonTolerance) { // support for people who offset first note to 0 mark - makes it exact instead of floating point errors
+        offset = notesArray[0];
+    }
 }
 
 /**
  * parses and loads a difficulty.dat string
- * @param {String} datString - the text contents of a difficulty.dat file
+ * @param {Object} datString - the parsed contents of a difficulty.dat file
  */
 function loadDifficultyDat(datString) {
     ready = false;
     let parsed = JSON.parse(datString);
+    bookmarksArray = getBookmarks(parsed);
     notesArray = getNotes(parsed);
     wallsArray = getWalls(parsed);
+    bookmarks = getBookmarks(parsed);
+    getLocalOffset();
 
     ready = true;
     centerBeat = 0;
     olaPosition = Ola(0);
     clearRenderedElements();
     checkParity();
+    getStats();
     render();
 }
 
@@ -509,7 +606,7 @@ function populateDiffSelect() {
         }
         let gap = document.createElement('option');
         gap.disabled = true;
-        gap.textContent = "---------";
+        gap.textContent = '---------';
         diffSelect.appendChild(gap);
     }
     diffSelect.removeChild(diffSelect.lastChild); // remove trailing ----
@@ -576,30 +673,139 @@ function getRenderContainerHeight() {
 function highlightElements(time) {
     timeInd = time.toFixed(3);
 
-    document.querySelectorAll('.selected').forEach(
+    output.querySelectorAll('.selected').forEach(
         (element) => { element.classList.remove('selected', 'multiSelected', 'firstSelected', 'lastSelected'); }
     );
 
-    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error';
+    let selector = '.showWarnings [data-time="' + timeInd + '"].warning, .showErrors [data-time="' + timeInd + '"].error, .showBookmarks [data-time="' + timeInd + '"].bookmark';
     let QScount = document.querySelectorAll(selector).length;
     let i = 0;
 
-    document.querySelectorAll(selector).forEach(
+    output.querySelectorAll(selector).forEach(
         (element) => {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+                    element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+                element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
                 element.classList.add('selected');
             }
         }
     );
+}
+
+/**
+ * checks for errors in parity within the notes
+ * @param {Array} notePos - number of notes in a given position, separated by note type
+ * @param {Array} noteRot - number of notes in a given rotation, separated by note type
+ * @param {Array} noteTyp - number of notes, separated by note type
+ * @returns {void} - outputs to DOM
+ */
+ function printStats(notePos, noteRot, noteTyp) {
+    const rotTransposeInv = [4, 0, 5, 2, 8, 3, 6, 1, 7];
+
+    const blockType = ['all', 'red', 'blue', 'bomb'];
+    const blockName = ['', 'red ', 'blue ', 'bomb'];
+    const blockNameAppend = ['note', 'note', 'note', '']
+    const niceCutDirections = ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right', 'dot']; // while aB works well for class names it looks a bit off in text
+
+    let out = document.getElementById('statsbox');
+    for (let i = out.childNodes.length - 1; i >= 0; i--) { // empty current statsbox, if present
+        out.removeChild(out.childNodes[i]);
+    }
+
+    // create top line
+    let line = document.createElement('div');
+
+    let label = document.createElement('span');
+    label.append('block positioning');
+    let label2 = document.createElement('span');
+    label2.append('note rotation');
+
+    line.append(label, label2);
+    out.append(line);
+
+    function createTile(count, blockTypeID, rotationMode=null) {
+        let tile = document.createElement('span');
+        tile.classList.add('tile');
+        tile.classList.add(blockType[blockTypeID]); // determines tile colour
+        let max = Math.max(...notePos[blockTypeID][0], ...notePos[blockTypeID][1], ...notePos[blockTypeID][2]); // get most common direction/rotation for colour reference 
+        let opacity = (noteTyp[blockTypeID] == 0) ? 0.05 : (0.05 + 0.95 * Math.pow(count / max, 0.75)) // convert to percentages of largest value, capped 5% and up
+        tile.style = '--opacity: ' + opacity + ';';
+        let title = count + ' '; // mouseover text
+        if (rotationMode != null) {
+            title += blockName[blockTypeID]
+            title += niceCutDirections[rotationMode];
+            title += (count == 1) ? ' note' :' notes';
+        } else {
+            title += blockName[blockTypeID] + blockNameAppend[blockTypeID];
+            title += (count == 1) ? '' :'s';
+            title += ' in this position';
+        }
+
+        if (noteTyp[blockTypeID] != 0) title += ' (' + (100*count/noteTyp[blockTypeID]).toFixed(1) + '% of ' + blockName[blockTypeID] + blockNameAppend[blockTypeID] + 's)';
+        tile.title = title;
+        return tile;
+    }
+
+    // create additional elements to show statistics
+    for (let i = 0; i < 3; i++) {
+        let line = document.createElement('div');
+        
+        line.classList.add('line');
+
+        for (let j = 0; j < 4; j++) { // position
+            notePos[j][i].forEach(item => {
+                line.append(createTile(item, j));
+            });
+
+            // template spacer
+            let spacer = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+            line.append(spacer);
+        }
+
+        for (let j = 0; j < 3; j++) { // rotation
+            if (noteTyp[j] == 0) continue;
+            
+            let spacer = document.createElement('span');
+            spacer.classList.add('tile', 'spacer');
+            spacer.style = '--opacity: 0;';
+
+            for (let k = 0; k < 3; k++) {
+                direction = rotTransposeInv[3 * i + k] // map bsaber positions to html positions
+                line.append(createTile(noteRot[j][direction], j, direction));
+            }
+            line.append(spacer);
+        }
+
+        if (i == 0) { line.append('red:blue:'); } // note ratio
+        else if (i == 1) { line.append((noteTyp[2] / noteTyp[1]).toFixed(2) + ":1"); }
+
+        out.append(line);
+    }
+}
+
+/*
+ * adds a little animation when items get hidden or shown, limited to under 60 items for now for performance reasons
+ * @param {Number} time - the (float) time at which to round & highlight
+ * @returns {void} - outputs to DOM
+ */
+function setTransitionDelays(toChange = '', edge = true) {
+    let query = '.parent.' + toChange;
+    let visible = Array.from(output.querySelectorAll(query)); // convert nodelist to array so .includes can be used
+    let count = visible.length;
+
+    for (let i = 0; i < count; i++) { // you'd hope that there'd be a better way to iteratively assign transition delays in 2020 but no
+        let delay = 0.5 * i / count;
+        visible[i].style.transitionDelay = '0s, 0s, 0s, 0s, ' + (delay).toFixed(3) + 's, ' + delay.toFixed(3) + 's';
+    }
 }
 
 pageTitle.addEventListener('click', randomizeTitle);
@@ -624,7 +830,7 @@ const easterEggTitles = [
 ];
 
 function randomizeTitle() {
-    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
+    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)] + songTitle;
 }
 
 // read all toggles on page load
