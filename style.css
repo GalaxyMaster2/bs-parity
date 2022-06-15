@@ -245,6 +245,7 @@ body.light #output div {
   max-width: 30rem;
   border-radius: 0.375rem;
   background-color: var(--bg);
+  color: var(--text);
 }
 .intro #load-error #close-error {
   width: 1rem;

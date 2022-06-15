@@ -74,6 +74,7 @@ function parseUrlInput(input) {
 
         if (typeof result === 'string') {
             downloadFromUrl(result); // valid url
+            setUrlParam('url', url);
         }
 
         if (result === -3) {
@@ -189,7 +190,7 @@ function readQuery() {
                 id = url.match(/([^\/]*)\/*$/)[1];
                 break;
             default:
-                downloadFromUrl(result);
+                urlInput.value = result;
                 return;
         }
     }
@@ -208,7 +209,7 @@ function readQuery() {
                 displayLoadError('invalid beatsaver key');
                 break;
             default:
-                downloadFromKey(result);
+                urlInput.value = result;
                 break;
         }
     }
@@ -225,9 +226,10 @@ async function downloadFromKey(key) {
 
     setIntroDivStatus('downloading');
     try {
-        let response = await download(url);
-        extractZip(response);
-        setUrlParam('id', key);
+        downloadFromUrl(url).then(
+            () => {setUrlParam('id', key);},
+            () => {throw 'Unable to download map'}
+        );
     } catch (e) {
         console.error(e);
         let errorMessage = 'unable to download map ' + key + ' from beatsaver';
@@ -262,16 +264,17 @@ async function downloadFromUrl(url) {
                 displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
             } else {
                 extractZip(response);
-                setUrlParam('url', url);
             }
         } catch (e) {
             // it's impossible to tell a CORS error apart from other network errors
             // so we have to try all proxies in either case
-            console.error(e);
             let errorMessage;
             let lastProxy = (currentProxy === (corsProxies.length - 1));
             if (lastProxy) {
+                console.error(e);
                 errorMessage = 'error downloading map, try manually uploading it instead';
+            } else {
+                console.warn(e)
             }
             if (typeof e === 'string') {
                 if (e.includes('response')) {
@@ -285,6 +288,7 @@ async function downloadFromUrl(url) {
                 }
             }
             if (errorMessage) {
+                console.warn(errorMessage);
                 displayLoadError(errorMessage);
             } else {
                 console.log('download failed, trying next CORS proxy');
@@ -294,7 +298,7 @@ async function downloadFromUrl(url) {
     }
 
     setIntroDivStatus('downloading');
-    attemptDownload();
+    return attemptDownload();
 }
 
 /**
@@ -344,7 +348,7 @@ function download(url) {
 function setUrlParam(param, value) {
     let params = new URLSearchParams();
     params.set(param, value);
-    history.replaceState(null, '', `?${params.toString()}`);
+    history.pushState(null, '', `?${params.toString()}`);
 }
 
 /**
@@ -544,6 +548,9 @@ function getLocalOffset(songInfo) {
     try {
         songInfo = getSelectedDiff();
         localOffset = songInfo['_customData']._editorOffset;
+        if (isNaN(localOffset)) {
+            localOffset = 0;
+        }
     } catch {
         localOffset = 0;
     } // not all files have this defined
@@ -830,7 +837,11 @@ const easterEggTitles = [
 ];
 
 function randomizeTitle() {
-    pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)] + songTitle;
+    if (songTitle !== '') {
+        pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)] + " - " + songTitle;
+    } else {
+        pageTitle.textContent = easterEggTitles[Math.floor(Math.random() * easterEggTitles.length)];
+    }
 }
 
 // read all toggles on page load
