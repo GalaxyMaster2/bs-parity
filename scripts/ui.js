@@ -93,7 +93,7 @@ function parseUrlInput(input) {
  */
 function resetUI() {
     while (playbackToggle.lastChild) {
-        playbackToggle.removeChild(playbackToggle.lastChild)
+        playbackToggle.removeChild(playbackToggle.lastChild);
     }
     notesArray = undefined;
     wallsArray = undefined;
@@ -102,7 +102,7 @@ function resetUI() {
     songFilename = undefined;
     sliderPrecision = 1 / 8;
     if (audio !== undefined && !audio.paused) {
-        audio.pause()
+        audio.pause();
     }
     audio = undefined;
     duration = undefined;
@@ -118,8 +118,8 @@ function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
     if (ready == true) { // file has already been loaded
-        scrollTo(0)
-        resetUI()
+        scrollTo(0);
+        resetUI();
     }
     if (files.length != 0) {
         readFile(files);
@@ -222,26 +222,35 @@ readQuery();
  */
 async function downloadFromKey(key) {
     console.log('downloading map #' + key);
-    let url = 'https://beatsaver.com/api/download/key/' + key;
+    let apiUrl = 'https://api.beatsaver.com/maps/id/' + key;
 
     setIntroDivStatus('downloading');
+
+    let response = await fetch(apiUrl);
+    if (!response.ok) {
+        let errorMessage = `unable to download map ${key} from beatsaver`;
+        if (response.status === 404) {
+            errorMessage = `map ${key} does not exist on beatsaver`;
+        }
+        displayLoadError(errorMessage);
+
+        return;
+    }
+    let downloadUrl = (await response.json()).versions[0].downloadURL;
+
     try {
-        downloadFromUrl(url).then(
-            () => {setUrlParam('id', key);},
-            () => {throw 'Unable to download map'}
-        );
+        let response = await download(downloadUrl);
+        extractZip(response);
+        setUrlParam('id', key);
     } catch (e) {
         console.error(e);
-        let errorMessage = 'unable to download map ' + key + ' from beatsaver';
+        let errorMessage = `unable to download map ${key} from beatsaver`;
         if (typeof e === 'string') {
-            if (e.includes('response')) {
-                let status = e.replace('response ', '');
-                switch (status) {
-                    case '404':
-                        errorMessage = 'map ' + key + ' does not exist on beatsaver';
-                }
-            } else if (e.includes('connection timeout')) {
-                errorMessage = 'connection timeout';
+            switch (e) {
+                case 'response 404':
+                    errorMessage = `map ${key} does not exist on beatsaver`;
+                case 'connection timeout':
+                    errorMessage = 'connection timeout';
             }
         }
         displayLoadError(errorMessage);
@@ -253,52 +262,40 @@ async function downloadFromKey(key) {
  * @param {String} url - a url from which to download a map
  */
 async function downloadFromUrl(url) {
-    console.log('downloading map from url: ' + url);
-    const corsProxies = ['https://api.allorigins.win/raw?url=', 'https://cors-anywhere.herokuapp.com/'];
-
-    async function attemptDownload(currentProxy = -1) {
-        let currentUrl = (corsProxies[currentProxy] || '') + url; // prepend proxy if it exists in corsProxies
-        try {
-            let response = await download(currentUrl);
-            if (response.byteLength === 0) {
-                displayLoadError('error downloading map, is the url correct? try manually uploading it instead');
-            } else {
-                extractZip(response);
-            }
-        } catch (e) {
-            // it's impossible to tell a CORS error apart from other network errors
-            // so we have to try all proxies in either case
-            let errorMessage;
-            let lastProxy = (currentProxy === (corsProxies.length - 1));
-            if (lastProxy) {
-                console.error(e);
-                errorMessage = 'error downloading map, try manually uploading it instead';
-            } else {
-                console.warn(e)
-            }
-            if (typeof e === 'string') {
-                if (e.includes('response')) {
-                    let status = e.replace('response ', '');
-                    switch (status) {
-                        case '404':
-                            errorMessage = 'map zip at url does not exist (404)';
-                    }
-                } else if (e.includes('connection timeout') && lastProxy) {
-                    errorMessage = 'connection timeout';
-                }
-            }
-            if (errorMessage) {
-                console.warn(errorMessage);
-                displayLoadError(errorMessage);
-            } else {
-                console.log('download failed, trying next CORS proxy');
-                attemptDownload(currentProxy + 1);
-            }
-        }
-    }
+    console.log(`downloading map from url: ${url}`);
+    const corsProxy = 'http://cors.bsmg.dev/';
 
     setIntroDivStatus('downloading');
-    return attemptDownload();
+
+    try {
+        let response = await download(url);
+        extractZip(response);
+        return;
+    } catch (e) {
+        // AFAIK it's impossible to tell a CORS error apart from other network errors
+        // so we have to try it either way
+        console.warn(e);
+        console.log('download failed, trying with CORS proxy');
+    }
+
+    try {
+        let response = await download(corsProxy + url);
+        extractZip(response);
+        return;
+    } catch (e) {
+        console.error(e);
+        let errorMessage = 'error downloading map, is the url correct? try manually uploading it instead';
+        if (typeof e === 'string') {
+            switch (e) {
+                case 'response 404':
+                    errorMessage = 'map zip at url does not exist (404)';
+                case 'connection timeout':
+                    errorMessage = 'connection timeout';
+            }
+        }
+        displayLoadError(errorMessage);
+    }
+    return;
 }
 
 /**
@@ -390,7 +387,7 @@ function validateUrl(url) {
     if (!validurl.test(url)) {
         return -2; // url is invalid
     }
-    if (url.includes('beatsaver.com/beatmap/') || url.includes('bsaber.com/songs/') || url.includes('beatsaver.com/api/download/key/')) {
+    if (url.includes('beatsaver.com/maps/') || url.includes('bsaber.com/songs/')) {
         return -3; // should be downloaded using map key
     }
 
@@ -504,13 +501,13 @@ function createPlayback(audioBlob) {
     function playbackToggleFunction() {
         if (audio.paused) {
             audio.currentTime = centerBeat * 60 / bpm;
-            audio.play(); 
+            audio.play();
             highlightElements(-1); // un-highlight elements
             playbackElement.classList.add('playing');
             syncPlayback();
         }
         else {
-            audio.pause(); 
+            audio.pause();
             playbackElement.classList.remove('playing');
         }
     }
@@ -520,7 +517,7 @@ function createPlayback(audioBlob) {
 
     audio.onloadedmetadata = function () {
         duration = audio.duration * bpm / 60;
-    }
+    };
 }
 
 /**
@@ -693,13 +690,13 @@ function highlightElements(time) {
             if (QScount > 1) {
                 element.classList.add('selected', 'multiSelected');
                 if (i == 0) {
-                    element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    element.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     element.classList.add('firstSelected');
                 }
                 if (i == QScount - 1) element.classList.add('lastSelected');
                 i++;
             } else {
-                element.parentElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+                element.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.classList.add('selected');
             }
         }
@@ -713,12 +710,12 @@ function highlightElements(time) {
  * @param {Array} noteTyp - number of notes, separated by note type
  * @returns {void} - outputs to DOM
  */
- function printStats(notePos, noteRot, noteTyp) {
+function printStats(notePos, noteRot, noteTyp) {
     const rotTransposeInv = [4, 0, 5, 2, 8, 3, 6, 1, 7];
 
     const blockType = ['all', 'red', 'blue', 'bomb'];
     const blockName = ['', 'red ', 'blue ', 'bomb'];
-    const blockNameAppend = ['note', 'note', 'note', '']
+    const blockNameAppend = ['note', 'note', 'note', ''];
     const niceCutDirections = ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right', 'dot']; // while aB works well for class names it looks a bit off in text
 
     let out = document.getElementById('statsbox');
@@ -737,25 +734,25 @@ function highlightElements(time) {
     line.append(label, label2);
     out.append(line);
 
-    function createTile(count, blockTypeID, rotationMode=null) {
+    function createTile(count, blockTypeID, rotationMode = null) {
         let tile = document.createElement('span');
         tile.classList.add('tile');
         tile.classList.add(blockType[blockTypeID]); // determines tile colour
         let max = Math.max(...notePos[blockTypeID][0], ...notePos[blockTypeID][1], ...notePos[blockTypeID][2]); // get most common direction/rotation for colour reference 
-        let opacity = (noteTyp[blockTypeID] == 0) ? 0.05 : (0.05 + 0.95 * Math.pow(count / max, 0.75)) // convert to percentages of largest value, capped 5% and up
+        let opacity = (noteTyp[blockTypeID] == 0) ? 0.05 : (0.05 + 0.95 * Math.pow(count / max, 0.75)); // convert to percentages of largest value, capped 5% and up
         tile.style = '--opacity: ' + opacity + ';';
         let title = count + ' '; // mouseover text
         if (rotationMode != null) {
-            title += blockName[blockTypeID]
+            title += blockName[blockTypeID];
             title += niceCutDirections[rotationMode];
-            title += (count == 1) ? ' note' :' notes';
+            title += (count == 1) ? ' note' : ' notes';
         } else {
             title += blockName[blockTypeID] + blockNameAppend[blockTypeID];
-            title += (count == 1) ? '' :'s';
+            title += (count == 1) ? '' : 's';
             title += ' in this position';
         }
 
-        if (noteTyp[blockTypeID] != 0) title += ' (' + (100*count/noteTyp[blockTypeID]).toFixed(1) + '% of ' + blockName[blockTypeID] + blockNameAppend[blockTypeID] + 's)';
+        if (noteTyp[blockTypeID] != 0) title += ' (' + (100 * count / noteTyp[blockTypeID]).toFixed(1) + '% of ' + blockName[blockTypeID] + blockNameAppend[blockTypeID] + 's)';
         tile.title = title;
         return tile;
     }
@@ -763,7 +760,7 @@ function highlightElements(time) {
     // create additional elements to show statistics
     for (let i = 0; i < 3; i++) {
         let line = document.createElement('div');
-        
+
         line.classList.add('line');
 
         for (let j = 0; j < 4; j++) { // position
@@ -780,13 +777,13 @@ function highlightElements(time) {
 
         for (let j = 0; j < 3; j++) { // rotation
             if (noteTyp[j] == 0) continue;
-            
+
             let spacer = document.createElement('span');
             spacer.classList.add('tile', 'spacer');
             spacer.style = '--opacity: 0;';
 
             for (let k = 0; k < 3; k++) {
-                direction = rotTransposeInv[3 * i + k] // map bsaber positions to html positions
+                direction = rotTransposeInv[3 * i + k]; // map bsaber positions to html positions
                 line.append(createTile(noteRot[j][direction], j, direction));
             }
             line.append(spacer);
