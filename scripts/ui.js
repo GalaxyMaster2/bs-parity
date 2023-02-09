@@ -74,7 +74,7 @@ function parseUrlInput(input) {
 
         if (typeof result === 'string') {
             downloadFromUrl(result); // valid url
-            setUrlParam('url', url);
+            setUrlParam('url', result);
         }
 
         if (result === -3) {
